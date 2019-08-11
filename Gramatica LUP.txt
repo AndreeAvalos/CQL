@@ -1,0 +1,89 @@
+S:= Instrucciones
+
+Instrucciones:= Instrucciones Instruccion
+            | Instruccion
+
+Instruccion:= LOGIN
+            | LOGOUT
+            | QUERY
+            | DATA
+            | MESSAGE
+            | ERROR
+            | STRUC
+            | DATABASES
+            | error_lup
+
+LOGIN   := "[+LOGIN]" USER PASSWORD "[-LOGIN]"
+        := "[+LOGIN]" RESPUESTA "[-LOGIN]"
+
+RESPUESTA:="[SUCCESS]"
+         |"[FAIL]"
+
+LOGOUT:= "[+LOGOUT]" RESPUESTA "[-LOGOUT]"
+    
+USER:= "[+USER]" VALOR "[-USER]"
+
+PASSWORD:= "[+PASS]" VALOR "[-PASS]"
+
+VALOR:= cadena
+    | id
+    | numero
+
+QUERY:="[+QUERY]" USER DATA "[-QUERY]"
+
+DATA:= "[+DATA]" VALOR "[-DATA]"
+
+MESSAGE := "[+MESSAGE]" VALOR "[-MESSAGE]"
+
+ERROR:= "[+ERROR]" LINEA COLUMNA TIPO DESCRIPCION "[-ERROR]"
+
+LINEA:= "[+LINE]" VALOR "[-LINE]"
+
+COLUMNA:= "[+COLUMN]" VALOR "[-COLUMN]"
+
+TIPO:= "[+TYPE]" VALOR "[-TYPE]"
+
+DESCRIPCION:="[+DESC]" VALOR "[-DESC]"
+
+STRUC:= "[+STRUC]" USER "[-STRUC]"
+
+DATABASES:= "[+DATABASES]" DATABASES2 "[-DATABASES]"
+
+DATABASES2:= DATABASES2 DATABASE
+          | DATABASE
+
+DATABASE:= "[+DATABASE]" NAME TABLES TYPES PROCEDURES  "[-DATABASE]"
+"[+]" "[-]"
+NAME:= "[+NAME]" VALOR "[-NAME]"
+
+TABLES:="[+TABLES]" TABLE "[-TABLES]"
+
+TABLE:= "[+TABLE]" NAME COLUMNS "[-TABLE]"
+      | "[+TABLE]" VALOR "[-TABLE]"
+
+COLUMNS:= COLUMNS COLUMN
+        | COLUMN
+
+COLUMN:= "[+COLUMNS]" VALOR "[-COLUMNNS]"
+
+TYPES:="[+TYPES]" TYPES2 "[-TYPES]"
+
+TYPES2:= TYPES2 TYPE
+       | TYPE
+
+TYPE:= "[+TYPE]" NAME ATTRIBUTES "[-TYPE]"
+    | "[+TYPE]" VALOR "[-TYPE]"
+
+ATTRIBUTES:= ATTRIBUTES ATTRIBUTE
+           | ATTRIBUTE 
+
+ATTRIBUTE := "[+ATTRIBUTES]" VALOR "[-ATTRIBUTES]"
+
+PROCEDURES:= "[+PROCEDURES]" VALOR "[-PROCEDURES]"
+
+
+
+
+
+    
+
