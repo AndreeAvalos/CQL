@@ -1,10 +1,10 @@
 # CQL - Teacher
-Proyecto 1 de Seminario de Sistemas 1
+Proyecto 1 de Organizacion de Lenguajes y Compiladores 2
 ### 📋
 
 * Universidad de San Carlos de Guatemala
 * Facultad de Ingenieria
-* Seminario de Sistemas 1
+* Organizacion de Lenguajes y Compiladores 2
 * Escuela de Vacaciones Junio 2019
 * Ing. Edgar Saban
 * Aux. Julio Arango
