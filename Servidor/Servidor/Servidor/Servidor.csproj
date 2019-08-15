@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Analizador\LUP\" />
     <Folder Include="Models\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -13,6 +12,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>Libreria\Irony.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

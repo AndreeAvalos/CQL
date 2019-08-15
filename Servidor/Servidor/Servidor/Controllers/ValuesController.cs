@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Servidor.Analizador.CQL;
+using Servidor.Analizador.LUP;
 
 namespace Servidor.Controllers
 {
@@ -12,9 +16,12 @@ namespace Servidor.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public string Get()
         {
-            return new string[] { "value1", "value2" };
+            String text = System.IO.File.ReadAllText("entrada.txt");
+            Sintactico_LUP sintactico = new Sintactico_LUP();
+
+            return sintactico.Analizar(text, new Gramatica_LUP()).ToString();
         }
 
         // GET api/values/5
