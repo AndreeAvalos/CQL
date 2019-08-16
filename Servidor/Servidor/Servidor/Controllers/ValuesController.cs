@@ -20,8 +20,14 @@ namespace Servidor.Controllers
         {
             String text = System.IO.File.ReadAllText("entrada.txt");
             Sintactico_LUP sintactico = new Sintactico_LUP();
+            sintactico.Analizar(text, new Gramatica_LUP());
+            string salida = "";
+            foreach (string item in sintactico.salida)
+            {
+                salida += item.ToString() +"\n";
+            }
 
-            return sintactico.Analizar(text, new Gramatica_LUP()).ToString();
+            return salida ;
         }
 
         // GET api/values/5
