@@ -43,7 +43,9 @@
 "TYPES"         return 'RTYPES';
 "TYPE"          return 'RTYPE';
 "ATTRIBUTES"    return 'RATTRIBUTES';
+"ATTRIBUTE"    return 'RATTRIBUTE';
 "PROCEDURES"    return 'RPROCEDURES';
+"PROCEDURE"    return 'RPROCEDURE';
 
 
 "["                 return 'CORIZQ';
@@ -190,14 +192,20 @@ TABLE
     | CORIZQ MAS RTABLE CORDER VALORES CORIZQ MENOS RTABLE CORDER               {$$ = OBJETO_INSTRUCCION.nuevoTable2($5);}
 ;
 
+
 COLUMNS
-    : COLUMNS COLUMN                                                            {$1.push($2); $$ = $1;}
+	: CORIZQ MAS RCOLUMNS CORDER COLUMNS2 CORIZQ MENOS RCOLUMNS CORDER			{ $$ = $5;}
+;	
+
+COLUMNS2
+    : COLUMNS2 COLUMN                                                            {$1.push($2); $$ = $1;}
     | COLUMN                                                                    { $$ = [$1];}
 ;
 
 COLUMN
-    : CORIZQ MAS RCOLUMNS CORDER VALORES CORIZQ MENOS RCOLUMNS CORDER          { $$ = $5;}
+    : CORIZQ MAS RCOLUMN CORDER NAME CORIZQ MENOS RCOLUMN CORDER          { $$ = $5;}
 ;
+
 
 TYPES
     : CORIZQ MAS RTYPES CORDER TYPES2 CORIZQ MENOS RTYPES CORDER               { $$ = $5;}
@@ -214,16 +222,29 @@ TYPE
 ;
 
 ATTRIBUTES
-    : ATTRIBUTES ATTRIBUTE  {$1.push($2); $$ = $1;}
+    : CORIZQ MAS RATTRIBUTES CORDER ATTRIBUTES2 CORIZQ MENOS RATTRIBUTES CORDER { $$ = $5;}
+;
+
+ATTRIBUTES2
+    : ATTRIBUTES2 ATTRIBUTE  {$1.push($2); $$ = $1;}
     | ATTRIBUTE { $$ = [$1];}
 ;
 
 ATTRIBUTE
-    : CORIZQ MAS RATTRIBUTES CORDER VALORES CORIZQ MENOS RATTRIBUTES CORDER     { $$ = $5;}
+    : CORIZQ MAS RATTRIBUTE CORDER NAME CORIZQ MENOS RATTRIBUTE CORDER     { $$ = $5;}
 ;
 
 PROCEDURES
-    : CORIZQ MAS RPROCEDURES CORDER VALORES CORIZQ MENOS RPROCEDURES CORDER     { $$ = $5;}
+    : CORIZQ MAS RPROCEDURES CORDER PROCEDURES2 CORIZQ MENOS RPROCEDURES CORDER     { $$ = $5;}
+;
+
+PROCEDURES2
+	: PROCEDURES2 PROCEDURE {$1.push($2); $$ = $1;}
+	| PROCEDURE { $$ = [$1];}
+;
+
+PROCEDURE
+	: CORIZQ MAS RPROCEDURE CORDER NAME CORIZQ MENOS RPROCEDURE CORDER
 ;
 
 VALORES
