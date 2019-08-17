@@ -10,7 +10,7 @@ namespace Servidor.Analizador.CQL
 {
     class Gramatica_LUP : Grammar
     {
-        public Gramatica_LUP()
+        public Gramatica_LUP() : base(caseSensitive: false)
         {
             #region Expresiones_Regulares
             StringLiteral CADENA = new StringLiteral("Cadena", "\"");
