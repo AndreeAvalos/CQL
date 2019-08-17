@@ -13,6 +13,7 @@ Contenido:
 
 * Lenguaje Unificado de Paquetes(LUP)
 * Compi Query Languaje (CQL)
+* CHISON
 
 Colaboradores:
 * Carlos Andree Avalos Soto       201408580
