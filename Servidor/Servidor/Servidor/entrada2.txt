@@ -28,43 +28,6 @@ $<
                     ]  
                 >,
                 <
-                    "CQL-TYPE" = "OBJECT",
-                    "NAME" = "Persona",
-                    "ATTRS" = [
-                        < 
-                            "NAME" = "CUI",
-                            "TYPE" = "Double" 
-                        >,
-                        < 
-                            "NAME" = "Nombre",
-                            "TYPE" = "String" 
-                        >
-                    ]
-                >,
-                <
-                    "CQL-TYPE" = "OBJECT",
-                    "NAME" = "Automovil",
-                    "ATTRS" = [
-                        < 
-                            "NAME" = "Marca",
-                            "TYPE" = "String" 
-                        >,
-                        < 
-                            "NAME" = "Fecha_Compra",
-                            "TYPE" = "Date" 
-                        >,
-                        < 
-                            "NAME" = "Kilometraje",
-                            "TYPE" = "Double" 
-                        >,
-                        < 
-                            "NAME" = "Propietario",
-                            "TYPE" = "Persona" 
-                        >
-
-                    ]
-                >,
-                <
                     "CQL-TYPE" = "TABLE",
                     "NAME"= "Jeans",
                     "COLUMNS" = [
@@ -85,34 +48,17 @@ $<
                         >
                     ],
                     "DATA" = [
-                      ${ jeansData.chison }$    
+					${hola.chison}$
                     ]  
-                >,
-                <
-                    "CQL-TYPE" = "PROCEDURE",
-                    "NAME" = "Procedure1",
-                    "PARAMETERS" = [
-                        <
-                            "NAME" = "@Nombre",
-                            "TYPE" = "String",
-                            "AS"   = IN
-                        >,
-                        <
-                            "NAME" = "@Id",
-                            "TYPE" = "Int",
-                            "AS"   = IN
-                        >,
-                        <
-                            "NAME" = "@Edad",
-                            "TYPE" = "Int",
-                            "AS"   = OUT
-                        >
-                    ],
-                    "INSTR" = $ 
-                                Return @val;
-                              $
                 >
+				
             ]
+        >,    
+        <
+        "NAME"= "Database2",
+        "Data"= [
+            ${ bd2data.chison }$
+        ]
         >
     ],
     "USERS"= [

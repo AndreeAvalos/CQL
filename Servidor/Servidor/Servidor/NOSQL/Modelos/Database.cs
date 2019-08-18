@@ -12,7 +12,7 @@ namespace Servidor.NOSQL.Modelos
         List<Objeto> objetos;
         List<Procedure> procedures;
 
-        string anexo;
+        string link;
         bool exportada = false;
 
         public Database()
@@ -36,7 +36,8 @@ namespace Servidor.NOSQL.Modelos
         public List<Tabla> Tablas { get => tablas; set => tablas = value; }
         public List<Objeto> Objetos { get => objetos; set => objetos = value; }
         public List<Procedure> Procedures { get => procedures; set => procedures = value; }
-        public string Anexo { get => anexo; set => anexo = value; }
+
         public bool Exportada { get => exportada; set => exportada = value; }
+        public string Link { get => link; set => link = value; }
     }
 }
