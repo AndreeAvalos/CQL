@@ -32,7 +32,7 @@ namespace Servidor.Controllers
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
             sintactico.Analizar(text, new Gramatica_CHISON());
             string salida = "Analisis: " + sintactico.Validar(text, new Gramatica_CHISON()).ToString() + "\n";
-
+            /*
             foreach (string item in sintactico.salida)
             {
                 salida += item.ToString() + "\n";
@@ -44,7 +44,7 @@ namespace Servidor.Controllers
             }
             salida += "\n\n\n";
 
-            salida += sintactico.db_nosql.Databases[0].ArmarHMTL(0);
+            salida += sintactico.db_nosql.Databases[0].ArmarHMTL(0);*/
 
             return salida;
         }
