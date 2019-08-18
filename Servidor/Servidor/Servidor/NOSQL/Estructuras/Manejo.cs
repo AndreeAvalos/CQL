@@ -19,5 +19,7 @@ namespace Servidor.NOSQL.Estructuras
 
         public List<Usuario> Usuarios { get => usuarios; set => usuarios = value; }
         public List<Database> Databases { get => databases; set => databases = value; }
+
+
     }
 }

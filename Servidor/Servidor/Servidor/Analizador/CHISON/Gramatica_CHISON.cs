@@ -143,22 +143,22 @@ namespace Servidor.Analizador.CHISON
 
 
             DATA5.Rule = DATA5 + COMA + DATA2
-                | DATA2;
+                | DATA2
+				| DOLLAR + LLAVIZQ + VALOR + PUNTO + VALOR + LLAVDER + DOLLAR;
 
             DATA2.Rule = MENQUE + DATA3 + MAYQUE
-                | DOLLAR + LLAVIZQ + VALOR + PUNTO + VALOR + LLAVDER + DOLLAR
                 | Empty;
 
             DATA3.Rule = DATA3 + COMA + DATA4
-                | DATA4 ;
+                | DATA4;
 
-            DATA4.Rule = TABLA
+            DATA4.Rule = CQL_TYPE
+                | NAME
+                | TABLA
                 | OBJETO
                 | PROCEDURE;
 
-            TABLA.Rule = CQL_TYPE
-                | NAME
-                | COLUMNS
+            TABLA.Rule = COLUMNS
                 | DATA_DATA;
 
 
@@ -171,11 +171,11 @@ namespace Servidor.Analizador.CHISON
 
             COLUMNS2.Rule = MENQUE + COLUMNS3 + MAYQUE
                 | Empty;
-         
+
 
             COLUMNS3.Rule = COLUMNS3 + COMA + COLUMN
                 | COLUMN;
-         
+
 
             COLUMN.Rule = NAME
                 | TYPE
@@ -194,16 +194,15 @@ namespace Servidor.Analizador.CHISON
             DATA_DATA3.Rule = DATA_DATA3 + COMA + DATA_DATA4
                 | DATA_DATA4;
 
-            DATA_DATA4.Rule = MENQUE+ DATA_DATA5 + MAYQUE;
+            DATA_DATA4.Rule = MENQUE + DATA_DATA5 + MAYQUE;
+
 
             DATA_DATA5.Rule = DATA_DATA5 + COMA + DATA_DATA6
                 | DATA_DATA6;
 
             DATA_DATA6.Rule = VALOR + IGUAL + VALOR;
 
-            OBJETO.Rule = CQL_TYPE
-                | NAME
-                | ATTRIBUTES;
+            OBJETO.Rule = ATTRIBUTES;
             ATTRIBUTES.Rule = RATTRS + IGUAL + CORIZQ + ATTRIBUTES2 + CORDER;
 
             ATTRIBUTES2.Rule = ATTRIBUTES2 + COMA + ATTRIBUTES3
@@ -218,9 +217,7 @@ namespace Servidor.Analizador.CHISON
             ATTRIBUTE.Rule = NAME
                 | TYPE;
 
-            PROCEDURE.Rule = CQL_TYPE
-                | NAME
-                | PARAMETERS
+            PROCEDURE.Rule =  PARAMETERS
                 | INSTR;
 
             INSTR.Rule = RINSTR + IGUAL + CONT_DATA_IMPORT;

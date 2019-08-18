@@ -42,6 +42,9 @@ namespace Servidor.Controllers
             {
                 salida += "USUARIO: " + item.Name + " PASSWORD: " + item.Password + " PERMISOS: " + agregar(item.Permisos) + "\n";
             }
+            salida += "\n\n\n";
+
+            salida += sintactico.db_nosql.Databases[0].ArmarHMTL(0);
 
             return salida;
         }

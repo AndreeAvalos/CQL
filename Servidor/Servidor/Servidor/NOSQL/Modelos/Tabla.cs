@@ -11,7 +11,37 @@ namespace Servidor.NOSQL.Modelos
         List<Columna> columnas;
         List<Fila> filas;
 
-        string anexo;
+        string link;
         bool exportada = false;
+
+        public string Name { get => name; set => name = value; }
+        public List<Columna> Columnas { get => columnas; set => columnas = value; }
+        public List<Fila> Filas { get => filas; set => filas = value; }
+        public bool Exportada { get => exportada; set => exportada = value; }
+        public string Link { get => link; set => link = value; }
+
+        public string ArmarRespuesta() {
+            string salida = "<table> \n";
+            salida += " <tr>\n  ";
+            foreach (Columna item in Columnas)
+            {
+                salida +=item.ArmarRespuesta().ToString();
+            }
+            salida += " </tr>\n  ";
+            salida += "</table> \n";
+            return salida;
+        }
+
+        public string ArmarHTML() {
+            string salida = "<table> \n";
+            salida += "\t<tr>\n\t\t<th>NAME</th><th>TYPE</th><th>PK</th>\n\t</tr>\n";
+            foreach (Columna item in Columnas)
+            {
+
+                salida += "\t\t<tr>" + item.ArmarHTML() + "</tr>\n";
+            }
+            salida += "</table> \n";
+            return salida;
+        }
     }
 }
