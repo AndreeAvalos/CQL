@@ -1,11 +1,16 @@
 ﻿using Irony.Parsing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Servidor.Analizador.CHISON
 {
-    class Gramatica_CHISON : Grammar
+    class Gramatica_Import_DATABASE : Grammar
     {
-        public Gramatica_CHISON() : base(caseSensitive: false)
+        public Gramatica_Import_DATABASE() : base(caseSensitive: false)
         {
+
             #region Expresiones_Regulares
             StringLiteral CADENA = new StringLiteral("Cadena", "\"");
             NumberLiteral NUMERO = new NumberLiteral("Numero");
@@ -33,7 +38,6 @@ namespace Servidor.Analizador.CHISON
                 PUNTO = ToTerm("."),
                 LLAVIZQ = ToTerm("{"),
                 LLAVDER = ToTerm("}"),
-                RDATABASES = ToTerm("\"DATABASES\""),
                 RNAME = ToTerm("\"NAME\""),
                 RDATA = ToTerm("\"DATA\""),
                 RCQL_TYPE = ToTerm("\"CQL-TYPE\""),
@@ -44,9 +48,6 @@ namespace Servidor.Analizador.CHISON
                 RINSTR = ToTerm("\"INSTR\""),
                 RPARAMETERS = ToTerm("\"PARAMETERS\""),
                 RAS = ToTerm("\"AS\""),
-                RUSERS = ToTerm("\"USERS\""),
-                RPASSWORD = ToTerm("\"PASSWORD\""),
-                RPERMISSIONS = ToTerm("\"PERMISSIONS\""),
                 RFALSE = ToTerm("FALSE"),
                 RTRUE = ToTerm("TRUE"),
                 RIN = ToTerm("IN"),
@@ -56,22 +57,12 @@ namespace Servidor.Analizador.CHISON
             #region No_Terminales
             NonTerminal
                 S = new NonTerminal("S"),
-                Instrucciones = new NonTerminal("Instrucciones"),
-                Instrucciones2 = new NonTerminal("Instrucciones2"),
-                Instruccion = new NonTerminal("Instruccion"),
-                DATABASES = new NonTerminal("DATABASES"),
-                DATABASES2 = new NonTerminal("DATABASES2"),
-                DATABASE = new NonTerminal("DATABASE"),
-                DATABASE2 = new NonTerminal("DATABASE2"),
-                DATABASE3 = new NonTerminal("DATABASE3"),
                 NAME = new NonTerminal("NAME"),
-                DATA = new NonTerminal("DATA"),
                 VALOR = new NonTerminal("VALOR"),
                 DATA2 = new NonTerminal("DATA2"),
                 DATA3 = new NonTerminal("DATA3"),
                 DATA4 = new NonTerminal("DATA4"),
                 DATA5 = new NonTerminal("DATA5"),
-                TABLAS = new NonTerminal("TABLAS"),
                 TABLA = new NonTerminal("TABLA"),
                 OBJETO = new NonTerminal("OBJETO"),
                 PROCEDURE = new NonTerminal("PROCEDURE"),
@@ -105,53 +96,23 @@ namespace Servidor.Analizador.CHISON
                 INSTR = new NonTerminal("INSTR"),
                 BOOL = new NonTerminal("BOOL"),
                 AS = new NonTerminal("AS"),
-                IN_OUT = new NonTerminal("IN_OUT"),
-                USER = new NonTerminal("USER"),
-                USERS = new NonTerminal("USERS"),
-                USERS2 = new NonTerminal("USERS2"),
-                USERS3 = new NonTerminal("USERS3"),
-                USERS4 = new NonTerminal("USERS4"),
-                PASSWORD = new NonTerminal("PASSWORD"),
-                PERMISSIONS = new NonTerminal("PERMISSIONS"),
-                PERMISSIONS2 = new NonTerminal("PERMISSIONS2"),
-                PERMISSION = new NonTerminal("PERMISSION")
-                ;
+                IN_OUT = new NonTerminal("IN_OUT");
+
+            ;
             #endregion
 
             #region GRAMATICA
-            S.Rule = Instrucciones;
+            S.Rule = DATA5;
 
-            Instrucciones.Rule = DOLLAR + MENQUE + Instrucciones2 + MAYQUE + DOLLAR;
-
-            Instrucciones2.Rule = Instrucciones2 + COMA + Instruccion
-                | Instruccion;
-
-            Instruccion.Rule = DATABASES
-                | USERS;
-
-            DATABASES.Rule = RDATABASES + IGUAL + CORIZQ + DATABASES2 + CORDER;
-
-            DATABASES2.Rule = DATABASES2 + COMA + DATABASE
-                | DATABASE
-                | Empty;
-
-            DATABASE.Rule = MENQUE + DATABASE2 + MAYQUE;
-
-            DATABASE2.Rule = DATABASE2 + COMA + DATABASE3
-                | DATABASE3;
-
-            DATABASE3.Rule = NAME
-                | DATA;
 
             NAME.Rule = RNAME + IGUAL + VALOR;
 
-            DATA.Rule = RDATA + IGUAL + CORIZQ + DATA5 + CORDER;
 
 
             DATA5.Rule = DATA5 + COMA + DATA2
                 | DATA2
                 | ruta_import
-				| Empty;
+                | Empty;
 
             DATA2.Rule = MENQUE + DATA3 + MAYQUE;
 
@@ -175,10 +136,10 @@ namespace Servidor.Analizador.CHISON
 
             COLUMNS4.Rule = COLUMNS4 + COMA + COLUMNS2
                 | COLUMNS2
-				| Empty;
+                | Empty;
 
             COLUMNS2.Rule = MENQUE + COLUMNS3 + MAYQUE;
-                
+
 
 
             COLUMNS3.Rule = COLUMNS3 + COMA + COLUMN
@@ -225,7 +186,7 @@ namespace Servidor.Analizador.CHISON
             ATTRIBUTE.Rule = NAME
                 | TYPE;
 
-            PROCEDURE.Rule =  PARAMETERS
+            PROCEDURE.Rule = PARAMETERS
                 | INSTR;
 
             INSTR.Rule = RINSTR + IGUAL + CONT_DATA_IMPORT;
@@ -233,8 +194,7 @@ namespace Servidor.Analizador.CHISON
             PARAMETERS.Rule = RPARAMETERS + IGUAL + CORIZQ + PARAMETERS2 + CORDER;
 
             PARAMETERS2.Rule = PARAMETERS2 + COMA + PARAMETERS3
-                | PARAMETERS3
-				| Empty;
+                | PARAMETERS3;
 
             PARAMETERS3.Rule = MENQUE + PARAMETERS4 + MAYQUE;
 
@@ -269,36 +229,9 @@ namespace Servidor.Analizador.CHISON
 
             MAPA2.Rule = MAPA2 + COMA + MAPA3
                 | MAPA3
-                | Empty ;
+                | Empty;
 
             MAPA3.Rule = VALOR;
-
-            #endregion
-
-            USERS.Rule = RUSERS + IGUAL + CORIZQ + USERS2 + CORDER;
-
-            USERS2.Rule = USERS2 + COMA + USERS3
-                | USERS3
-                | Empty;
-
-            USERS3.Rule = MENQUE + USERS4 + MAYQUE;
-
-            USERS4.Rule = USERS4 + COMA + USER
-                | USER;
-
-            USER.Rule = NAME
-                | PASSWORD
-                | PERMISSIONS;
-
-            PASSWORD.Rule = RPASSWORD + IGUAL + VALOR;
-
-            PERMISSIONS.Rule = RPERMISSIONS + IGUAL + CORIZQ + PERMISSIONS2 + CORDER;
-
-            PERMISSIONS2.Rule = PERMISSIONS2 + COMA + PERMISSION
-                | PERMISSION
-                | Empty;
-
-            PERMISSION.Rule = MENQUE + NAME + MAYQUE;
 
             #endregion
 
@@ -307,7 +240,8 @@ namespace Servidor.Analizador.CHISON
             this.Root = S;
             #endregion
 
+            #endregion
         }
-    }
 
+    }
 }

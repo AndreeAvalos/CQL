@@ -7,7 +7,7 @@ namespace Servidor.NOSQL.Modelos
 {
     public class Tabla
     {
-        string name;
+        string name = "";
         List<Columna> columnas;
         List<Fila> filas;
 
@@ -20,19 +20,44 @@ namespace Servidor.NOSQL.Modelos
         public bool Exportada { get => exportada; set => exportada = value; }
         public string Link { get => link; set => link = value; }
 
-        public string ArmarRespuesta() {
+        public Tabla()
+        {
+            this.columnas = new List<Columna>();
+            this.filas = new List<Fila>();
+        }
+
+        public bool Exist_Column(string val) {
+            foreach (Columna item in columnas)
+            {
+                if (item.Equals(val)) return true;
+            }
+            return false;
+
+        }
+
+        public string ArmarRespuesta()
+        {
             string salida = "<table> \n";
             salida += " <tr>\n  ";
             foreach (Columna item in Columnas)
             {
-                salida +=item.ArmarRespuesta().ToString();
+                salida += item.ArmarRespuesta().ToString();
             }
-            salida += " </tr>\n  ";
+            salida += "\n </tr>\n";
+            
+            foreach (Fila item in Filas)
+            {
+                salida += " <tr>\n      ";
+                salida += item.ArmarRespuesta(columnas)+"\n";
+                salida += " </tr>\n";
+            }
+
             salida += "</table> \n";
             return salida;
         }
 
-        public string ArmarHTML() {
+        public string ArmarHTML()
+        {
             string salida = "<table> \n";
             salida += "\t<tr>\n\t\t<th>NAME</th><th>TYPE</th><th>PK</th>\n\t</tr>\n";
             foreach (Columna item in Columnas)
