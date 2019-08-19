@@ -1,4 +1,0 @@
-[+LOGIN][+USER] Luis [-USER] [+PASS] 1234 [-PASS][-LOGIN]
-[+LOGOUT] [+USER] Luis [-USER] [-LOGOUT]
-[+QUERY] [+USER] Luis [-USER] [+DATA] "SELECT * FROM Employee; UPDATE Employee SET apellido = \"RODRIGUEZ\" WHERE nombre = 'ANTONIO';" [-DATA] [-QUERY]
-[+STRUC] [+USER] Luis [-USER] [-STRUC]

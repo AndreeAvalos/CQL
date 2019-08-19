@@ -20,7 +20,7 @@ namespace Servidor.Controllers
         [HttpGet]
         public string Get()
         {
-            String text = System.IO.File.ReadAllText("entrada2.txt");
+            String text = System.IO.File.ReadAllText("Principal.chison");
             /*Sintactico_LUP sintactico = new Sintactico_LUP();
             sintactico.Analizar(text, new Gramatica_LUP());
             string salida = "";
@@ -32,7 +32,7 @@ namespace Servidor.Controllers
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
             sintactico.Analizar(text, new Gramatica_CHISON());
             string salida = "Analisis: " + sintactico.Validar(text, new Gramatica_CHISON()).ToString() + "\n";
-            /*
+           
             foreach (string item in sintactico.salida)
             {
                 salida += item.ToString() + "\n";
@@ -44,7 +44,13 @@ namespace Servidor.Controllers
             }
             salida += "\n\n\n";
 
-            salida += sintactico.db_nosql.Databases[0].ArmarHMTL(0);*/
+            for (int i = 0; i < sintactico.db_nosql.Databases.Count; i++)
+            {
+                salida += "<h1>" + sintactico.db_nosql.Databases[i].Name + "</h1>\n\n";
+                salida += sintactico.db_nosql.Databases[i].ArmarHMTL();
+
+
+            }
 
             return salida;
         }

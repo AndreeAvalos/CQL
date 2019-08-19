@@ -9,5 +9,13 @@ namespace Servidor.NOSQL.Modelos
     {
         string name;
         string type;
+
+        public string Name { get => name; set => name = value; }
+        public string Type { get => type; set => type = value; }
+
+
+        public string ArmarRespuesta() {
+            return "<td>" + name + "</td>" + "<td>" + type + "</td>";
+        }
     }
 }

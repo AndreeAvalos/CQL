@@ -12,7 +12,6 @@ namespace Servidor.Analizador.CHISON
     {
         public List<string> salida = new List<string>();
         public Manejo db_nosql;
-
         #region Auxiliares
 
         #endregion
@@ -109,27 +108,41 @@ namespace Servidor.Analizador.CHISON
                         if (item.Name.ToLower().Equals("\"name\"")) new_db.Name = item.Valor.ToString();
                         else if (item.Name.ToLower().Equals("\"data\""))
                         {
-                            try
+                            if (item.Valor != null)
                             {
-                                foreach (Tipo_Objeto item2 in (List<Tipo_Objeto>)item.Valor)
+                                try
                                 {
-                                    if (item2.Name.Equals("table")) new_db.Tablas.Add((Tabla)item2.Valor);
+                                    foreach (Tipo_Objeto item2 in (List<Tipo_Objeto>)item.Valor)
+                                    {
+                                        if (item2.Name.Equals("table")) new_db.Tablas.Add((Tabla)item2.Valor);
+                                        else if (item2.Name.Equals("object")) new_db.Objetos.Add((Objeto)item2.Valor);
+                                        else if (item2.Name.Equals("procedure")) new_db.Procedures.Add((Procedure)item2.Valor);
+                                    }
+                                }
+                                catch (Exception)
+                                {
+                                    Tipo_Objeto val_aux = (Tipo_Objeto)item.Valor;
+                                    new_db.Link = val_aux.Link;
+                                    new_db.Exportada = val_aux.Export;
+
+                                    //aqui exportamos los archivos de bases de datos
+
+                                    String text = System.IO.File.ReadAllText(new_db.Link);
+
+                                    LanguageData lenguaje = new LanguageData(new Gramatica_Import_DATABASE());
+                                    Parser parser = new Parser(lenguaje);
+                                    ParseTree arbol = parser.Parse(text);
+                                    ParseTreeNode raiz = arbol.Root;
+
+
+                                    foreach (Tipo_Objeto item2 in (List<Tipo_Objeto>)Ejecutar(raiz.ChildNodes.ElementAt(0)))
+                                    {
+                                        if (item2.Name.Equals("table")) new_db.Tablas.Add((Tabla)item2.Valor);
+                                        else if (item2.Name.Equals("object")) new_db.Objetos.Add((Objeto)item2.Valor);
+                                        else if (item2.Name.Equals("procedure")) new_db.Procedures.Add((Procedure)item2.Valor);
+                                    }
                                 }
                             }
-                            catch (Exception)
-                            {
-                                Tipo_Objeto val_aux = (Tipo_Objeto)item.Valor;
-                                new_db.Link = val_aux.Link;
-                                new_db.Exportada = val_aux.Export;
-
-                                //aqui exportamos los archivos de bases de datos
-                                
-
-                            }
-
-
-
-
                         }
                     }
                     return new_db;
@@ -165,28 +178,31 @@ namespace Servidor.Analizador.CHISON
                         lst_general.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(2)));
                         return lst_general;
                     }
-                    else if (nodo.ChildNodes.Count == 7) {
-
-                        Tipo_Objeto aux__ = new Tipo_Objeto("null", "null");
-                        aux__.Export = true;
-                        aux__.Link = Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString() + "." + Ejecutar(nodo.ChildNodes.ElementAt(4));
-                        return aux__;
-
-                    }
-                    else
+                    else if (nodo.ChildNodes.Count == 1)
                     {
+                        if (nodo.ChildNodes.ElementAt(0).Term.Name.Equals("ruta_import"))
+                        {
+
+                            Tipo_Objeto aux__ = new Tipo_Objeto("null", "null");
+                            aux__.Export = true;
+                            string link = nodo.ChildNodes.ElementAt(0).Token.Text.Replace("${ ", "");
+                            link = link.Replace(" }$", "");
+                            aux__.Link = link;
+                            return aux__;
+                        }
+
                         List<Tipo_Objeto> lst_general = new List<Tipo_Objeto>();
                         lst_general.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0)));
                         return lst_general;
                     }
+                    else return null;
 
                 case "DATA2":
-
                     Tabla tabla_aux = new Tabla();
                     Objeto objeto_aux = new Objeto();
                     Procedure procedure_aux = new Procedure();
                     string name = "", cql_type = "";
-                    object columna = null, data = null, attrs = null, parametros = null;
+                    object columna = null, data = null, attrs = null, parametros = null, instr = null;
                     List<Tipo_Objeto> lst = (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1));
                     foreach (Tipo_Objeto item in lst)
                     {
@@ -196,6 +212,7 @@ namespace Servidor.Analizador.CHISON
                         else if (item.Name.ToLower().Equals("\"data\"")) data = item.Valor;
                         else if (item.Name.ToLower().Equals("\"attrs\"")) attrs = item.Valor;
                         else if (item.Name.ToLower().Equals("\"parameters\"")) parametros = item.Valor;
+                        else if (item.Name.ToLower().Equals("\"instr\"")) instr = item.Valor;
                     }
 
                     if (cql_type.ToLower().Equals("table"))
@@ -204,29 +221,60 @@ namespace Servidor.Analizador.CHISON
                         tabla_aux.Name = name;
                         if (columna != null) tabla_aux.Columnas = (List<Columna>)columna;
                         else tabla_aux.Columnas = new List<Columna>();
+                        if (data != null)
+                        {
+                            try
+                            {
+                                List<Fila> filas = (List<Fila>)data;
+                                tabla_aux.Filas = filas;
+                            }
+                            catch (Exception)
+                            {
+                                Tipo_Objeto aux2 = (Tipo_Objeto)data;
+                                tabla_aux.Link = aux2.Link;
+                                tabla_aux.Exportada = aux2.Export;
 
-                        /*try
-                        {
-                            List<Fila> filas = (List <Fila>) data;
-                            tabla_aux.Filas = filas;
+                                String text = System.IO.File.ReadAllText(tabla_aux.Link);
+
+                                LanguageData lenguaje = new LanguageData(new Gramatica_Import_DATA());
+                                Parser parser = new Parser(lenguaje);
+                                ParseTree arbol = parser.Parse(text);
+                                ParseTreeNode raiz = arbol.Root;
+
+                                //instanciamos un objeto para la base de datos no-sql
+
+                                tabla_aux.Filas = (List<Fila>)Ejecutar(raiz.ChildNodes.ElementAt(0));
+
+                            }
                         }
-                        catch (Exception)
-                        {
-                            Tipo_Objeto aux2 = (Tipo_Objeto) data;
-                            tabla_aux.Link = aux2.Link;
-                            tabla_aux.Exportada = aux2.Export;
-                            tabla_aux.Filas = (List<Fila>) aux2.Valor;
-                        }*/
+                        else tabla_aux.Filas = new List<Fila>();
+
                         return new Tipo_Objeto("table", tabla_aux);
                     }
-                    return null;
-                /*else if (cql_type.ToLower().Equals("\"object\""))
-                {
+                    else if (cql_type.ToLower().Equals("object"))
+                    {
+                        objeto_aux.Name = name;
+                        if (attrs != null) objeto_aux.Atributos = (List<Atributo>)attrs;
+                        else objeto_aux.Atributos = new List<Atributo>();
+                        return new Tipo_Objeto("object", objeto_aux);
+                    }
+                    else if (cql_type.ToLower().Equals("procedure"))
+                    {
+                        procedure_aux.Name = name;
+                        if (instr != null) procedure_aux.Instr = instr.ToString();
+                        else procedure_aux.Instr = "";
+                        if (parametros != null) procedure_aux.Parametros = (List<Parametro>)parametros;
+                        else procedure_aux.Parametros = new List<Parametro>();
 
-                }
-                else if (cql_type.ToLower().Equals("\"procedure\"")) {
+                        return new Tipo_Objeto("procedure", procedure_aux);
 
-                }*/
+                    }
+                    else return new Tipo_Objeto("table", tabla_aux);
+
+
+
+                /*
+*/
 
 
                 case "DATA3":
@@ -247,11 +295,15 @@ namespace Servidor.Analizador.CHISON
                     return (Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0));
 
                 case "TABLA":
-                    Tipo_Objeto auxxx = (Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0));
-                    return auxxx;
+                    return (Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                case "OBJETO":
+                    return (Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                case "PROCEDURE":
+                    return (Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0));
 
                 case "COLUMNS":
-                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+                    if (Ejecutar(nodo.ChildNodes.ElementAt(3)) != null) return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+                    else return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), null);
 
                 case "COLUMNS4":
 
@@ -261,12 +313,13 @@ namespace Servidor.Analizador.CHISON
                         columnas.Add((Columna)Ejecutar(nodo.ChildNodes.ElementAt(2)));
                         return columnas;
                     }
-                    else
+                    else if (nodo.ChildNodes.Count == 1)
                     {
                         List<Columna> columnas = new List<Columna>();
                         columnas.Add((Columna)Ejecutar(nodo.ChildNodes.ElementAt(0)));
                         return columnas;
                     }
+                    else return null;
 
                 case "COLUMNS2":
 
@@ -309,24 +362,177 @@ namespace Servidor.Analizador.CHISON
                     return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
                 case "BOOL":
                     return nodo.ChildNodes[0].Term.Name;
+                case "AS":
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
+                case "IN_OUT":
+                    return nodo.ChildNodes[0].Term.Name;
 
                 case "DATA_DATA":
-                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), new Fila());
+                    //Aqui armamos las filas;
+                    if (Ejecutar(nodo.ChildNodes.ElementAt(3)) != null) return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+                    else return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), null);
+
                 case "DATA_DATA2":
-                    if (nodo.ChildNodes.Count == 7)
+
+                    if (nodo.ChildNodes.Count == 1)
                     {
-                        Tipo_Objeto aux__ = new Tipo_Objeto("null","null");
-                        aux__.Export = true;
-                        aux__.Link = Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString() + "." + Ejecutar(nodo.ChildNodes.ElementAt(4));
-                        return aux__;
-                    }
-                    else if (nodo.ChildNodes.Count == 1)
-                    {
+                        if (nodo.ChildNodes.ElementAt(0).Term.Name.Equals("ruta_import"))
+                        {
+                            Tipo_Objeto aux__ = new Tipo_Objeto("null", "null");
+                            string link = nodo.ChildNodes.ElementAt(0).Token.Text.Replace("${ ", "");
+                            link = link.Replace(" }$", "");
+                            aux__.Link = link;
+                            return aux__;
+                        }
+
                         return Ejecutar(nodo.ChildNodes.ElementAt(0));
                     }
                     else return null;
 
 
+                case "DATA_DATA3":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Fila> filas = (List<Fila>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        filas.Add((Fila)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return filas;
+                    }
+                    else
+                    {
+                        List<Fila> filas = new List<Fila>();
+                        filas.Add((Fila)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return filas;
+                    }
+                case "DATA_DATA4":
+                    //aqui armamos la fila
+                    Fila fila = new Fila();
+                    fila.Valores = (List<Valor>)Ejecutar(nodo.ChildNodes.ElementAt(1));
+                    return fila;
+
+                case "DATA_DATA5":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Valor> valors = (List<Valor>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        valors.Add((Valor)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return valors;
+                    }
+                    else
+                    {
+                        List<Valor> valors = new List<Valor>();
+                        valors.Add((Valor)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return valors;
+                    }
+
+                case "DATA_DATA6":
+                    return new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+
+                case "ATTRIBUTES":
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+                case "ATTRIBUTES2":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Atributo> atributos = (List<Atributo>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        atributos.Add((Atributo)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return atributos;
+                    }
+                    else if (nodo.ChildNodes.Count == 1)
+                    {
+                        List<Atributo> atributos = new List<Atributo>();
+                        atributos.Add((Atributo)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return atributos;
+                    }
+                    else return new List<Atributo>();
+
+                case "ATTRIBUTES3":
+                    Atributo atributo_new = new Atributo();
+
+                    foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
+                    {
+                        if (item.Name.ToLower().Equals("\"name\"")) atributo_new.Name = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"type\"")) atributo_new.Type = item.Valor.ToString();
+                        else
+                        {
+                            //algun error
+                        }
+                    }
+                    return atributo_new;
+
+                case "ATTRIBUTES4":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Tipo_Objeto> tipo_Objetos = (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        tipo_Objetos.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return tipo_Objetos;
+                    }
+                    else
+                    {
+                        List<Tipo_Objeto> objetos = new List<Tipo_Objeto>();
+                        objetos.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return objetos;
+                    }
+                case "ATTRIBUTE":
+                    return Ejecutar(nodo.ChildNodes.ElementAt(0));
+
+                case "INSTR":
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), nodo.ChildNodes.ElementAt(2).Token.Text);
+                case "PARAMETERS":
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+                case "PARAMETERS2":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Parametro> param = (List<Parametro>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        param.Add((Parametro)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return param;
+                    }
+                    else if (nodo.ChildNodes.Count == 1)
+                    {
+                        List<Parametro> param = new List<Parametro>();
+                        param.Add((Parametro)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return param;
+                    }
+                    else return new List<Parametro>();
+                case "PARAMETERS3":
+                    Parametro new_param = new Parametro();
+
+                    foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
+                    {
+                        if (item.Name.ToLower().Equals("\"name\"")) new_param.Name = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"type\"")) new_param.Type = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"as\""))
+                        {
+                            if (item.Valor.ToString().ToLower().Equals("in"))
+                            {
+                                new_param.Out_ = false; new_param.Out__ = item.Valor.ToString();
+                            }
+                            else
+                            {
+                                new_param.Out_ = true; new_param.Out__ = item.Valor.ToString();
+                            }
+                        }
+                        else
+                        {
+                            //algun error
+                        }
+                    }
+                    return new_param;
+
+
+                case "PARAMETERS4":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Tipo_Objeto> tipo_Objetos = (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        tipo_Objetos.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return tipo_Objetos;
+                    }
+                    else
+                    {
+                        List<Tipo_Objeto> objetos = new List<Tipo_Objeto>();
+                        objetos.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return objetos;
+                    }
+
+                case "PARAMETER":
+                    return Ejecutar(nodo.ChildNodes.ElementAt(0));
 
                 case "USERS2":
                     if (nodo.ChildNodes.Count == 3)
@@ -345,8 +551,6 @@ namespace Servidor.Analizador.CHISON
                     {
                         return new List<Usuario>();
                     }
-
-
 
                 case "USERS3":
                     Usuario new_user = new Usuario();
@@ -378,14 +582,14 @@ namespace Servidor.Analizador.CHISON
                 case "CQL_TYPE":
                     return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
                 case "NAME":
-                    Tipo_Objeto objeto = new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
-                    return objeto;
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
+
                 case "PASSWORD":
-                    Tipo_Objeto objeto2 = new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
-                    return objeto2;
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
+
                 case "PERMISSIONS":
-                    Tipo_Objeto objeto3 = new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
-                    return objeto3;
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
+
                 case "VALOR":
                     String evaluar = nodo.ChildNodes[0].Term.Name;
                     switch (evaluar)

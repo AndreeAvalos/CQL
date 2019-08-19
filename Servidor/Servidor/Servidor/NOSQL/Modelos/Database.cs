@@ -23,11 +23,25 @@ namespace Servidor.NOSQL.Modelos
             this.procedures = new List<Procedure>();
         }
 
-        public string ArmarHMTL(int tabla) {
+        public string ArmarHMTL() {
 
             string salida = "";
+            salida += "<h2>TABLAS</h2>\n";
             foreach (Tabla item in tablas) {
-                salida += item.ArmarHTML() + "\n";
+
+                salida += item.ArmarRespuesta() + "\n";
+            }
+            salida += "<h2>OBJETOS</h2>\n";
+            foreach (Objeto item in objetos)
+            {
+
+                salida += item.ArmarRespuesta() + "\n";
+            }
+            salida += "<h2>PROCEDURES</h2>\n";
+            foreach (Procedure item in procedures)
+            {
+
+                salida += item.ArmarRespuesta() + "\n";
             }
             return salida;
         }
