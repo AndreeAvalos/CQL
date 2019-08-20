@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Servidor.Analizador.CHISON;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,25 @@ namespace Servidor.NOSQL.Modelos
 
         public string ArmarRespuesta() {
 
-           return "<td>" + this.val + "</td>";
+            try
+            {
+                List<Tipo_Objeto> lst = (List<Tipo_Objeto>)val;
+                return "<td>DATOS_OBJETO</td>";
+            }
+            catch (Exception)
+            {
+
+                try
+                {
+                    List<string> lst = (List<string>)val;
+                    return "<td>DATOS_LISTA</td>";
+                }
+                catch (Exception)
+                {
+
+                    return "<td>"+this.val+"</td>";
+                }
+            }
 
         }
     }

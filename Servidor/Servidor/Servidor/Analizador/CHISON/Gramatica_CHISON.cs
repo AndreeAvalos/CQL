@@ -92,6 +92,9 @@ namespace Servidor.Analizador.CHISON
                 MAPA = new NonTerminal("MAPA"),
                 MAPA2 = new NonTerminal("MAPA2"),
                 MAPA3 = new NonTerminal("MAPA3"),
+				LISTAS = new NonTerminal("LISTAS"),
+				LISTAS2 = new NonTerminal("LISTAS2"),
+				LISTAS3 = new NonTerminal("LISTAS3"),
                 ATTRIBUTES = new NonTerminal("ATTRIBUTES"),
                 ATTRIBUTES2 = new NonTerminal("ATTRIBUTES2"),
                 ATTRIBUTES3 = new NonTerminal("ATTRIBUTES3"),
@@ -257,21 +260,30 @@ namespace Servidor.Analizador.CHISON
                 | DECIMAL
                 | IDENTIFICADOR
                 | MAPA
+				| LISTAS
                 | NUMERO
                 | RTRUE
                 | RFALSE
                 | RTIME
-                | RDATE
-                | Empty;
+                | RDATE;
 
-            #region lISTAS
-            MAPA.Rule = CORIZQ + MAPA2 + CORDER;
+            #region  LISTAS y MAPAS
+			LISTAS.Rule = CORIZQ + LISTAS2 + CORDER;
+			
+			LISTAS2.Rule = LISTAS2 + COMA + LISTAS3
+				| LISTAS3
+				| Empty;
+				
+			LISTAS3.Rule = VALOR;
+			
+			
+            MAPA.Rule = MENQUE + MAPA2 + MAYQUE;
 
             MAPA2.Rule = MAPA2 + COMA + MAPA3
                 | MAPA3
                 | Empty ;
 
-            MAPA3.Rule = VALOR;
+            MAPA3.Rule = VALOR + IGUAL + VALOR;
 
             #endregion
 

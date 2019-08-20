@@ -20,39 +20,18 @@ namespace Servidor.Controllers
         [HttpGet]
         public string Get()
         {
-            String text = System.IO.File.ReadAllText("Principal.chison");
-            /*Sintactico_LUP sintactico = new Sintactico_LUP();
-            sintactico.Analizar(text, new Gramatica_LUP());
+            String text = System.IO.File.ReadAllText("entradaCliente.txt");
+            Sintactico_LUP sintactico = new Sintactico_LUP();
             string salida = "";
-            foreach (string item in sintactico.salida)
-            {
-                salida += item.ToString() +"\n";
-            }*/
-
-            Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
-            sintactico.Analizar(text, new Gramatica_CHISON());
-            string salida = "Analisis: " + sintactico.Validar(text, new Gramatica_CHISON()).ToString() + "\n";
-           
-            foreach (string item in sintactico.salida)
-            {
-                salida += item.ToString() + "\n";
+            if (sintactico.Validar(text, new Gramatica_LUP())) {
+                sintactico.Analizar(text, new Gramatica_LUP());
+                foreach (string item in sintactico.salida)
+                {
+                    salida += item + "\n";
+                }
             }
 
-            foreach (Usuario item in sintactico.db_nosql.Usuarios)
-            {
-                salida += "USUARIO: " + item.Name + " PASSWORD: " + item.Password + " PERMISOS: " + agregar(item.Permisos) + "\n";
-            }
-            salida += "\n\n\n";
-
-            for (int i = 0; i < sintactico.db_nosql.Databases.Count; i++)
-            {
-                salida += "<h1>" + sintactico.db_nosql.Databases[i].Name + "</h1>\n\n";
-                salida += sintactico.db_nosql.Databases[i].ArmarHMTL();
-
-
-            }
-
-            return salida;
+                return salida;
         }
         private string agregar(List<Permiso> permisos)
         {

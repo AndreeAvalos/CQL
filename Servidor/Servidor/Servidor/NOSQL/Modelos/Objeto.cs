@@ -13,8 +13,6 @@ namespace Servidor.NOSQL.Modelos
         public string Name { get => name; set => name = value; }
         public List<Atributo> Atributos { get => atributos; set => atributos = value; }
 
-
-
         public string ArmarRespuesta() {
             string salida = "<table> \n";
             salida += " <tr>\n  ";
@@ -29,6 +27,23 @@ namespace Servidor.NOSQL.Modelos
 
             }
             salida += "</table> \n";
+            return salida;
+        }
+
+        public string CrearEstructura() {
+            string salida = "";
+            salida += "\t\t\t[+TYPE]\n";
+            salida += "\t\t\t\t[+NAME]\n";
+            salida += "\t\t\t\t\t" + Name + "\n";
+            salida += "\t\t\t\t[-NAME]\n";
+            salida += "\t\t\t\t[+ATTRIBUTES]\n";
+            foreach (Atributo item in atributos)
+            {
+                salida += item.CrearEstructura();
+            }
+            salida += "\t\t\t\t[-ATTRIBUTES]\n";
+            salida += "\t\t\t[-TYPE]\n";
+
             return salida;
         }
 

@@ -29,7 +29,17 @@ namespace Servidor.NOSQL.Modelos
             salida += "</table> \n";
             return salida;
         }
+        public string CrearEstructura() {
+            string salida = "";
+            salida += "\t\t\t[+PROCEDURE]\n";
+            salida += "\t\t\t\t[+NAME]\n";
+            salida += "\t\t\t\t\t" + Name + "\n";
+            salida += "\t\t\t\t[-NAME]\n";
+            salida += "\t\t\t[-PROCEDURE]\n";
 
+            return salida;
+
+        }
         public string Name { get => name; set => name = value; }
         public string Instr { get => instr; set => instr = value; }
         public List<Parametro> Parametros { get => parametros; set => parametros = value; }

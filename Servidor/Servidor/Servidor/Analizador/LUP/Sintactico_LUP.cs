@@ -56,8 +56,9 @@ namespace Servidor.Analizador.LUP
 
         private void LOGEAR(string user, string pass)
         {
-         
-            salida.Add("[+LOGIN][SUCCESS][-LOGIN]");
+            if (Program.sistema.Buscar_Usuario(user, pass)) {
+                salida.Add("[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]");
+            }else salida.Add("[+LOGIN]\n\t[FAIL]\n[-LOGIN]");
         }
 
         public void LOGOUT(ParseTreeNode nodo)
@@ -98,10 +99,10 @@ namespace Servidor.Analizador.LUP
             getEstructura(user);
         }
 
-        private void getEstructura(string data)
+        private void getEstructura(string user)
         {
             //metodo para traer toda la estructura 
-            salida.Add("[+DATABASES][+DATABASE][+NAME] Prueba1[-NAME][+TABLES][+TABLE][+NAME] Prueba1[-NAME][+COLUMNS] Column1[-COLUMNS][-TABLE][+TABLE] MAESTRO[-TABLE][-TABLES][+TYPES][+TYPE][+NAME] Persona[-NAME][+ATTRIBUTES] nombre[-ATTRIBUETS][-TYPE][+TYPE] DOMICILIO[-TYPE][-TYPES][+PROCEDURES] CreateStudent[-PROCEDURES][-DATABASE][-DATABASES]");
+            salida.Add(Program.sistema.Crear_Estructura(user));
 
         }
 

@@ -47,12 +47,12 @@ namespace Servidor.Analizador.CHISON
                 DATA_DATA4 = new NonTerminal("DATA_DATA4"),
                 DATA_DATA5 = new NonTerminal("DATA_DATA5"),
                 DATA_DATA6 = new NonTerminal("DATA_DATA6"),
-
+                LISTAS = new NonTerminal("LISTAS"),
+                LISTAS2 = new NonTerminal("LISTAS2"),
+                LISTAS3 = new NonTerminal("LISTAS3"),
                 MAPA = new NonTerminal("MAPA"),
                 MAPA2 = new NonTerminal("MAPA2"),
                 MAPA3 = new NonTerminal("MAPA3");
-
-                ;
             #endregion
 
             #region GRAMATICA
@@ -64,7 +64,7 @@ namespace Servidor.Analizador.CHISON
             DATA_DATA4.Rule = MENQUE + DATA_DATA5 + MAYQUE;
 
             DATA_DATA5.Rule = DATA_DATA5 + COMA + DATA_DATA6
-                |   DATA_DATA6;
+                | DATA_DATA6;
 
             DATA_DATA6.Rule = VALOR + IGUAL + VALOR;
 
@@ -72,20 +72,32 @@ namespace Servidor.Analizador.CHISON
                 | DECIMAL
                 | IDENTIFICADOR
                 | MAPA
+                | LISTAS
                 | NUMERO
                 | RTRUE
                 | RFALSE
                 | RTIME
-                | RDATE
+                | RDATE;
+
+            #region LISTAS y MAPAS
+            LISTAS.Rule = CORIZQ + LISTAS2 + CORDER;
+
+            LISTAS2.Rule = LISTAS2 + COMA + LISTAS3
+                | LISTAS3
                 | Empty;
 
-            MAPA.Rule = CORIZQ + MAPA2 + CORDER;
+            LISTAS3.Rule = VALOR;
+
+
+            MAPA.Rule = MENQUE + MAPA2 + MAYQUE;
 
             MAPA2.Rule = MAPA2 + COMA + MAPA3
                 | MAPA3
                 | Empty;
 
-            MAPA3.Rule = VALOR;
+            MAPA3.Rule = VALOR + IGUAL + VALOR;
+
+            #endregion
 
             #endregion
 

@@ -68,5 +68,21 @@ namespace Servidor.NOSQL.Modelos
             salida += "</table> \n";
             return salida;
         }
+
+        public string CrearEstructura() {
+            string salida = "";
+            salida += "\t\t\t[+TABLE]\n";
+            salida += "\t\t\t\t[+NAME]\n";
+            salida += "\t\t\t\t\t" + Name + "\n";
+            salida += "\t\t\t\t[-NAME]\n";
+            salida += "\t\t\t\t[+COLUMNS]\n";
+            foreach (Columna item in columnas)
+            {
+                salida += item.CrearEstructura();
+            }
+            salida += "\t\t\t\t[-COLUMNS]\n";
+            salida += "\t\t\t[-TABLE]\n";
+            return salida;
+        }
     }
 }

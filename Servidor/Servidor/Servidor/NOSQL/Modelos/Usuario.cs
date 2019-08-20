@@ -9,7 +9,7 @@ namespace Servidor.NOSQL.Modelos
     {
         string name;
         string password;
-        List<Permiso> permisos;
+        List<Permiso> permisos = new List<Permiso>();
 
         public string Name { get => name; set => name = value; }
         public string Password { get => password; set => password = value; }

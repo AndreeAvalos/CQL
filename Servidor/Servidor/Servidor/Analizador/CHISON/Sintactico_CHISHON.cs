@@ -10,7 +10,6 @@ namespace Servidor.Analizador.CHISON
 {
     public class Sintactico_CHISHON
     {
-        public List<string> salida = new List<string>();
         public Manejo db_nosql;
         #region Auxiliares
 
@@ -61,11 +60,9 @@ namespace Servidor.Analizador.CHISON
             {
                 case "USERS":
                     db_nosql.Usuarios = (List<Usuario>)Ejecutar(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
-                    salida.Add("Se agregaron usuarios al sistema ");
                     break;
                 case "DATABASES":
                     db_nosql.Databases = (List<Database>)Ejecutar(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
-                    salida.Add("Se agrego la base de datos al sistema ");
                     break;
             }
 
@@ -424,7 +421,8 @@ namespace Servidor.Analizador.CHISON
                     }
 
                 case "DATA_DATA6":
-                    return new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                    Valor val = new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                    return val;
 
                 case "ATTRIBUTES":
                     return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(3)));
@@ -470,9 +468,9 @@ namespace Servidor.Analizador.CHISON
                         objetos.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0)));
                         return objetos;
                     }
+
                 case "ATTRIBUTE":
                     return Ejecutar(nodo.ChildNodes.ElementAt(0));
-
                 case "INSTR":
                     return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), nodo.ChildNodes.ElementAt(2).Token.Text);
                 case "PARAMETERS":
@@ -516,7 +514,6 @@ namespace Servidor.Analizador.CHISON
                     }
                     return new_param;
 
-
                 case "PARAMETERS4":
                     if (nodo.ChildNodes.Count == 3)
                     {
@@ -533,6 +530,50 @@ namespace Servidor.Analizador.CHISON
 
                 case "PARAMETER":
                     return Ejecutar(nodo.ChildNodes.ElementAt(0));
+                case "LISTAS":
+                    return Ejecutar(nodo.ChildNodes.ElementAt(1));
+                case "MAPA":
+                    return Ejecutar(nodo.ChildNodes.ElementAt(1));
+                case "MAPA2":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<Tipo_Objeto> valores = (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        valores.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        return valores;
+                    }
+                    else if (nodo.ChildNodes.Count == 1)
+                    {
+                        List<Tipo_Objeto> valores = new List<Tipo_Objeto>();
+                        valores.Add((Tipo_Objeto)Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        return valores;
+                    }
+                    else
+                    {
+                        return new List<Tipo_Objeto>();
+                    }
+                case "MAPA3":
+                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+
+                case "LISTAS2":
+                    if (nodo.ChildNodes.Count == 3)
+                    {
+                        List<string> valores = (List<string>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        valores.Add(Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
+                        return valores;
+                    }
+                    else if (nodo.ChildNodes.Count == 1)
+                    {
+                        List<string> valores = new List<string>();
+                        valores.Add(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString());
+                        return valores;
+                    }
+                    else
+                    {
+                        return new List<string>();
+                    }
+                case "LISTAS3":
+                    return Ejecutar(nodo.ChildNodes.ElementAt(0));
+
 
                 case "USERS2":
                     if (nodo.ChildNodes.Count == 3)
@@ -602,6 +643,10 @@ namespace Servidor.Analizador.CHISON
                             return nodo.ChildNodes[0].ToString().Replace(" (Numero)", "");
                         case "Decimal":
                             return nodo.ChildNodes[0].ToString().Replace(" (Decimal)", "");
+                        case "LISTAS":
+                            return Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        case "MAPA":
+                            return Ejecutar(nodo.ChildNodes.ElementAt(0));
                         default:
                             return "";
                     }

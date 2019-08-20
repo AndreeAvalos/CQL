@@ -1,12 +1,12 @@
 <
 	"ID" = 1,
 	"Nombre" = "Brevvuiks",
-	"Tallas" = [32,30,33]
+	"Tallas" = []
 >,
 <
 	"ID" = 2,
 	"Nombre" = "Xistrod",
-	"Tallas" = []
+	"Tallas" = [32,30,33]
 >,
 <
 	"ID" = 3,

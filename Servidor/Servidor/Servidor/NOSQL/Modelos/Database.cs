@@ -46,6 +46,36 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
+        public string CrearEstructura() {
+            string salida = "";
+            salida += "\t[+DATABASE]\n";
+            salida += "\t\t[+NAME]\n";
+            salida += "\t\t\t" + Name + "\n";
+            salida += "\t\t[-NAME]\n";
+            salida += "\t\t[+TABLES]\n";
+            foreach (Tabla item in Tablas)
+             {
+                 salida += item.CrearEstructura();
+            }
+            salida += "\t\t[-TABLES]\n";
+            salida += "\t\t[+TYPES]\n";
+            foreach (Objeto item in Objetos)
+            {
+                salida += item.CrearEstructura();
+            }
+            salida += "\t\t[-TYPES]\n";
+            salida += "\t\t[+PROCEDURES]\n";
+            foreach (Procedure item in Procedures)
+            {
+                salida += item.CrearEstructura();
+            }
+            salida += "\t\t[-PROCEDURES]\n";
+
+
+            salida += "\t[-DATABASE]\n";
+            return salida;
+        }
+
         public string Name { get => name; set => name = value; }
         public List<Tabla> Tablas { get => tablas; set => tablas = value; }
         public List<Objeto> Objetos { get => objetos; set => objetos = value; }
