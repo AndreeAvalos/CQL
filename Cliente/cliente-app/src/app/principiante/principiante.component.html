@@ -1,0 +1,72 @@
+<div class="container">
+  <!-- toolbar -->
+  <mat-toolbar
+    class="mat-elevation-z4"
+    color="primary"
+    fxLayout="row"
+    fxLayoutAlign="start center"
+  >
+    <span fxFlex>Principiante</span>
+  </mat-toolbar>
+  
+  <!-- main content -->
+  <mat-drawer-container class="container">
+    <mat-drawer-content style="height: 100%">
+      <div id="blocklyDiv" style="width: 80%; height: 80%"></div>
+<xml id="toolbox" style="display: none">
+            <category name="Sentencias">
+              <block type="sentencia_select"></block>
+              <block type="sentencia_insert"></block>
+              <block type="sentencia_update"></block>
+              <block type="sentencia_delete"></block>
+            </category>
+            <sep></sep>
+            <category name="Atributos">
+              <block type="selector">
+                <field name="NAME">OPTIONNAME</field>
+                <field name="TABLES">OPTIONNAME</field>
+              </block>
+              <block type="table">
+                <field name="NAME">OPTIONNAME</field>
+              </block>
+            </category>
+            <sep></sep>
+            <category name="Operadores">
+              <block type="mayor"></block>
+              <block type="and"></block>
+              <block type="mayor_igual"></block>
+              <block type="menor"></block>
+              <block type="or"></block>
+              <block type="diferente"></block>
+              <block type="igual"></block>
+              <block type="menor_igual"></block>
+            </category>
+            <sep></sep>
+            <category name="Valores">
+              <block type="false"></block>
+              <block type="lista"></block>
+              <block type="true"></block>
+              <block type="lista_valores"></block>
+              <block type="opcion">
+                <field name="NAME">OPTIONNAME</field>
+                <field name="COLUMNA">OPTIONNAME</field>
+              </block>
+              <block type="entero">
+                <field name="NAME">2</field>
+              </block>
+              <block type="decimal">
+                <field name="NAME">0.2</field>
+              </block>
+              <block type="cadena">
+                <field name="NAME">"EJEMPLO"</field>
+              </block>
+              <block type="fecha">
+                <field name="year">1900</field>
+                <field name="mes">1</field>
+                <field name="dia">1</field>
+              </block>
+            </category>
+          </xml>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</div>
