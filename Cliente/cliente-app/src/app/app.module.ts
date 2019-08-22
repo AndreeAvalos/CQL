@@ -15,6 +15,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTreeModule } from '@angular/material/tree';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +25,8 @@ import { LoginComponent } from './login/login.component';
 import { IntermedioComponent } from './intermedio/intermedio.component';
 import { AvanzadoComponent } from './avanzado/avanzado.component';
 import { HomeComponent } from './home/home.component';
+import { TreeViewModule } from '@progress/kendo-angular-treeview';
+
 
 @NgModule({
   declarations: [
@@ -51,8 +54,11 @@ import { HomeComponent } from './home/home.component';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTreeModule,
 
-    AppRoutingModule
+    AppRoutingModule,
+
+    TreeViewModule
   ],
   providers: [],
   bootstrap: [AppComponent],

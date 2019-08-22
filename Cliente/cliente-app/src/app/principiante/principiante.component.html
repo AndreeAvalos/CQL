@@ -6,13 +6,30 @@
     fxLayout="row"
     fxLayoutAlign="start center"
   >
-    <span fxFlex>Principiante</span>
+    <span fxFlex = "20%">Principiante</span>
   </mat-toolbar>
   
   <!-- main content -->
   <mat-drawer-container class="container">
-    <mat-drawer-content style="height: 100%">
-      <div id="blocklyDiv" style="width: 80%; height: 80%"></div>
+    <mat-drawer-content style="height: 80%" fxLayout="row" >
+        <div id="arbol" style="width: 10%; height: 80%" fxFlex="20%">
+          <h1>Base de Datos</h1>
+          <kendo-treeview
+          [nodes]="data"
+          textField="text"
+          kendoTreeViewExpandable
+          kendoTreeViewSelectable
+          kendoTreeViewHierarchyBinding
+          childrenField="items"
+      >
+      </kendo-treeview>
+        </div>
+      <div id="blocklyDiv" style="width: 60%; height: 100%" fxFlex="100%"></div>
+      <div id="codigo" style="width: 30%; height: 80%" fxFlex="20%">
+        <h1 align="center" >Codigo</h1>
+        <textarea name="codigo" rows="40" cols="51"></textarea>
+        <button>Ejecutar</button>
+      </div>
 <xml id="toolbox" style="display: none">
             <category name="Sentencias">
               <block type="sentencia_select"></block>
