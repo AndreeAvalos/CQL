@@ -1,1 +1,1 @@
-[+LOGIN] [+USER] Luis [-USER] [+PASS] 1234 [-PASS] [-LOGIN]
+[+STRUC] [+USER] admin [-USER] [-STRUC]

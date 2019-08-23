@@ -94,7 +94,8 @@
               {
                 "input": "node_modules/@progress/kendo-theme-default/dist/all.css"
               },
-              "src/styles.scss"
+              "src/styles.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
             "scripts": [],
             "assets": [

@@ -3,6 +3,7 @@ import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,7 +27,8 @@ import { IntermedioComponent } from './intermedio/intermedio.component';
 import { AvanzadoComponent } from './avanzado/avanzado.component';
 import { HomeComponent } from './home/home.component';
 import { TreeViewModule } from '@progress/kendo-angular-treeview';
-
+import { LoginService } from './login/login.service';
+import { PruebaEntrada } from './login/prueba';
 
 @NgModule({
   declarations: [
@@ -42,6 +44,7 @@ import { TreeViewModule } from '@progress/kendo-angular-treeview';
     BrowserAnimationsModule,
     FlexLayoutModule,
     FormsModule,
+    HttpClientModule,
 
     MatCardModule,
     MatButtonModule,
@@ -60,7 +63,9 @@ import { TreeViewModule } from '@progress/kendo-angular-treeview';
 
     TreeViewModule
   ],
-  providers: [],
+  providers: [LoginService,
+    PruebaEntrada
+  ],
   bootstrap: [AppComponent],
   schemas: [NO_ERRORS_SCHEMA]
 })
