@@ -19,28 +19,29 @@ namespace Servidor.Controllers
     [EnableCors("CorsPolicy")]
     public class ValuesController : ControllerBase
     {
-        string salida ="" ;
+        string salida = "";
         // GET api/values
         [HttpGet]
         public string Get()
         {
             String text = System.IO.File.ReadAllText("entradaCliente.txt");
             Sintactico_LUP sintactico = new Sintactico_LUP();
-            
-           if (sintactico.Validar(text, new Gramatica_LUP())) {
+
+            if (sintactico.Validar(text, new Gramatica_LUP()))
+            {
                 sintactico.Analizar(text, new Gramatica_LUP());
                 foreach (string item in sintactico.salida)
                 {
                     salida += item + "\n";
                 }
             }
-        
-                        return salida;
-                }
-       /* public IEnumerable<string> Get()
-        {
-            return new string[] { "data", "TODOS LOS DATOS" };
-        }*/
+
+            return salida;
+        }
+        /* public IEnumerable<string> Get()
+         {
+             return new string[] { "data", "TODOS LOS DATOS" };
+         }*/
 
         private string agregar(List<Permiso> permisos)
         {

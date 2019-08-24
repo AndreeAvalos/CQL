@@ -11,7 +11,7 @@ namespace Servidor.NOSQL.Modelos
         List<Tabla> tablas;
         List<Objeto> objetos;
         List<Procedure> procedures;
-
+        bool en_uso;
         string link;
         bool exportada = false;
 
@@ -21,6 +21,7 @@ namespace Servidor.NOSQL.Modelos
             this.tablas = new List<Tabla>();
             this.objetos = new List<Objeto>();
             this.procedures = new List<Procedure>();
+            this.en_uso = false;
         }
 
         public string ArmarHMTL() {
@@ -83,5 +84,6 @@ namespace Servidor.NOSQL.Modelos
 
         public bool Exportada { get => exportada; set => exportada = value; }
         public string Link { get => link; set => link = value; }
+        public bool En_uso { get => en_uso; set => en_uso = value; }
     }
 }

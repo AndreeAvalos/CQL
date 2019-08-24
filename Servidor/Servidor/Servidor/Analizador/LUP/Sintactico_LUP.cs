@@ -1,4 +1,5 @@
 ﻿using Irony.Parsing;
+using Servidor.Analizador.CQL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,18 +79,23 @@ namespace Servidor.Analizador.LUP
         private void QUERY(ParseTreeNode nodo)
         {
             string user = Valor(nodo.ChildNodes[4].ChildNodes[4]);
-            string data = Valor(nodo.ChildNodes[5].ChildNodes[4]);
+            string data = nodo.ChildNodes[5].ChildNodes[0].Token.Text.Replace("[+DATA]","");
+            data = data.Replace("[-DATA]", "");
+            data = data.Replace("\\\"", "\"");
 
-            data = data.Replace("\\\"","\"");
 
-            EjecutarQuery(data);
+
+
+            EjecutarQuery(data, user);
 
         }
 
-        private void EjecutarQuery(string data)
+        private void EjecutarQuery(string data, string user)
         {
+            Sintactico_CQL sintactico = new Sintactico_CQL();
+            sintactico.Analizar(data, new Gramatica_CQL(),user);
             //Ejecutar las sentencias query que traiga el string 
-            salida.Add("[+DATA]" + data + "[-DATA]");
+            salida.Add(data);
         }
 
         private void STRUC(ParseTreeNode nodo)

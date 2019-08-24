@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 
 namespace Servidor.Models
 {
-    public class _in
+    public interface Instruccion
     {
+        Object Ejecutar(TablaDeSimbolos ts);
+        Object Recolectar(TablaDeSimbolos ts);
     }
 }
+
+

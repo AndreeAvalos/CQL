@@ -79,5 +79,52 @@ namespace Servidor.NOSQL.Estructuras
             }
             return null;
         }
+        public bool existDataBase(string name)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.Name.Equals(name)) return true;
+            }
+            return false;
+        }
+        public void addPermissions(string name, string database)
+        {
+            foreach (Usuario item in usuarios)
+            {
+                if (item.Name.Equals(name))
+                {
+                    item.Permisos.Add(new Permiso(database));
+                    return;
+                }
+            }
+        }
+        public void addDataBase(string name)
+        {
+            Database db = new Database();
+            db.Name = name;
+            Databases.Add(db);
+        }
+
+        //Metodo para manejar que database se usa, la primer base de datos 
+        public void asignUse(string name)
+        {
+            bool encontro = false;
+            foreach (Database item in databases)
+            {
+                if (item.Name.Equals(name)) item.En_uso = true;
+                else item.En_uso = false;
+            }
+        }
+        public void deleteDataBase(string name) {
+            int index = -1 ;
+            for (int i = 0; i < databases.Count; i++)
+            {
+                if (databases.ElementAt(i).Name.Equals(name)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) databases.RemoveAt(index);
+        }
     }
 }

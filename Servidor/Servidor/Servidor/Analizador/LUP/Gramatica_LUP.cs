@@ -16,6 +16,7 @@ namespace Servidor.Analizador.CQL
             StringLiteral CADENA = new StringLiteral("Cadena", "\"");
             NumberLiteral NUMERO = new NumberLiteral("Numero");
             IdentifierTerminal IDENTIFICADOR = new IdentifierTerminal("Identificador");
+            CommentTerminal CONT_DATA_IMPORT = new CommentTerminal("CONT_DATA_IMPORT", "[+DATA]", "[-DATA]");
             #endregion
 
             #region Terminales
@@ -123,7 +124,7 @@ namespace Servidor.Analizador.CQL
 
             QUERY.Rule = CORIZQ + MAS + RQUERY + CORDER + USER + DATA + CORIZQ + MENOS + RQUERY + CORDER;
 
-            DATA.Rule = CORIZQ + MAS + RDATA + CORDER + VALOR + CORIZQ + MENOS + RDATA + CORDER;
+            DATA.Rule = CONT_DATA_IMPORT;
 
             MESSAGE.Rule = CORIZQ + MAS + RMESSAGE + CORDER + VALORES + CORIZQ + MENOS + RMESSAGE + CORDER;
 
