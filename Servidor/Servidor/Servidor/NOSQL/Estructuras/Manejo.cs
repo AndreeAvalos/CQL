@@ -71,6 +71,16 @@ namespace Servidor.NOSQL.Estructuras
             return salida;
         }
 
+        public bool En_uso()
+        {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso) return true;
+            }
+            return false;
+        }
+
         private Database getDataBase(string name)
         {
             foreach (Database item in databases)
@@ -86,6 +96,34 @@ namespace Servidor.NOSQL.Estructuras
                 if (item.Name.Equals(name)) return true;
             }
             return false;
+        }
+
+        public bool existTable(string name)
+        {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    if (item.existTable(name)) return true;
+                }
+            }
+            return false;
+        }
+
+        public bool addTable(Tabla new_tabla)
+        {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    item.Tablas.Add(new_tabla);
+                    return true;
+                }
+            }
+            return false;
+
         }
         public void addPermissions(string name, string database)
         {
@@ -115,11 +153,13 @@ namespace Servidor.NOSQL.Estructuras
                 else item.En_uso = false;
             }
         }
-        public void deleteDataBase(string name) {
-            int index = -1 ;
+        public void deleteDataBase(string name)
+        {
+            int index = -1;
             for (int i = 0; i < databases.Count; i++)
             {
-                if (databases.ElementAt(i).Name.Equals(name)) {
+                if (databases.ElementAt(i).Name.Equals(name))
+                {
                     index = i;
                     break;
                 }

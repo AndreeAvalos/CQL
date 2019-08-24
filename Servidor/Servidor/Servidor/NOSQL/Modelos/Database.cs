@@ -24,6 +24,15 @@ namespace Servidor.NOSQL.Modelos
             this.en_uso = false;
         }
 
+        public bool existTable(string name) {
+            foreach (Tabla item in Tablas)
+            {
+                if (item.Name.Equals(name)) return true;
+            }
+            return false;
+        }
+
+
         public string ArmarHMTL() {
 
             string salida = "";

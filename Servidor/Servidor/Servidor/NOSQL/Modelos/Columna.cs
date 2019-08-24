@@ -16,6 +16,15 @@ namespace Servidor.NOSQL.Modelos
         public bool Pk { get => pk; set => pk = value; }
         public bool Modify { get => modify; set => modify = value; }
 
+        public bool isCounter() {
+            if (type.ToLower().Equals("counter")) return true;
+            return false;
+        }
+        public bool isPK() {
+            if (pk) return true;
+            return false;
+        }
+
         public string ArmarRespuesta() {
             return "<th>" + name + "</th>";
         }

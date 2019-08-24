@@ -117,7 +117,7 @@ namespace Servidor.Analizador.CQL
         private Columna COLUMN(ParseTreeNode nodo)
         {
             Columna columna = new Columna();
-            columna.Name = nodo.ChildNodes.ElementAt(0).Term.Name.Replace(" (Identificador)", ""); ;
+            columna.Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", ""); ;
             columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
             if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count != 0) columna.Pk = true;
             return columna;
@@ -125,7 +125,7 @@ namespace Servidor.Analizador.CQL
 
         private List<Columna> PK_C(List<Columna> columnas, ParseTreeNode nodo) {
             pk_c = true;
-            List<object> nombres = VALORES(nodo.ChildNodes.ElementAt(2));
+            List<object> nombres = VALORES(nodo.ChildNodes.ElementAt(3));
             List<Columna> columnas_aux = columnas;
             foreach (string item in nombres)
             {
@@ -133,7 +133,6 @@ namespace Servidor.Analizador.CQL
                 {
                     if (item2.Name.Equals(item)) {
                         item2.Modify = true;
-                        item2.Pk = true;
                     }
                 }
                 //reportar error ya que no existe 

@@ -120,7 +120,7 @@ namespace Servidor.Analizador.CQL
             IFN_PK.Rule = RPRIMARY_KEY
                 | Empty;
             //SI LA LLAVE ES COMPUESTA
-            IFC_PK.Rule = RPRIMARY_KEY + PARIZQ + VALORES + PARDER
+            IFC_PK.Rule = COMA + RPRIMARY_KEY + PARIZQ + VALORES + PARDER
                 | Empty;
 
 
@@ -134,10 +134,10 @@ namespace Servidor.Analizador.CQL
                 | TCOUNTER
                 | TDOUBLE
                 | TBOOLEAN
-                | IDENTIFICADOR
                 | TINT
                 | TMAP
                 | TLIST
+                | IDENTIFICADOR
                 ;
 
             // SI VIENE POR EJEMPLO 1,2,3,4 O PERSONA, PERRO, CARRO O TRUE, FALSE, TRUE
@@ -157,6 +157,8 @@ namespace Servidor.Analizador.CQL
 
             #region Preferencias
             this.Root = S;
+            string[] palabras = { RPRIMARY_KEY.Text };
+            MarkReservedWords(palabras);
             #endregion
 
 
