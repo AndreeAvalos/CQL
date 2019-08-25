@@ -11,6 +11,7 @@ namespace Servidor.NOSQL.Modelos
         string type;
         bool pk;
         bool modify = false;
+
         public string Name { get => name; set => name = value; }
         public string Type { get => type; set => type = value; }
         public bool Pk { get => pk; set => pk = value; }

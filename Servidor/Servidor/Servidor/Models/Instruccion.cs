@@ -9,8 +9,9 @@ namespace Servidor.Models
     {
         Object Ejecutar(TablaDeSimbolos ts);
         Object Recolectar(TablaDeSimbolos ts);
+        int getLine();
+        int getColumn();
         List<string> getSalida();
-
     }
 }
 

@@ -14,13 +14,16 @@ namespace Servidor.Models
         bool compuesta;
         List<object> llaves_compuestas;
         public List<string> salida = new List<string>();
-        public Create_Table(string id, List<Columna> columnas, bool existe, bool compuesta, List<object> llaves)
+        int linea, columna;
+        public Create_Table(string id, List<Columna> columnas, bool existe, bool compuesta, List<object> llaves, int line, int column)
         {
             this.id = id;
             this.columnas = columnas;
             this.existe = existe;
             this.compuesta = compuesta;
             this.llaves_compuestas = llaves;
+            this.linea = line;
+            this.columna = column;
         }
         public List<string> getSalida()
         {
@@ -42,12 +45,13 @@ namespace Servidor.Models
                     }
                     else
                     {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla " + id + " ya existe en la base de datos."));
                         // marcar error
                     }
                 }
                 else
                 {
-                    int repetidos = 0;
+                    int repetidos;
                     bool no_hay_repetidos = true;
                     foreach (Columna item in columnas)
                     {
@@ -64,6 +68,7 @@ namespace Servidor.Models
                                 else
                                 {
                                     //mostrar error
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna " + item.Name + " ya existe en este contexto."));
                                     no_hay_repetidos = false;
                                 }
                             }
@@ -72,8 +77,8 @@ namespace Servidor.Models
                     if (no_hay_repetidos)
                     {
                         //si son primitivos o objetos
-                        bool is_primitivo = true;
-                        bool is_objeto = true;
+                        bool is_primitivo;
+                        bool is_objeto;
                         bool is_ok = true;
                         foreach (Columna item in columnas)
                         {
@@ -89,19 +94,16 @@ namespace Servidor.Models
                                 is_primitivo = true; is_objeto = true;
                             }
 
-                            if (!is_primitivo && !is_objeto) is_ok = false;
-                            else
+                            if (!is_primitivo && !is_objeto)
                             {
+                                is_ok = false;
+
                                 //informar que no existe ese tipo de dato
+                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Type + " no es primitivo, ni es parte de los objetos de la base de datos."));
                             }
 
                         }
-                        if (is_ok == false)
-                        {
-                            // reportamos que no todas las columnas existen
-
-                        }
-                        else
+                        if (is_ok)
                         {
 
                             bool validacion_counter_and_PK = true;
@@ -127,6 +129,7 @@ namespace Servidor.Models
                                     if (existe_llave == false)
                                     {
                                         //reportar que no existe este id
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La llave compuesta " + item + " no es parte de las columnas declaradas."));
                                         todas_existen = false;
                                     }
                                 }
@@ -182,6 +185,7 @@ namespace Servidor.Models
                                         }
                                         else
                                         {
+                                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No todas las llaves primarias son counter."));
                                             //error ya que no todas cumplen con ser counter al ser compuestas
                                             return null;
                                         }
@@ -219,6 +223,7 @@ namespace Servidor.Models
                                     {
                                         validacion_counter_and_PK = false;
                                         //ejecutar error de que se encontro un counter y no es pk
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna " + item.Name + " es counter y no primaria."));
                                         break;
                                     }
 
@@ -229,7 +234,7 @@ namespace Servidor.Models
                                 }
                                 else
                                 {
-                                    //ejecutar resulucion de errores
+                                    //ejecutar resolucion de errores
                                     return null;
                                 }
 
@@ -242,10 +247,12 @@ namespace Servidor.Models
                             if (Program.sistema.addTable(tabla_aux))
                             {
                                 //Mandamos mensaje que se creo la tabla con exito
+                                salida.Add(Program.buildMessage("Tabla "+id+" se creo con exito."));
                             }
                             else
                             {
                                 //mandamos mensaje que no se pudo por que no hay ninguna base de datos en uso.
+                                salida.Add(Program.buildMessage("No existe ninguna base de datos en uso."));
                                 return null;
                             }
                         }
@@ -255,9 +262,18 @@ namespace Servidor.Models
             else
             {
                 //no hay ninguna base de datos seleccionada.
+                salida.Add(Program.buildMessage("No existe ninguna base de datos en uso."));
             }
 
             return null;
+        }
+        public int getLine()
+        {
+            return linea;
+        }
+        public int getColumn()
+        {
+            return columna;
         }
     }
 }

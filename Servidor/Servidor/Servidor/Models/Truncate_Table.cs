@@ -9,13 +9,14 @@ namespace Servidor.Models
     public class Truncate_Table : Instruccion
     {
         string id_tabla;
-        private ParseTreeNodeList lst_nodos;
         public List<string> salida = new List<string>();
+        int linea, columna;
 
-        public Truncate_Table(string id_tabla, ParseTreeNodeList nodo)
+        public Truncate_Table(string id_tabla, int line, int column)
         {
             this.id_tabla = id_tabla;
-            this.lst_nodos = nodo;
+            this.linea = line;
+            this.columna = column;
         }
         public List<string> getSalida()
         {
@@ -35,38 +36,33 @@ namespace Servidor.Models
                     if (eliminado)
                     {
                         //informar que se elimino con exito
+                        salida.Add(Program.buildMessage("Tabla " + id_tabla + " truncada con exito."));
                     }
                     else
                     {
                         // informar que es un error interno;
                     }
                 }
-                else {
-
-                    Console.WriteLine("holaMundo");
-                    List<int> LC = obtenerLC(id_tabla);
-                    if ( LC != null) {
-                        salida.Add(Program.buildError(LC.ElementAt(0),LC.ElementAt(1),"Semantico", "La tabla que desea truncar no existe en la base de datos actual."));
-                    }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla "+id_tabla+" no existe en la base de datos actual."));
 
                 }
+            }
+            else
+            {
+                //no hay ninguna base de datos seleccionada.
+                salida.Add(Program.buildMessage("No existe ninguna base de datos en uso."));
             }
 
             return null;
         }
-
-        private List<int> obtenerLC(string token) {
-            List<int> linea_columna = new List<int>();
-            foreach (ParseTreeNode item in lst_nodos)
-            {
-                if (item.Token.Text.ToLower().Equals(token.ToLower())) {
-                    linea_columna.Add(item.Token.Location.Line);
-                    linea_columna.Add(item.Token.Location.Column);
-                    return linea_columna;
-                }
-            }
-            return null;
-
+        public int getLine()
+        {
+            return linea;
+        }
+        public int getColumn() {
+            return columna;
         }
     }
 }

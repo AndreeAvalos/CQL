@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Irony.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +10,14 @@ namespace Servidor.Models
     {
         string id_tabla;
         bool existe;
+        int linea, columna;
         public List<string> salida = new List<string>();
-        public Drop_Table(string id_tabla, bool existe)
+        public Drop_Table(string id_tabla, bool existe, int line, int column)
         {
             this.id_tabla = id_tabla;
             this.existe = existe;
+            this.linea = line;
+            this.columna = column;
         }
 
         public List<string> getSalida()
@@ -36,6 +40,7 @@ namespace Servidor.Models
                     }
                     else
                     {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla "+ id_tabla+ "no puede eliminarse porque no existe en la base de datos."));
                         // marcar error
                     }
                 }
@@ -45,15 +50,31 @@ namespace Servidor.Models
                     if (eliminado)
                     {
                         //mandar mensaje de eliminacion
+                        salida.Add(Program.buildMessage("La tabla " + id_tabla + " fue eliminida con exito."));
                     }
-                    else {
+                    else
+                    {
                         // mandar mensaje que hubo un error interno.
+                        salida.Add(Program.buildMessage("ha ocurrido un error interno mientras se intentaba eliminar la tabla."));
+                        
                     }
 
                 }
             }
-
+            else
+            {
+                //no hay ninguna base de datos seleccionada.
+                salida.Add(Program.buildMessage("No existe ninguna base de datos en uso."));
+            }
             return null;
+        }
+        public int getLine()
+        {
+            return linea;
+        }
+        public int getColumn()
+        {
+            return columna;
         }
     }
 }

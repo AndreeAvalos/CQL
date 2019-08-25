@@ -75,55 +75,69 @@ namespace Servidor.Analizador.CQL
         private Instruccion DDL(ParseTreeNode nodo)
         {
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
-
+            int linea = 0, columna = 0;
             switch (produccion)
             {
                 case "CREATE_DB":
                     bool existe = false;
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) existe = true;
                     string name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3)).ToString();
-                    return new Create_DataBase(existe, name, this.user);
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Create_DataBase(existe, name, this.user, linea, columna);
                 case "PUSE":
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1)).ToString();
-                    return new DDL_USE(name);
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new DDL_USE(name, linea, columna);
                 case "DROP_DB":
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2)).ToString();
-                    return new Drop_DataBase(name);
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Drop_DataBase(name, linea, columna);
                 case "CREATE_TABLE":
                     existe = false; bool pk_c = false;
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) existe = true;
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3)).ToString();
                     List<Columna> columnas = COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5));
                     List<object> llaves_compuestas = new List<object>();
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(6).ChildNodes.Count != 0)
                     {
                         llaves_compuestas = PK_C(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(6));
                         pk_c = true;
                     }
-                    return new Create_Table(name, columnas, existe, pk_c, llaves_compuestas);
+                    return new Create_Table(name, columnas, existe, pk_c, llaves_compuestas, linea, columna);
                 case "ALTER_TABLE":
                     string opcion = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Term.ToString();
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                     switch (opcion)
                     {
+
                         case "DROP":
                             List<object> columnas_eliminar = DROP_COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
-                            name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                            return new Alter_Table(name, false, columnas_eliminar);
+                            return new Alter_Table(name, false, columnas_eliminar, linea, columna);
                         case "ADD":
                             List<Columna> columnas_agregar = ADD_COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
-                            name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                            return new Alter_Table(name, true, columnas_agregar);
+                            return new Alter_Table(name, true, columnas_agregar, linea, columna);
 
                     }
                     return null;
                 case "DROP_TABLE":
                     bool ife = false;
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) ife = true;
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).ToString().Replace(" (Identificador)", "");
-                    return new Drop_Table(name, ife);
+                    return new Drop_Table(name, ife, linea, columna);
                 case "TRUNCATE_TABLE":
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                    return new Truncate_Table(name, nodo.ChildNodes.ElementAt(0).ChildNodes);
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Truncate_Table(name, linea, columna);
 
 
             }
@@ -168,7 +182,8 @@ namespace Servidor.Analizador.CQL
                 columnas_eliminar.Add(DROP_COLUMN(nodo.ChildNodes.ElementAt(2)));
                 return columnas_eliminar;
             }
-            else {
+            else
+            {
                 List<Object> columnas_eliminar = new List<object>
                 {
                     DROP_COLUMN(nodo.ChildNodes.ElementAt(0))

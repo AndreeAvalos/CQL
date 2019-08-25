@@ -11,11 +11,14 @@ namespace Servidor.Models
         private string id;
         private string user;
         public List<string> salida = new List<string>();
-        public Create_DataBase(bool existe, string id,string user)
+        int linea, columna;
+        public Create_DataBase(bool existe, string id,string user, int line, int column)
         {
             this.existe = existe;
             this.id = id;
             this.user = user;
+            this.linea = line;
+            this.columna = column;
         }
         public List<string> getSalida()
         {
@@ -36,16 +39,25 @@ namespace Servidor.Models
                 else
                 {
                     //Imprimir error ya que la tabla 
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla que desea crear ya existe."));
                 }
             }
             else {
                 Program.sistema.addDataBase(id);
                 Program.sistema.addPermissions(user, id);
                 Program.sistema.addPermissions("admin", id);
+                salida.Add(Program.buildMessage("La base de datos fue creada con exit."));
 
             }
             return null;
         }
-
+        public int getLine()
+        {
+            return linea;
+        }
+        public int getColumn()
+        {
+            return columna;
+        }
     }
 }

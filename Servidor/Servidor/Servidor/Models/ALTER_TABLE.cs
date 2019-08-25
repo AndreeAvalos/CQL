@@ -8,29 +8,36 @@ namespace Servidor.Models
 {
     public class Alter_Table : Instruccion
     {
-        string id_tabla;
-        bool add_column = true;
-        List<Columna> columnas_agregar;
-        List<object> columnas_eliminar;
+        readonly string id_tabla;
+        readonly bool add_column = true;
+        readonly List<Columna> columnas_agregar;
+        readonly List<object> columnas_eliminar;
         public List<string> salida = new List<string>();
+        private readonly int linea;
+        private readonly int columna;
 
-        public List<string> getSalida() {
+        public List<string> getSalida()
+        {
 
             return salida;
         }
 
-        public Alter_Table(string id_tabla, bool add_column, List<Columna> columnas_agregar)
+        public Alter_Table(string id_tabla, bool add_column, List<Columna> columnas_agregar, int line, int column)
         {
             this.id_tabla = id_tabla;
             this.add_column = add_column;
             this.columnas_agregar = columnas_agregar;
+            this.linea = line;
+            this.columna = column;
         }
 
-        public Alter_Table(string id_tabla, bool add_column, List<object> columnas_eliminar)
+        public Alter_Table(string id_tabla, bool add_column, List<object> columnas_eliminar, int line, int column)
         {
             this.id_tabla = id_tabla;
             this.add_column = add_column;
             this.columnas_eliminar = columnas_eliminar;
+            this.linea = line;
+            this.columna = column;
         }
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
@@ -38,7 +45,6 @@ namespace Servidor.Models
         {
             if (Program.sistema.En_uso())
             {
-
                 if (Program.sistema.existTable(id_tabla.ToLower()))
                 {
                     //si hay que agregar columnas
@@ -46,7 +52,7 @@ namespace Servidor.Models
                     {
                         List<Columna> columnaux = columnas_agregar;
 
-                        int repetidos = 0;
+                        int repetidos;
                         bool no_hay_repetidos = true;
                         foreach (Columna item in columnas_agregar)
                         {
@@ -63,6 +69,8 @@ namespace Servidor.Models
                                     else
                                     {
                                         //mostrar error
+
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna " + item.Name + " existe en el mismo contexto "));
                                         no_hay_repetidos = false;
                                     }
                                 }
@@ -73,8 +81,8 @@ namespace Servidor.Models
 
                             //verificamos si existen los tipos declarados
                             //si son primitivos o objetos
-                            bool is_primitivo = true;
-                            bool is_objeto = true;
+                            bool is_primitivo;
+                            bool is_objeto;
                             bool is_ok = true;
                             foreach (Columna item in columnas_agregar)
                             {
@@ -90,16 +98,16 @@ namespace Servidor.Models
                                     is_primitivo = true; is_objeto = true;
                                 }
 
-                                if (!is_primitivo && !is_objeto) is_ok = false;
-                                else
+                                if (!is_primitivo && !is_objeto)
                                 {
-                                    //informar que no existe ese tipo de dato
+                                    is_ok = false;
+
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Type + " no es primitivo, ni es parte de los objetos de la base de datos."));
                                 }
                             }
                             //si existen los tipos pasar
                             if (is_ok)
                             {
-
                                 //verificamos si existe ya el nombre de la columna que quiere insertar
                                 is_ok = true;
                                 foreach (Columna item in columnas_agregar)
@@ -108,6 +116,8 @@ namespace Servidor.Models
                                     {
                                         is_ok = false;
                                         //desplegar error
+
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna " + item.Name + " ya existe en la tabla " + id_tabla + "."));
                                     }
                                 }
                                 //si no existe pasamos
@@ -121,6 +131,8 @@ namespace Servidor.Models
                                         {
                                             is_ok = false;
                                             //desplegar error
+
+                                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna " + item.Name + " no puede ser tipo " + item.Type + "."));
                                         }
                                     }
                                     //si no viene ninguno procedemos a insertar
@@ -128,8 +140,10 @@ namespace Servidor.Models
                                     {
                                         foreach (Columna item in columnas_agregar)
                                         {
+
                                             Program.sistema.addColumn(id_tabla.ToLower(), item);
                                         }
+                                        salida.Add(Program.buildMessage("Tabla " + id_tabla + " modificada con exito; Total de cambios: " + columnas_agregar.Count + "."));
                                     }
                                     else
                                     {
@@ -160,28 +174,33 @@ namespace Servidor.Models
                             {
                                 //informar que no existe columna
                                 is_ok = false;
+
+                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No existe columna " + item + " en tabla " + id_tabla + "."));
                             }
                             else
                             {
-                                if (Program.sistema.isPk(id_tabla.ToLower(), item.ToLower())) is_ok = false;
-                                else
+                                if (Program.sistema.isPk(id_tabla.ToLower(), item.ToLower()))
                                 {
-                                    //informar que la llave es primaria, por lo tanto no se puede eliminar
+                                    is_ok = false;
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La columna que intenta eliminar es llave primaria."));
                                 }
                             }
                         }
 
                         if (is_ok)
                         {
-                            bool eliminado = false;
+                            bool eliminado;
                             foreach (string item in columnas_eliminar)
                             {
                                 eliminado = Program.sistema.dropColumn(id_tabla.ToLower(), item.ToLower());
                                 if (!eliminado)
                                 {
                                     //por alguna razon interna
+                                    salida.Add(Program.buildMessage("Error interno del servidor."));
                                 }
                             }
+                            salida.Add(Program.buildMessage("Tabla " + id_tabla + " modificada con exito; Total de cambios: " + columnas_eliminar.Count + "."));
+
                         }
 
                         return null;
@@ -191,14 +210,26 @@ namespace Servidor.Models
                 else
                 {
                     //error por que no existe la tabla
+
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla " + id_tabla + " no existe en esta base de datos."));
                     return null;
 
                 }
             }
             else
-            {// no se esta usando ninguna dt
-                return null;
+            {
+                //no hay ninguna base de datos seleccionada.
+                salida.Add(Program.buildMessage("No existe ninguna base de datos en uso."));
             }
+            return null;
+        }
+        public int getLine()
+        {
+            return linea;
+        }
+        public int getColumn()
+        {
+            return columna;
         }
     }
 }
