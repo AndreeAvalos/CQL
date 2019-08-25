@@ -112,9 +112,15 @@ namespace Servidor.Analizador.CQL
                             break;
 
                     }
-
                     return null;
-
+                case "DROP_TABLE":
+                    bool ife = false;
+                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) ife = true;
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).ToString().Replace(" (Identificador)", "");
+                    return new Drop_Table(name, ife);
+                case "TRUNCATE_TABLE":
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
+                    return new Truncate_Table(name);
 
 
             }

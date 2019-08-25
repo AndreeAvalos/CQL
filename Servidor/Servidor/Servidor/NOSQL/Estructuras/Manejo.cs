@@ -96,6 +96,29 @@ namespace Servidor.NOSQL.Estructuras
             }
             return false;
         }
+        public bool dropTable(string name)
+        {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.dropTable(name.ToLower());
+                }
+            }
+            return false;
+        }
+        public bool truncateTable(string name) {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.truncateTable(name.ToLower());
+                }
+            }
+            return false;
+
+        }
 
         public bool existTable(string name)
         {

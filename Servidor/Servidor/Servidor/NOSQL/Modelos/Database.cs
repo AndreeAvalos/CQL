@@ -24,7 +24,8 @@ namespace Servidor.NOSQL.Modelos
             this.en_uso = false;
         }
 
-        public bool existTable(string name) {
+        public bool existTable(string name)
+        {
             foreach (Tabla item in Tablas)
             {
                 if (item.Name.ToLower().Equals(name.ToLower())) return true;
@@ -34,12 +35,14 @@ namespace Servidor.NOSQL.Modelos
 
         public bool existeObjeto(string name)
         {
-            foreach (Objeto item in objetos) {
+            foreach (Objeto item in objetos)
+            {
                 if (item.Name.ToLower().Equals(name.ToLower())) return true;
             }
             return false;
         }
-        public bool addColumn(string table_name, Columna column) {
+        public bool addColumn(string table_name, Columna column)
+        {
             foreach (Tabla item in tablas)
             {
                 if (item.Name.ToLower().Equals(table_name)) { item.Columnas.Add(column); return true; }
@@ -47,7 +50,8 @@ namespace Servidor.NOSQL.Modelos
             return false;
         }
 
-        public bool existeColumn(string table_name, string column_name) {
+        public bool existeColumn(string table_name, string column_name)
+        {
 
             foreach (Tabla item in tablas)
             {
@@ -56,7 +60,8 @@ namespace Servidor.NOSQL.Modelos
             return false;
 
         }
-        public bool dropColumn(string table_name, string column_name) {
+        public bool dropColumn(string table_name, string column_name)
+        {
             foreach (Tabla item in tablas)
             {
                 if (item.Name.ToLower().Equals(table_name)) { return item.dropColumn(column_name); }
@@ -72,11 +77,29 @@ namespace Servidor.NOSQL.Modelos
             return false;
         }
 
-        public string ArmarHMTL() {
+        public bool dropTable(string nombre)
+        {
+            int index = -1;
+            for (int i = 0; i < tablas.Count; i++)
+            {
+                if (tablas.ElementAt(i).Name.ToLower().Equals(nombre.ToLower())) index = i;
+            }
+
+            if (index != -1)
+            {
+                Tablas.RemoveAt(index);
+                return true;
+            }
+            return false;
+        }
+
+        public string ArmarHMTL()
+        {
 
             string salida = "";
             salida += "<h2>TABLAS</h2>\n";
-            foreach (Tabla item in tablas) {
+            foreach (Tabla item in tablas)
+            {
 
                 salida += item.ArmarRespuesta() + "\n";
             }
@@ -95,7 +118,17 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
-        public string CrearEstructura() {
+        internal bool truncateTable(string name)
+        {
+            foreach (Tabla item in Tablas)
+            {
+                if (item.Name.ToLower().Equals(name)) { item.Filas.Clear(); return true; }
+            }
+            return false;
+        }
+
+        public string CrearEstructura()
+        {
             string salida = "";
             salida += "\t[+DATABASE]\n";
             salida += "\t\t[+NAME]\n";
@@ -103,8 +136,8 @@ namespace Servidor.NOSQL.Modelos
             salida += "\t\t[-NAME]\n";
             salida += "\t\t[+TABLES]\n";
             foreach (Tabla item in Tablas)
-             {
-                 salida += item.CrearEstructura();
+            {
+                salida += item.CrearEstructura();
             }
             salida += "\t\t[-TABLES]\n";
             salida += "\t\t[+TYPES]\n";

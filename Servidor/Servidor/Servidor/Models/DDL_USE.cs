@@ -18,7 +18,12 @@ namespace Servidor.Models
             return null;
         }
         public object Ejecutar(TablaDeSimbolos ts) {
-            Program.sistema.asignUse(id);
+            if (Program.sistema.existDataBase(id.ToLower())) Program.sistema.asignUse(id);
+            else
+            {
+                //informar que no existe database
+
+            }
             return null;
         }
     }

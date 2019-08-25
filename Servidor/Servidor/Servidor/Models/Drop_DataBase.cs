@@ -16,7 +16,11 @@ namespace Servidor.Models
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts) {
-            Program.sistema.deleteDataBase(id);
+            if (Program.sistema.existDataBase(id.ToLower())) Program.sistema.deleteDataBase(id);
+            else {
+                //informar que no existe database
+
+            }
             return null;
         }
     }

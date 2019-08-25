@@ -47,8 +47,10 @@ namespace Servidor.Analizador.CQL
                 RUSE = ToTerm("USE"),
                 RDROP = ToTerm("DROP"),
                 RALTER = ToTerm("ALTER"),
+                RTRUNCATE = ToTerm("TRUNCATE"),
                 RADD = ToTerm("ADD"),
-                RIF_NOT_EXISTS = ToTerm("[IF NOT EXISTS]"),
+                RIF_NOT_EXISTS = ToTerm("IF NOT EXISTS"),
+                RIF_EXISTS = ToTerm("IF EXISTS"),
                 RTABLE = ToTerm("TABLE"),
                 RPRIMARY_KEY = ToTerm("PRIMARY KEY"),
                 TSTRING = ToTerm("string"),
@@ -75,13 +77,14 @@ namespace Servidor.Analizador.CQL
                 VALORES = new NonTerminal("VALORES"),
                 IFNE = new NonTerminal("IFNE"),
                 PUSE = new NonTerminal("PUSE"),
+                TRUNCATE_TABLE =new NonTerminal("TRUNCATE_TABLE"),
                 DROP_DB = new NonTerminal("DROP_DB"),
                 CREATE_TABLE = new NonTerminal("CREATE_TABLE"),
                 ALTER_TABLE = new NonTerminal("ALTER_TABLE"),
-                ADD_TABLE = new NonTerminal("ADD_TABLE"),
                 ADD_COLUMNS = new NonTerminal("ADD_COLUMNS"),
                 ADD_COLUMN = new NonTerminal("ADD_COLUMN"),
                 DROP_TABLE = new NonTerminal("DROP_TABLE"),
+                IFE = new NonTerminal("IFE"),
                 DROP_COLUMNS = new NonTerminal("DROP_COLUMNS"),
                 DROP_COLUMN = new NonTerminal("DROP_COLUMN"),
                 COLUMNS = new NonTerminal("COLUMNS"),
@@ -107,7 +110,9 @@ namespace Servidor.Analizador.CQL
                 | PUSE
                 | DROP_DB
                 | CREATE_TABLE
-                | ALTER_TABLE;
+                | ALTER_TABLE
+                | DROP_TABLE
+                | TRUNCATE_TABLE;
 
             #region DDL
             // CREATE DATABASE
@@ -145,7 +150,13 @@ namespace Servidor.Analizador.CQL
                 | DROP_COLUMN;
             //ID
             DROP_COLUMN.Rule = IDENTIFICADOR;
-
+            //DROP TABLE
+            DROP_TABLE.Rule = RDROP + RTABLE + IFE + IDENTIFICADOR + PTCOMA;
+            // IF EXISTS VIENE
+            IFE.Rule = RIF_EXISTS
+                | Empty;
+            //TRUNCATE TABLE
+            TRUNCATE_TABLE.Rule = RTRUNCATE + RTABLE + IDENTIFICADOR + PTCOMA;
 
             #endregion
 
@@ -180,7 +191,7 @@ namespace Servidor.Analizador.CQL
 
             #region Preferencias
             this.Root = S;
-            string[] palabras = { RPRIMARY_KEY.Text,RDROP.Text, RADD.Text };
+            string[] palabras = { RPRIMARY_KEY.Text,RDROP.Text, RADD.Text, RIF_NOT_EXISTS.Text };
             MarkReservedWords(palabras);
             #endregion
 
