@@ -30,59 +30,119 @@ namespace Servidor.Models
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
         {
+
+
             if (Program.sistema.existTable(id_tabla.ToLower()))
             {
                 //si hay que agregar columnas
                 if (add_column)
                 {
-                    //verificamos si hay algun counter
+                    List<Columna> columnaux = columnas_agregar;
 
-                    bool is_ok = true;
+                    int repetidos = 0;
+                    bool no_hay_repetidos = true;
                     foreach (Columna item in columnas_agregar)
                     {
-                        if (item.isCounter())
+                        repetidos = 0;
+                        foreach (Columna item2 in columnaux)
                         {
-                            is_ok = false;
-                            //desplegar error
+                            if (item.Name.Equals(item2.Name))
+                            {
+                                repetidos++;
+                                if (repetidos <= 1)
+                                {
+                                    //no hacemos nada
+                                }
+                                else
+                                {
+                                    //mostrar error
+                                    no_hay_repetidos = false;
+                                }
+                            }
                         }
                     }
-                    if (is_ok)
+                    if (no_hay_repetidos)
                     {
-                        bool es_primitivo = true;
-                        bool es_objeto = true;
-                        bool existe_error = false;
-                        //aqui puede ir la comprobacion de objetos
+
+                        //verificamos si existen los tipos declarados
+                        //si son primitivos o objetos
+                        bool is_primitivo = true;
+                        bool is_objeto = true;
+                        bool is_ok = true;
                         foreach (Columna item in columnas_agregar)
                         {
-                            if (!Program.comprobarPrimitivo(item.Type))
-                                es_primitivo = false;
-                            if (!Program.sistema.existeObjeto(item.Type))
-                                es_objeto = false;
 
-                            if (!es_primitivo && !es_objeto)
+                            if (!Program.comprobarPrimitivo(item.Type.ToLower()))
                             {
-                                //informar de error y no agregar
-                                existe_error = true;
+                                is_primitivo = false;
+                                if (!Program.sistema.existeObjeto(item.Type.ToLower())) is_objeto = false;
+                                else { is_primitivo = true; is_objeto = true; }
+                            }
+                            else
+                            {
+                                is_primitivo = true; is_objeto = true;
+                            }
+
+                            if (!is_primitivo && !is_objeto) is_ok = false;
+                            else
+                            {
+                                //informar que no existe ese tipo de dato
                             }
                         }
-                        if (existe_error == false)
+                        //si existen los tipos pasar
+                        if (is_ok)
                         {
+
+                            //verificamos si existe ya el nombre de la columna que quiere insertar
+                            is_ok = true;
                             foreach (Columna item in columnas_agregar)
                             {
-                                Program.sistema.addColumn(id_tabla.ToLower(), item);
+                                if (Program.sistema.existColumn(id_tabla.ToLower(), item.Name.ToLower()))
+                                {
+                                    is_ok = false;
+                                    //desplegar error
+                                }
+                            }
+                            //si no existe pasamos
+                            if (is_ok)
+                            {
+                                //buscamos si en los datos existe algun counter
+                                is_ok = true;
+                                foreach (Columna item in columnas_agregar)
+                                {
+                                    if (item.isCounter())
+                                    {
+                                        is_ok = false;
+                                        //desplegar error
+                                    }
+                                }
+                                //si no viene ninguno procedemos a insertar
+                                if (is_ok)
+                                {
+                                    foreach (Columna item in columnas_agregar)
+                                    {
+                                        Program.sistema.addColumn(id_tabla.ToLower(), item);
+                                    }
+                                }
+                                else
+                                {
+                                    //exist un tipo de counter y ya que no se puede 
+                                }
+                                return null;
+                            }
+                            else
+                            {
+                                //no ejecutar
+                                return null;
                             }
                         }
-                        else {
-                            //reportar que no se pudo crear la db
+                        else
+                        {
+                            //no insertar 
+                            return null;
                         }
-                        return null;
                     }
-                    else
-                    {
-                        //no insertar 
-                        return null;
-                    }
-
+                    else return null;
                 }
                 else
                 {
@@ -94,9 +154,11 @@ namespace Servidor.Models
                             //informar que no existe columna
                             is_ok = false;
                         }
-                        else {
+                        else
+                        {
                             if (Program.sistema.isPk(id_tabla.ToLower(), item.ToLower())) is_ok = false;
-                            else {
+                            else
+                            {
                                 //informar que la llave es primaria, por lo tanto no se puede eliminar
                             }
                         }
@@ -107,8 +169,9 @@ namespace Servidor.Models
                         bool eliminado = false;
                         foreach (string item in columnas_eliminar)
                         {
-                           eliminado = Program.sistema.dropColumn(id_tabla.ToLower(), item.ToLower());
-                            if (!eliminado) {
+                            eliminado = Program.sistema.dropColumn(id_tabla.ToLower(), item.ToLower());
+                            if (!eliminado)
+                            {
                                 //por alguna razon interna
                             }
                         }

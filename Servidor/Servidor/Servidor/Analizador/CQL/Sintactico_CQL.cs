@@ -106,6 +106,9 @@ namespace Servidor.Analizador.CQL
                             name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
                             return new ALTER_TABLE(name, false, columnas_eliminar);
                         case "ADD":
+                            List<Columna> columnas_agregar = ADD_COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
+                            name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
+                            return new ALTER_TABLE(name, true, columnas_agregar);
                             break;
 
                     }
@@ -116,6 +119,32 @@ namespace Servidor.Analizador.CQL
 
             }
             return null;
+        }
+
+        private List<Columna> ADD_COLUMNS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Columna> columnas_agregar = ADD_COLUMNS(nodo.ChildNodes.ElementAt(0));
+                columnas_agregar.Add(ADD_COLUMN(nodo.ChildNodes.ElementAt(2)));
+                return columnas_agregar;
+            }
+            else
+            {
+                List<Columna> columnas_agregar = new List<Columna>();
+                columnas_agregar.Add(ADD_COLUMN(nodo.ChildNodes.ElementAt(0)));
+                return columnas_agregar;
+            }
+        }
+
+        private Columna ADD_COLUMN(ParseTreeNode nodo)
+        {
+            Columna columna = new Columna();
+            columna.Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", "");
+            columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
+            columna.Pk = false;
+
+            return columna;
         }
 
         private List<object> DROP_COLUMNS(ParseTreeNode nodo)

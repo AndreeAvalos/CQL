@@ -41,102 +41,150 @@ namespace Servidor.Models
                 }
                 else
                 {
-                    //si son primitivos o objetos
-                    bool is_primitivo = true;
-                    bool is_objeto = true;
-                    bool is_ok = true;
+                    int repetidos = 0;
+                    bool no_hay_repetidos = true;
                     foreach (Columna item in columnas)
                     {
-
-                        if (!Program.comprobarPrimitivo(item.Type.ToLower()))
+                        repetidos = 0;
+                        foreach (Columna item2 in columnas)
                         {
-                            is_primitivo = false;
-                            if (!Program.sistema.existeObjeto(item.Type.ToLower())) is_objeto = false;
-                            else { is_primitivo = true; is_objeto = true; }
-                        }
-                        else
-                        {
-                            is_primitivo = true; is_objeto = true;
-                        }
-
-                        if (!is_primitivo && !is_objeto) is_ok = false;
-                        else
-                        {
-                            //informar que no existe ese tipo de dato
-                        }
-
-                    }
-                    if (is_ok == false)
-                    {
-                        // reportamos que no todas las columnas existen
-
-                    }
-                    else
-                    {
-
-                        bool validacion_counter_and_PK = true;
-                        bool existe_algun_counter = false;
-                        List<Columna> columnas_aux = new List<Columna>();
-                        //lista auxiliar para poder saber que llaves se van a modificar a primarias
-
-                        //si es compuesta entonces pasamos a convertir
-
-                        if (compuesta)
-                        {
-                            //comparar si todas las llaves compuestas existen en las columnas
-
-                            bool todas_existen = true;
-                            bool existe_llave = false;
-                            foreach (string item in llaves_compuestas)
+                            if (item.Name.Equals(item2.Name))
                             {
-                                existe_llave = false;
-                                foreach (Columna item2 in columnas)
+                                repetidos++;
+                                if (repetidos <= 1)
                                 {
-                                    if (item2.Name.ToLower().Equals(item.ToLower())) existe_llave = true;
+                                    //no hacemos nada
                                 }
-                                if (existe_llave == false)
+                                else
                                 {
-                                    //reportar que no existe este id
-                                    todas_existen = false;
+                                    //mostrar error
+                                    no_hay_repetidos = false;
                                 }
                             }
-                            if (todas_existen)
+                        }
+                    }
+                    if (no_hay_repetidos)
+                    {
+                        //si son primitivos o objetos
+                        bool is_primitivo = true;
+                        bool is_objeto = true;
+                        bool is_ok = true;
+                        foreach (Columna item in columnas)
+                        {
+
+                            if (!Program.comprobarPrimitivo(item.Type.ToLower()))
                             {
-                                //ahora pasamos a verificar si existe algun counter en las columnas
-                                foreach (Columna item in columnas)
+                                is_primitivo = false;
+                                if (!Program.sistema.existeObjeto(item.Type.ToLower())) is_objeto = false;
+                                else { is_primitivo = true; is_objeto = true; }
+                            }
+                            else
+                            {
+                                is_primitivo = true; is_objeto = true;
+                            }
+
+                            if (!is_primitivo && !is_objeto) is_ok = false;
+                            else
+                            {
+                                //informar que no existe ese tipo de dato
+                            }
+
+                        }
+                        if (is_ok == false)
+                        {
+                            // reportamos que no todas las columnas existen
+
+                        }
+                        else
+                        {
+
+                            bool validacion_counter_and_PK = true;
+                            bool existe_algun_counter = false;
+                            List<Columna> columnas_aux = new List<Columna>();
+                            //lista auxiliar para poder saber que llaves se van a modificar a primarias
+
+                            //si es compuesta entonces pasamos a convertir
+
+                            if (compuesta)
+                            {
+                                //comparar si todas las llaves compuestas existen en las columnas
+
+                                bool todas_existen = true;
+                                bool existe_llave = false;
+                                foreach (string item in llaves_compuestas)
                                 {
-                                    if (item.Type.ToLower().Equals("counter"))
+                                    existe_llave = false;
+                                    foreach (Columna item2 in columnas)
                                     {
-                                        existe_algun_counter = true;
+                                        if (item2.Name.ToLower().Equals(item.ToLower())) existe_llave = true;
+                                    }
+                                    if (existe_llave == false)
+                                    {
+                                        //reportar que no existe este id
+                                        todas_existen = false;
                                     }
                                 }
-                                //si existe algun counter verificamos que este en la lista de llaves primarias
-                                if (existe_algun_counter)
+                                if (todas_existen)
                                 {
-                                    //vamos a recorrer todas las llaves compuestas para verificar si son conter todas
-                                    bool todas_counter = true;
-                                    foreach (string item in llaves_compuestas)
+                                    //ahora pasamos a verificar si existe algun counter en las columnas
+                                    foreach (Columna item in columnas)
                                     {
-                                        //recorremos todas las columnas en busca si todas las llaves coinciden con counter
-                                        foreach (Columna item2 in columnas)
+                                        if (item.Type.ToLower().Equals("counter"))
                                         {
-                                            //analizamos en nombre de la columna con el nombre de la llave compuesta
-                                            if (item2.Name.Equals(item))
+                                            existe_algun_counter = true;
+                                        }
+                                    }
+                                    //si existe algun counter verificamos que este en la lista de llaves primarias
+                                    if (existe_algun_counter)
+                                    {
+                                        //vamos a recorrer todas las llaves compuestas para verificar si son conter todas
+                                        bool todas_counter = true;
+                                        foreach (string item in llaves_compuestas)
+                                        {
+                                            //recorremos todas las columnas en busca si todas las llaves coinciden con counter
+                                            foreach (Columna item2 in columnas)
                                             {
-                                                //verificamos si es counter, si no, no tenemos match ejemplo counter, string 
-                                                if (!item2.isCounter())
+                                                //analizamos en nombre de la columna con el nombre de la llave compuesta
+                                                if (item2.Name.Equals(item))
                                                 {
-                                                    todas_counter = false;
-                                                    break;
+                                                    //verificamos si es counter, si no, no tenemos match ejemplo counter, string 
+                                                    if (!item2.isCounter())
+                                                    {
+                                                        todas_counter = false;
+                                                        break;
+                                                    }
                                                 }
                                             }
+                                            if (!todas_counter) break;
                                         }
-                                        if (!todas_counter) break;
-                                    }
-                                    if (todas_counter)
+                                        if (todas_counter)
+                                        {
+                                            foreach (string item in llaves_compuestas)
+                                            {
+                                                //recorremos todas las columnas para asignar los tipos primary key
+                                                foreach (Columna item2 in columnas)
+                                                {
+                                                    //analizamos en nombre de la columna con el nombre de la llave compuesta
+                                                    if (item2.Name.Equals(item))
+                                                    {
+                                                        item2.Pk = true;
+                                                    }
+                                                }
+                                            }
+                                            columnas_aux = columnas;
+
+                                        }
+                                        else
+                                        {
+                                            //error ya que no todas cumplen con ser counter al ser compuestas
+                                            return null;
+                                        }
+                                    }//si no existe algun counter entonces solo agregamos las filas
+                                    else
                                     {
                                         foreach (string item in llaves_compuestas)
                                         {
+                                            columnas_aux = new List<Columna>();
                                             //recorremos todas las columnas para asignar los tipos primary key
                                             foreach (Columna item2 in columnas)
                                             {
@@ -148,75 +196,52 @@ namespace Servidor.Models
                                             }
                                         }
                                         columnas_aux = columnas;
-
                                     }
-                                    else
-                                    {
-                                        //error ya que no todas cumplen con ser counter al ser compuestas
-                                        return null;
-                                    }
-                                }//si no existe algun counter entonces solo agregamos las filas
+                                }
                                 else
                                 {
-                                    foreach (string item in llaves_compuestas)
+                                    //reportar que una, o mas llaves no existen 
+                                    return null;
+                                }
+
+                            }//si no es compuesta, tenemos que ver los datos
+                            else
+                            {
+                                foreach (Columna item in columnas)
+                                {
+                                    if (item.isCounter() && !item.isPK())
                                     {
-                                        columnas_aux = new List<Columna>();
-                                        //recorremos todas las columnas para asignar los tipos primary key
-                                        foreach (Columna item2 in columnas)
-                                        {
-                                            //analizamos en nombre de la columna con el nombre de la llave compuesta
-                                            if (item2.Name.Equals(item))
-                                            {
-                                                item2.Pk = true;
-                                            }
-                                        }
+                                        validacion_counter_and_PK = false;
+                                        //ejecutar error de que se encontro un counter y no es pk
+                                        break;
                                     }
+
+                                }
+                                if (validacion_counter_and_PK)
+                                {
                                     columnas_aux = columnas;
                                 }
-                            }
-                            else
-                            {
-                                //reportar que una, o mas llaves no existen 
-                                return null;
-                            }
-
-                        }//si no es compuesta, tenemos que ver los datos
-                        else
-                        {
-                            foreach (Columna item in columnas)
-                            {
-                                if (item.isCounter() && !item.isPK())
+                                else
                                 {
-                                    validacion_counter_and_PK = false;
-                                    //ejecutar error de que se encontro un counter y no es pk
-                                    break;
+                                    //ejecutar resulucion de errores
+                                    return null;
                                 }
 
                             }
-                            if (validacion_counter_and_PK)
+                            Tabla tabla_aux = new Tabla();
+                            tabla_aux.Name = id;
+                            tabla_aux.Columnas = columnas_aux;
+                            tabla_aux.Exportada = false;
+
+                            if (Program.sistema.addTable(tabla_aux))
                             {
-                                columnas_aux = columnas;
+                                //Mandamos mensaje que se creo la tabla con exito
                             }
                             else
                             {
-                                //ejecutar resulucion de errores
+                                //mandamos mensaje que no se pudo por que no hay ninguna base de datos en uso.
                                 return null;
                             }
-
-                        }
-                        Tabla tabla_aux = new Tabla();
-                        tabla_aux.Name = id;
-                        tabla_aux.Columnas = columnas_aux;
-                        tabla_aux.Exportada = false;
-
-                        if (Program.sistema.addTable(tabla_aux))
-                        {
-                            //Mandamos mensaje que se creo la tabla con exito
-                        }
-                        else
-                        {
-                            //mandamos mensaje que no se pudo por que no hay ninguna base de datos en uso.
-                            return null;
                         }
                     }
                 }

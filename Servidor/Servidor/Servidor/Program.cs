@@ -54,6 +54,12 @@ namespace Servidor
                     return true;
                 case "counter":
                     return true;
+                case "map":
+                    return true;
+                case "set":
+                    return true;
+                case "list":
+                    return true;
             }
             return false;
 
