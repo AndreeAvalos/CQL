@@ -46,6 +46,8 @@ namespace Servidor.Analizador.CQL
                 RDATABASE = ToTerm("DATABASE"),
                 RUSE = ToTerm("USE"),
                 RDROP = ToTerm("DROP"),
+                RALTER = ToTerm("ALTER"),
+                RADD = ToTerm("ADD"),
                 RIF_NOT_EXISTS = ToTerm("[IF NOT EXISTS]"),
                 RTABLE = ToTerm("TABLE"),
                 RPRIMARY_KEY = ToTerm("PRIMARY KEY"),
@@ -75,6 +77,13 @@ namespace Servidor.Analizador.CQL
                 PUSE = new NonTerminal("PUSE"),
                 DROP_DB = new NonTerminal("DROP_DB"),
                 CREATE_TABLE = new NonTerminal("CREATE_TABLE"),
+                ALTER_TABLE = new NonTerminal("ALTER_TABLE"),
+                ADD_TABLE = new NonTerminal("ADD_TABLE"),
+                ADD_COLUMNS = new NonTerminal("ADD_COLUMNS"),
+                ADD_COLUMN = new NonTerminal("DROP_COLUMNS"),
+                DROP_TABLE = new NonTerminal("DROP_TABLE"),
+                DROP_COLUMNS = new NonTerminal("ADD_COLUMNS"),
+                DROP_COLUMN = new NonTerminal("DROP_COLUMN"),
                 COLUMNS = new NonTerminal("COLUMNS"),
                 COLUMN = new NonTerminal("COLUMN"),
                 TIPO_DATO = new NonTerminal("TIPO_DATO"),
@@ -97,7 +106,8 @@ namespace Servidor.Analizador.CQL
             DDL.Rule = CREATE_DB
                 | PUSE
                 | DROP_DB
-                | CREATE_TABLE;
+                | CREATE_TABLE
+                | ALTER_TABLE;
 
             #region DDL
             // CREATE DATABASE
@@ -122,6 +132,19 @@ namespace Servidor.Analizador.CQL
             //SI LA LLAVE ES COMPUESTA
             IFC_PK.Rule = COMA + RPRIMARY_KEY + PARIZQ + VALORES + PARDER
                 | Empty;
+            //ALTER TABLE ADD O DROP
+            ALTER_TABLE.Rule = RALTER + RTABLE + IDENTIFICADOR + RADD + ADD_COLUMNS + PTCOMA
+                | RALTER + RTABLE + IDENTIFICADOR + RDROP + DROP_COLUMNS + PTCOMA;
+            // COLUMNA, COLUMNA, COLUMNA
+            ADD_COLUMNS.Rule = ADD_COLUMNS + COMA + ADD_COLUMN
+                | ADD_COLUMN;
+            //ID TIPO
+            ADD_COLUMN.Rule = IDENTIFICADOR + TIPO_DATO;
+            //COLUMNA, COLUMNA
+            DROP_COLUMNS.Rule = DROP_COLUMNS + COMA + DROP_COLUMN
+                | DROP_COLUMN;
+            //ID
+            DROP_COLUMN.Rule = IDENTIFICADOR;
 
 
             #endregion

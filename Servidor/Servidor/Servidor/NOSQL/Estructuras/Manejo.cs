@@ -33,7 +33,6 @@ namespace Servidor.NOSQL.Estructuras
 
             return false;
         }
-
         public string Crear_Estructura(string usuario)
         {
             string salida = "";
@@ -85,7 +84,7 @@ namespace Servidor.NOSQL.Estructuras
         {
             foreach (Database item in databases)
             {
-                if (item.Name.Equals(name)) return item;
+                if (item.Name.ToLower().Equals(name.ToLower())) return item;
             }
             return null;
         }
@@ -93,7 +92,7 @@ namespace Servidor.NOSQL.Estructuras
         {
             foreach (Database item in databases)
             {
-                if (item.Name.Equals(name)) return true;
+                if (item.Name.ToLower().Equals(name.ToLower())) return true;
             }
             return false;
         }
@@ -105,11 +104,61 @@ namespace Servidor.NOSQL.Estructuras
             {
                 if (item.En_uso)
                 {
-                    if (item.existTable(name)) return true;
+                    return item.existTable(name);
                 }
             }
             return false;
         }
+
+        public bool addColumn(string table_name, Columna column) {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.addColumn(table_name.ToLower(), column);
+                }
+            }
+            return false;
+
+        }
+
+        public bool existColumn(string table_name, string column_name) {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.existeColumn(table_name.ToLower(), column_name);
+                }
+            }
+            return false;
+        }
+
+        public bool dropColumn(string table_name, string column_name)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.dropColumn(table_name.ToLower(), column_name);
+                }
+            }
+            return false;
+        }
+
+        public bool existeObjeto(string name)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.existeObjeto(name);
+                }
+            }
+            return false;
+
+        }
+
 
         public bool addTable(Tabla new_tabla)
         {
@@ -129,7 +178,7 @@ namespace Servidor.NOSQL.Estructuras
         {
             foreach (Usuario item in usuarios)
             {
-                if (item.Name.Equals(name))
+                if (item.Name.ToLower().Equals(name.ToLower()))
                 {
                     item.Permisos.Add(new Permiso(database));
                     return;
@@ -146,10 +195,9 @@ namespace Servidor.NOSQL.Estructuras
         //Metodo para manejar que database se usa, la primer base de datos 
         public void asignUse(string name)
         {
-            bool encontro = false;
             foreach (Database item in databases)
             {
-                if (item.Name.Equals(name)) item.En_uso = true;
+                if (item.Name.ToLower().Equals(name.ToLower())) item.En_uso = true;
                 else item.En_uso = false;
             }
         }
@@ -158,7 +206,7 @@ namespace Servidor.NOSQL.Estructuras
             int index = -1;
             for (int i = 0; i < databases.Count; i++)
             {
-                if (databases.ElementAt(i).Name.Equals(name))
+                if (databases.ElementAt(i).Name.ToLower().Equals(name.ToLower()))
                 {
                     index = i;
                     break;

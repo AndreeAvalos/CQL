@@ -26,13 +26,28 @@ namespace Servidor.NOSQL.Modelos
             this.filas = new List<Fila>();
         }
 
-        public bool Exist_Column(string val) {
+        public bool existeColumn(string val)
+        {
             foreach (Columna item in columnas)
             {
-                if (item.Equals(val)) return true;
+                if (item.Name.ToLower().Equals(val)) return true;
             }
             return false;
+        }
 
+        public bool dropColumn(string name)
+        {
+            int index = -1;
+            for (int i = 0; i < columnas.Count; i++)
+            {
+                if (columnas.ElementAt(i).Name.ToLower().Equals(name.ToLower()))
+                {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) return true;
+            else return false;
         }
 
         public string ArmarRespuesta()
@@ -44,11 +59,11 @@ namespace Servidor.NOSQL.Modelos
                 salida += item.ArmarRespuesta().ToString();
             }
             salida += "\n </tr>\n";
-            
+
             foreach (Fila item in Filas)
             {
                 salida += " <tr>\n      ";
-                salida += item.ArmarRespuesta(columnas)+"\n";
+                salida += item.ArmarRespuesta(columnas) + "\n";
                 salida += " </tr>\n";
             }
 
@@ -69,7 +84,8 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
-        public string CrearEstructura() {
+        public string CrearEstructura()
+        {
             string salida = "";
             salida += "\t\t\t[+TABLE]\n";
             salida += "\t\t\t\t[+NAME]\n";

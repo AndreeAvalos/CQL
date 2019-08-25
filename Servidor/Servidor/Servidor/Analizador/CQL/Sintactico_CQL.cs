@@ -30,7 +30,7 @@ namespace Servidor.Analizador.CQL
 
             LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
             TablaDeSimbolos global = new TablaDeSimbolos();
-
+            
             foreach (Instruccion ins in AST)
             {
                 ins.Ejecutar(global);
@@ -90,11 +90,14 @@ namespace Servidor.Analizador.CQL
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) existe = true;
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3)).ToString();
                     List<Columna> columnas = COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5));
+                    List<object> llaves_compuestas = new List<object>();
                     if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(6).ChildNodes.Count != 0) {
-                        columnas = PK_C(columnas, nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(6));
+                        llaves_compuestas = PK_C(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(6));
                         pk_c = true;
                     } 
-                    return new Create_Table(name, columnas, existe, pk_c);
+                    return new Create_Table(name, columnas, existe, pk_c, llaves_compuestas);
+               
+
 
             }
             return null;
@@ -123,21 +126,11 @@ namespace Servidor.Analizador.CQL
             return columna;
         }
 
-        private List<Columna> PK_C(List<Columna> columnas, ParseTreeNode nodo) {
+        private List<object> PK_C(ParseTreeNode nodo) {
             pk_c = true;
             List<object> nombres = VALORES(nodo.ChildNodes.ElementAt(3));
-            List<Columna> columnas_aux = columnas;
-            foreach (string item in nombres)
-            {
-                foreach (Columna item2 in columnas_aux)
-                {
-                    if (item2.Name.Equals(item)) {
-                        item2.Modify = true;
-                    }
-                }
-                //reportar error ya que no existe 
-            }
-            return columnas_aux;
+
+            return nombres;
 
         }
 

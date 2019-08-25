@@ -9,6 +9,7 @@ namespace Servidor.Models
     {
         Object Ejecutar(TablaDeSimbolos ts);
         Object Recolectar(TablaDeSimbolos ts);
+
     }
 }
 

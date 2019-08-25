@@ -27,12 +27,42 @@ namespace Servidor.NOSQL.Modelos
         public bool existTable(string name) {
             foreach (Tabla item in Tablas)
             {
-                if (item.Name.Equals(name)) return true;
+                if (item.Name.ToLower().Equals(name.ToLower())) return true;
             }
             return false;
         }
 
+        public bool existeObjeto(string name)
+        {
+            foreach (Objeto item in objetos) {
+                if (item.Name.ToLower().Equals(name.ToLower())) return true;
+            }
+            return false;
+        }
+        public bool addColumn(string table_name, Columna column) {
+            foreach (Tabla item in tablas)
+            {
+                if (item.Name.ToLower().Equals(table_name)) { item.Columnas.Add(column); return true; }
+            }
+            return false;
+        }
 
+        public bool existeColumn(string table_name, string column_name) {
+
+            foreach (Tabla item in tablas)
+            {
+                if (item.Name.ToLower().Equals(table_name)) { return item.existeColumn(column_name); }
+            }
+            return false;
+
+        }
+        public bool dropColumn(string table_name, string column_name) {
+            foreach (Tabla item in tablas)
+            {
+                if (item.Name.ToLower().Equals(table_name)) { return item.dropColumn(column_name); }
+            }
+            return false;
+        }
         public string ArmarHMTL() {
 
             string salida = "";
