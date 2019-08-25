@@ -35,6 +35,15 @@ namespace Servidor.NOSQL.Modelos
             return false;
         }
 
+        internal bool isPk(string column_name)
+        {
+            foreach (Columna item in columnas)
+            {
+                if (item.Name.ToLower().Equals(column_name)) return item.isPK();
+            }
+            return false;
+        }
+
         public bool dropColumn(string name)
         {
             int index = -1;
@@ -46,7 +55,7 @@ namespace Servidor.NOSQL.Modelos
                     break;
                 }
             }
-            if (index != -1) return true;
+            if (index != -1) { columnas.RemoveAt(index); return true; }
             else return false;
         }
 
@@ -71,6 +80,7 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
+
         public string ArmarHTML()
         {
             string salida = "<table> \n";
@@ -83,6 +93,7 @@ namespace Servidor.NOSQL.Modelos
             salida += "</table> \n";
             return salida;
         }
+
 
         public string CrearEstructura()
         {

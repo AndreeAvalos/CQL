@@ -11,7 +11,7 @@ namespace Servidor.Models
         string id_tabla;
         bool add_column = true;
         List<Columna> columnas_agregar;
-        List<string> columnas_eliminar;
+        List<object> columnas_eliminar;
 
         public ALTER_TABLE(string id_tabla, bool add_column, List<Columna> columnas_agregar)
         {
@@ -20,7 +20,7 @@ namespace Servidor.Models
             this.columnas_agregar = columnas_agregar;
         }
 
-        public ALTER_TABLE(string id_tabla, bool add_column, List<string> columnas_eliminar)
+        public ALTER_TABLE(string id_tabla, bool add_column, List<object> columnas_eliminar)
         {
             this.id_tabla = id_tabla;
             this.add_column = add_column;
@@ -94,15 +94,24 @@ namespace Servidor.Models
                             //informar que no existe columna
                             is_ok = false;
                         }
+                        else {
+                            if (Program.sistema.isPk(id_tabla.ToLower(), item.ToLower())) is_ok = false;
+                            else {
+                                //informar que la llave es primaria, por lo tanto no se puede eliminar
+                            }
+                        }
                     }
 
                     if (is_ok)
                     {
+                        bool eliminado = false;
                         foreach (string item in columnas_eliminar)
                         {
-                            if (Program.sistema.existColumn(id_tabla.ToLower(), item.ToLower())) Program.sistema.dropColumn(id_tabla.ToLower(), item.ToLower());
+                           eliminado = Program.sistema.dropColumn(id_tabla.ToLower(), item.ToLower());
+                            if (!eliminado) {
+                                //por alguna razon interna
+                            }
                         }
-
                     }
 
                     return null;

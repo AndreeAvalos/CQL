@@ -80,9 +80,9 @@ namespace Servidor.Analizador.CQL
                 ALTER_TABLE = new NonTerminal("ALTER_TABLE"),
                 ADD_TABLE = new NonTerminal("ADD_TABLE"),
                 ADD_COLUMNS = new NonTerminal("ADD_COLUMNS"),
-                ADD_COLUMN = new NonTerminal("DROP_COLUMNS"),
+                ADD_COLUMN = new NonTerminal("ADD_COLUMN"),
                 DROP_TABLE = new NonTerminal("DROP_TABLE"),
-                DROP_COLUMNS = new NonTerminal("ADD_COLUMNS"),
+                DROP_COLUMNS = new NonTerminal("DROP_COLUMNS"),
                 DROP_COLUMN = new NonTerminal("DROP_COLUMN"),
                 COLUMNS = new NonTerminal("COLUMNS"),
                 COLUMN = new NonTerminal("COLUMN"),
@@ -180,7 +180,7 @@ namespace Servidor.Analizador.CQL
 
             #region Preferencias
             this.Root = S;
-            string[] palabras = { RPRIMARY_KEY.Text };
+            string[] palabras = { RPRIMARY_KEY.Text,RDROP.Text, RADD.Text };
             MarkReservedWords(palabras);
             #endregion
 

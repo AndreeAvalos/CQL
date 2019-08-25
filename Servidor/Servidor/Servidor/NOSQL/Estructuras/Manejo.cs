@@ -134,6 +134,18 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
+        public bool isPk(string table_name, string column_name) {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.isPK(table_name.ToLower(), column_name);
+                }
+            }
+            return false;
+        }
+
+
         public bool dropColumn(string table_name, string column_name)
         {
             foreach (Database item in databases)

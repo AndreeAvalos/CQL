@@ -63,6 +63,15 @@ namespace Servidor.NOSQL.Modelos
             }
             return false;
         }
+        internal bool isPK(string table_name, string column_name)
+        {
+            foreach (Tabla item in tablas)
+            {
+                if (item.Name.ToLower().Equals(table_name)) { return item.isPk(column_name); }
+            }
+            return false;
+        }
+
         public string ArmarHMTL() {
 
             string salida = "";
@@ -120,6 +129,8 @@ namespace Servidor.NOSQL.Modelos
         public List<Tabla> Tablas { get => tablas; set => tablas = value; }
         public List<Objeto> Objetos { get => objetos; set => objetos = value; }
         public List<Procedure> Procedures { get => procedures; set => procedures = value; }
+
+
 
         public bool Exportada { get => exportada; set => exportada = value; }
         public string Link { get => link; set => link = value; }
