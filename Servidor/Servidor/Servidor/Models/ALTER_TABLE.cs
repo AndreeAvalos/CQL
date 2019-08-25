@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 
 namespace Servidor.Models
 {
-    public class ALTER_TABLE : Instruccion
+    public class Alter_Table : Instruccion
     {
         string id_tabla;
         bool add_column = true;
         List<Columna> columnas_agregar;
         List<object> columnas_eliminar;
+        public List<string> salida = new List<string>();
 
-        public ALTER_TABLE(string id_tabla, bool add_column, List<Columna> columnas_agregar)
+        public List<string> getSalida() {
+
+            return salida;
+        }
+
+        public Alter_Table(string id_tabla, bool add_column, List<Columna> columnas_agregar)
         {
             this.id_tabla = id_tabla;
             this.add_column = add_column;
             this.columnas_agregar = columnas_agregar;
         }
 
-        public ALTER_TABLE(string id_tabla, bool add_column, List<object> columnas_eliminar)
+        public Alter_Table(string id_tabla, bool add_column, List<object> columnas_eliminar)
         {
             this.id_tabla = id_tabla;
             this.add_column = add_column;

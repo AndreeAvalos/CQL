@@ -8,7 +8,7 @@ namespace Servidor.Models
     public class DDL_USE :Instruccion
     {
         private string id;
-
+        public List<string> salida = new List<string>();
         public DDL_USE(string id)
         {
             this.id = id;
@@ -26,5 +26,11 @@ namespace Servidor.Models
             }
             return null;
         }
+        public List<string> getSalida()
+        {
+
+            return salida;
+        }
+
     }
 }

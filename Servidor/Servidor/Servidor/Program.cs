@@ -15,6 +15,7 @@ namespace Servidor
     public class Program
     {
         public static Manejo sistema, backup_sistema;
+        public static List<string> log_errores = new List<string>();
         public static void Main(string[] args)
         {
             crearDB();
@@ -62,8 +63,52 @@ namespace Servidor
                     return true;
             }
             return false;
-
         }
+
+        //metodo que crea un mensaje de tipo LUP
+        public static string buildMessage(string message)
+        {
+            string salida = "[+MESSAGE]\n";
+            salida +="\""+ message +"\"";
+            salida += "\n[-MESSAGE]";
+            return salida;
+        }
+        //metodo que crea un mensaje de tipo LUP
+        public static string buildData(string data)
+        {
+            string salida = "[+DATA]\n";
+            salida += "\"" + data + "\"";
+            salida += "\n[-DATA]";
+            return salida;
+        }
+        //metodo que crea un mensaje de tipo LUP
+        public static string buildError(int linea, int columna, string type, string descripcion)
+        {
+            string salida = "[+ERROR]\n";
+            salida += "[+LINE]\n";
+            salida += linea;
+            salida += "\n[-LINE]\n";
+            salida += "[+COLUMN]\n";
+            salida += columna;
+            salida += "\n[-COLUMN]\n";
+            salida += "[+TYPE]\n";
+            salida += type;
+            salida += "\n[-TYPE]\n";
+            salida += "[+DESC]\n";
+            salida +="\""+ descripcion + "\"";
+            salida += "\n[-DESC]\n";
+            salida += "[-ERROR]";
+
+            log_errores.Add(salida);
+            return salida;
+        }
+        //metodo que crea un mensaje de tipo LUP
+        public static string buildDataBase()
+        {
+            string salida = "";
+            return salida;
+        }
+
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)

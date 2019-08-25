@@ -11,7 +11,7 @@ namespace Servidor.Analizador.CQL
     public class Sintactico_CQL
     {
         string user;
-
+        public List<string> salida = new List<string>();
         public bool Validar(String entrada, Grammar gramatica)
         {
             LanguageData lenguaje = new LanguageData(gramatica);
@@ -34,6 +34,10 @@ namespace Servidor.Analizador.CQL
             foreach (Instruccion ins in AST)
             {
                 ins.Ejecutar(global);
+                foreach (string item in ins.getSalida())
+                {
+                    salida.Add(item);
+                }
             }
             return arbol.Root.ChildNodes.ElementAt(0);
         }
@@ -104,12 +108,11 @@ namespace Servidor.Analizador.CQL
                         case "DROP":
                             List<object> columnas_eliminar = DROP_COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
                             name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                            return new ALTER_TABLE(name, false, columnas_eliminar);
+                            return new Alter_Table(name, false, columnas_eliminar);
                         case "ADD":
                             List<Columna> columnas_agregar = ADD_COLUMNS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
                             name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                            return new ALTER_TABLE(name, true, columnas_agregar);
-                            break;
+                            return new Alter_Table(name, true, columnas_agregar);
 
                     }
                     return null;
@@ -120,7 +123,7 @@ namespace Servidor.Analizador.CQL
                     return new Drop_Table(name, ife);
                 case "TRUNCATE_TABLE":
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ToString().Replace(" (Identificador)", "");
-                    return new Truncate_Table(name);
+                    return new Truncate_Table(name, nodo.ChildNodes.ElementAt(0).ChildNodes);
 
 
             }
@@ -137,18 +140,22 @@ namespace Servidor.Analizador.CQL
             }
             else
             {
-                List<Columna> columnas_agregar = new List<Columna>();
-                columnas_agregar.Add(ADD_COLUMN(nodo.ChildNodes.ElementAt(0)));
+                List<Columna> columnas_agregar = new List<Columna>
+                {
+                    ADD_COLUMN(nodo.ChildNodes.ElementAt(0))
+                };
                 return columnas_agregar;
             }
         }
 
         private Columna ADD_COLUMN(ParseTreeNode nodo)
         {
-            Columna columna = new Columna();
-            columna.Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", "");
-            columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
-            columna.Pk = false;
+            Columna columna = new Columna
+            {
+                Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", ""),
+                Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1)),
+                Pk = false
+            };
 
             return columna;
         }
@@ -162,8 +169,10 @@ namespace Servidor.Analizador.CQL
                 return columnas_eliminar;
             }
             else {
-                List<Object> columnas_eliminar = new List<object>();
-                columnas_eliminar.Add(DROP_COLUMN(nodo.ChildNodes.ElementAt(0)));
+                List<Object> columnas_eliminar = new List<object>
+                {
+                    DROP_COLUMN(nodo.ChildNodes.ElementAt(0))
+                };
                 return columnas_eliminar;
             }
 
@@ -184,15 +193,20 @@ namespace Servidor.Analizador.CQL
             }
             else
             {
-                List<Columna> columnas = new List<Columna>();
-                columnas.Add(COLUMN(nodo.ChildNodes.ElementAt(0)));
+                List<Columna> columnas = new List<Columna>
+                {
+                    COLUMN(nodo.ChildNodes.ElementAt(0))
+                };
                 return columnas;
             }
         }
         private Columna COLUMN(ParseTreeNode nodo)
         {
-            Columna columna = new Columna();
-            columna.Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", ""); ;
+            Columna columna = new Columna
+            {
+                Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", "")
+            };
+            ;
             columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
             if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count != 0) columna.Pk = true;
             return columna;
@@ -223,15 +237,17 @@ namespace Servidor.Analizador.CQL
             }
             else
             {
-                List<Object> valores = new List<Object>();
-                valores.Add(VALOR(nodo.ChildNodes.ElementAt(0)));
+                List<Object> valores = new List<Object>
+                {
+                    VALOR(nodo.ChildNodes.ElementAt(0))
+                };
                 return valores;
             }
         }
 
         private object VALOR(ParseTreeNode node)
         {
-            String evaluar = node.ChildNodes[0].Term.Name;
+            string evaluar = node.ChildNodes[0].Term.Name;
 
             switch (evaluar)
             {

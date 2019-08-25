@@ -8,7 +8,7 @@ namespace Servidor.Models
     public class Drop_DataBase : Instruccion
     {
         private string id;
-
+        public List<string> salida = new List<string>();
         public Drop_DataBase(string id)
         {
             this.id = id;
@@ -23,5 +23,11 @@ namespace Servidor.Models
             }
             return null;
         }
+        public List<string> getSalida()
+        {
+
+            return salida;
+        }
+
     }
 }

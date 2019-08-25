@@ -13,7 +13,7 @@ namespace Servidor.Models
         bool existe;
         bool compuesta;
         List<object> llaves_compuestas;
-
+        public List<string> salida = new List<string>();
         public Create_Table(string id, List<Columna> columnas, bool existe, bool compuesta, List<object> llaves)
         {
             this.id = id;
@@ -22,6 +22,12 @@ namespace Servidor.Models
             this.compuesta = compuesta;
             this.llaves_compuestas = llaves;
         }
+        public List<string> getSalida()
+        {
+
+            return salida;
+        }
+
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)

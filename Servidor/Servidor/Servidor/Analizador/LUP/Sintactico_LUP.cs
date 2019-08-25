@@ -95,7 +95,7 @@ namespace Servidor.Analizador.LUP
             Sintactico_CQL sintactico = new Sintactico_CQL();
             sintactico.Analizar(data, new Gramatica_CQL(),user);
             //Ejecutar las sentencias query que traiga el string 
-            salida.Add(data);
+            salida = sintactico.salida;
         }
 
         private void STRUC(ParseTreeNode nodo)

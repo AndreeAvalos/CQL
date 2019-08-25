@@ -10,13 +10,19 @@ namespace Servidor.Models
         private bool existe;
         private string id;
         private string user;
-
+        public List<string> salida = new List<string>();
         public Create_DataBase(bool existe, string id,string user)
         {
             this.existe = existe;
             this.id = id;
             this.user = user;
         }
+        public List<string> getSalida()
+        {
+
+            return salida;
+        }
+
         public object Recolectar(TablaDeSimbolos ts) {
             return null;
         }

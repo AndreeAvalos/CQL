@@ -9,12 +9,19 @@ namespace Servidor.Models
     {
         string id_tabla;
         bool existe;
-
+        public List<string> salida = new List<string>();
         public Drop_Table(string id_tabla, bool existe)
         {
             this.id_tabla = id_tabla;
             this.existe = existe;
         }
+
+        public List<string> getSalida()
+        {
+
+            return salida;
+        }
+
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
