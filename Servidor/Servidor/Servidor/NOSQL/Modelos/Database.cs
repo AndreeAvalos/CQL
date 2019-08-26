@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -91,6 +92,57 @@ namespace Servidor.NOSQL.Modelos
                 return true;
             }
             return false;
+        }
+
+        public string execCommit(int num_tabs)
+        {
+            num_tabs++;
+            string tabs = Program.getTabulaciones(num_tabs);
+            num_tabs++;
+            string salida = tabs + "\"NAME\"= \"" + name + "\",\n";
+            salida += tabs + "\"DATA\"= [\n";
+            if (exportada)
+            {
+                salida += Program.getTabulaciones(num_tabs) + "${ " + link + " }$\n";
+                writeImportFile();
+            }
+            else
+            {
+                for (int i = 0; i < tablas.Count; i++)
+                {
+                    if (i == tablas.Count - 1)
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs+1)+"\"CQL-TYPE\" = \"TABLE\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\"\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                        salida += Program.getTabulaciones(num_tabs) + ">\n";
+                    }
+                    else
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"TABLE\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\"\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                        salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    }
+                }
+            }
+            salida += tabs + "]\n";
+            return salida;
+        }
+        private void writeImportFile()
+        {
+            string path = "P"+link;
+            string text = "<\n";
+            text += ">";
+            File.WriteAllText(path, text);
         }
 
         public string ArmarHMTL()

@@ -17,6 +17,32 @@ namespace Servidor.NOSQL.Estructuras
             this.Databases = new List<Database>();
         }
 
+        public string execComit(int num_tabs)
+        {
+            string tabulaciones = Program.getTabulaciones(num_tabs);
+            string salida = tabulaciones + "\"DATABASES\"= [\n";
+            num_tabs++;
+            for (int i = 0; i < databases.Count; i++)
+            {
+                if (i == databases.Count - 1)
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += databases.ElementAt(i).execCommit(num_tabs);
+                    salida += Program.getTabulaciones(num_tabs) + ">\n";
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += databases.ElementAt(i).execCommit(num_tabs);
+                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                }
+            }
+            salida += tabulaciones + "],\n";
+            salida += tabulaciones + "\"USERS\"= [\n";
+            salida += tabulaciones + "]";
+            return salida;
+        }
+
         public List<Usuario> Usuarios { get => usuarios; set => usuarios = value; }
         public List<Database> Databases { get => databases; set => databases = value; }
 
@@ -108,7 +134,8 @@ namespace Servidor.NOSQL.Estructuras
             }
             return false;
         }
-        public bool truncateTable(string name) {
+        public bool truncateTable(string name)
+        {
             foreach (Database item in databases)
             {
                 if (item.En_uso)
@@ -133,7 +160,8 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
-        public bool addColumn(string table_name, Columna column) {
+        public bool addColumn(string table_name, Columna column)
+        {
 
             foreach (Database item in databases)
             {
@@ -146,7 +174,8 @@ namespace Servidor.NOSQL.Estructuras
 
         }
 
-        public bool existColumn(string table_name, string column_name) {
+        public bool existColumn(string table_name, string column_name)
+        {
             foreach (Database item in databases)
             {
                 if (item.En_uso)
@@ -157,7 +186,8 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
-        public bool isPk(string table_name, string column_name) {
+        public bool isPk(string table_name, string column_name)
+        {
             foreach (Database item in databases)
             {
                 if (item.En_uso)

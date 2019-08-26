@@ -25,7 +25,7 @@ namespace Servidor
 
         private static void crearDB()
         {
-            String text = System.IO.File.ReadAllText("Principal.chison");
+            String text = File.ReadAllText("Principal.chison");
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
 
             if (sintactico.Validar(text, new Gramatica_CHISON()))
@@ -34,7 +34,7 @@ namespace Servidor
                 sistema = sintactico.db_nosql;
                 backup_sistema = sistema;
             }
-
+            execCommit();
         }
         public static bool comprobarPrimitivo(string name)
         {
@@ -69,7 +69,7 @@ namespace Servidor
         public static string buildMessage(string message)
         {
             string salida = "[+MESSAGE]\n";
-            salida +="\""+ message +"\"";
+            salida += "\"" + message + "\"";
             salida += "\n[-MESSAGE]";
             return salida;
         }
@@ -95,7 +95,7 @@ namespace Servidor
             salida += type;
             salida += "\n[-TYPE]\n";
             salida += "[+DESC]\n";
-            salida +="\""+ descripcion + "\"";
+            salida += "\"" + descripcion + "\"";
             salida += "\n[-DESC]\n";
             salida += "[-ERROR]";
 
@@ -109,7 +109,30 @@ namespace Servidor
             return salida;
         }
 
+        public static void execRollbak()
+        {
+            sistema = backup_sistema;
+        }
 
+        public static bool execCommit() {
+            string path = "prueba.chison";
+            string text = "$<\n";
+            text += sistema.execComit(1) +"\n";
+            text += ">$";
+            File.WriteAllText(path, text);
+            return true;
+        }
+
+        public static string getTabulaciones(int num_tabs) {
+
+            string tabulaciones = "";
+            for (int i = 0; i < num_tabs; i++)
+            {
+                tabulaciones += "\t";
+
+            }
+            return tabulaciones;
+        }
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
