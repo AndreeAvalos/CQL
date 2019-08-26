@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -33,6 +34,72 @@ namespace Servidor.NOSQL.Modelos
                 if (item.Name.ToLower().Equals(val)) return true;
             }
             return false;
+        }
+
+        public string execColumn(int num_tabs) {
+            string tabs = Program.getTabulaciones(num_tabs);
+            num_tabs++;
+            string salida = "";
+            string tabs2 = Program.getTabulaciones(num_tabs);
+            for (int i = 0; i < columnas.Count; i++)
+            {
+                if (i == columnas.Count - 1)
+                {
+                    salida += tabs + "<\n";
+                    salida += tabs2 + "\"NAME\"= \"" + columnas.ElementAt(i).Name + "\",\n";
+                    salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
+                    salida += tabs2 + "\"PK\"= " + columnas.ElementAt(i).Pk.ToString().ToUpper() + "\n";
+                    salida += tabs + ">\n";
+                }
+                else {
+                    salida += tabs + "<\n";
+                    salida += tabs2 + "\"NAME\"= \"" + columnas.ElementAt(i).Name + "\",\n";
+                    salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
+                    salida += tabs2 + "\"PK\"= " + columnas.ElementAt(i).Pk.ToString().ToUpper() + "\n";
+                    salida += tabs + ">,\n";
+                }
+            }
+            return salida;
+        }
+
+        public string execCommit(int num_tabs) {
+            string tabs = Program.getTabulaciones(num_tabs);
+            
+            if (exportada)
+            {
+                string salida = "";
+                for (int i = 0; i < filas.Count; i++)
+                {
+                    if (filas.Count - 1 == i)
+                    {
+                       salida+= filas.ElementAt(i).writeImportFile()+"\n";
+                    }
+                    else {
+                      salida+=  filas.ElementAt(i).writeImportFile()+",\n";
+                    }
+                }
+                File.WriteAllText( link, salida);
+                return tabs+ "${ " + link + " }$\n";
+            }
+            else {
+                string salida = "";
+                for (int i = 0; i < filas.Count; i++)
+                {
+
+                    if (filas.Count - 1 == i)
+                    {
+                        salida += filas.ElementAt(i).writeImportFile() + "\n";
+                    }
+                    else
+                    {
+                        salida += filas.ElementAt(i).writeImportFile() + ",\n";
+                    }
+                }
+
+
+                return salida ;
+            }
+
         }
 
         internal bool isPk(string column_name)

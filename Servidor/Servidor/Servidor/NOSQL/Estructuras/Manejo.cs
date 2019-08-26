@@ -39,6 +39,21 @@ namespace Servidor.NOSQL.Estructuras
             }
             salida += tabulaciones + "],\n";
             salida += tabulaciones + "\"USERS\"= [\n";
+            for (int i = 0; i < usuarios.Count; i++)
+            {
+                if (i == usuarios.Count - 1)
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += usuarios.ElementAt(i).execCommit(num_tabs);
+                    salida += Program.getTabulaciones(num_tabs) + ">\n";
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += usuarios.ElementAt(i).execCommit(num_tabs);
+                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                }
+            }
             salida += tabulaciones + "]";
             return salida;
         }

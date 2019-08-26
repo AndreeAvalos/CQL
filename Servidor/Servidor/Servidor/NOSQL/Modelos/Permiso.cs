@@ -13,6 +13,10 @@ namespace Servidor.NOSQL.Modelos
         {
             this.name = name;
         }
+        public string execCommit(int num_tabs) {
+            string tabs = Program.getTabulaciones(num_tabs);
+            return tabs + "\"NAME\" = " + "\"" + name + "\"\n";
+        }
 
         public string Name { get => name; set => name = value; }
     }

@@ -1,50 +1,50 @@
 <
-	"ID" = 1,
-	"Nombre" = "Brevvuiks",
-	"Tallas" = []
+	"ID"= 1,
+	"Nombre"= "Brevvuiks",
+	"Tallas"= []
 >,
 <
-	"ID" = 2,
-	"Nombre" = "Xistrod",
-	"Tallas" = [32,30,33]
+	"ID"= 2,
+	"Nombre"= "Xistrod",
+	"Tallas"= [32,30,33]
 >,
 <
-	"ID" = 3,
-	"Nombre" = "Qonqix",
-	"Tallas" = [32,36]
+	"ID"= 3,
+	"Nombre"= "Qonqix",
+	"Tallas"= [32,36]
 >,
 <
-	"ID" = 4,
-	"Nombre" = "Nids",
-	"Tallas" = [32,28,33]
+	"ID"= 4,
+	"Nombre"= "Nids",
+	"Tallas"= [32,28,33]
 >,
 <
-	"ID" = 5,
-	"Nombre" = "Noltain",
-	"Tallas" = [33]
+	"ID"= 5,
+	"Nombre"= "Noltain",
+	"Tallas"= [33]
 >,
 <
-	"ID" = 6,
-	"Nombre" = "Bheelzae",
-	"Tallas" = [31,28,34]
+	"ID"= 6,
+	"Nombre"= "Bheelzae",
+	"Tallas"= [31,28,34]
 >,
 <
-	"ID" = 7,
-	"Nombre" = "Sih'un",
-	"Tallas" = [32,28,29]
+	"ID"= 7,
+	"Nombre"= "Sih'un",
+	"Tallas"= [32,28,29]
 >,
 <
-	"ID" = 8,
-	"Nombre" = "Grudoll",
-	"Tallas" = [28,27]
+	"ID"= 8,
+	"Nombre"= "Grudoll",
+	"Tallas"= [28,27]
 >,
 <
-	"ID" = 9,
-	"Nombre" = "Lahlo",
-	"Tallas" = [27,36,30,31]
+	"ID"= 9,
+	"Nombre"= "Lahlo",
+	"Tallas"= [27,36,30,31]
 >,
 <
-	"ID" = 10,
-	"Nombre" = "Vehlens",
-	"Tallas" = [31,33,29,35]
+	"ID"= 10,
+	"Nombre"= "Vehlens",
+	"Tallas"= [31,33,29,35]
 >

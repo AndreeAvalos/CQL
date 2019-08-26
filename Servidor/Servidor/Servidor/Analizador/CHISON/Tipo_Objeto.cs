@@ -15,6 +15,8 @@ namespace Servidor.Analizador.CHISON
         string link = "";
         bool export = false;
 
+        int type;
+
         public Tipo_Objeto(string name, object valor)
         {
             this.name = name;
@@ -26,5 +28,6 @@ namespace Servidor.Analizador.CHISON
         public string Link { get => link; set => link = value; }
         public bool Export { get => export; set => export = value; }
         public string Padre { get => padre; set => padre = value; }
+        public int Type { get => type; set => type = value; }
     }
 }

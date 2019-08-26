@@ -51,7 +51,8 @@ namespace Servidor.Analizador.CHISON
                 RFALSE = ToTerm("FALSE"),
                 RTRUE = ToTerm("TRUE"),
                 RIN = ToTerm("IN"),
-                ROUT = ToTerm("OUT");
+                ROUT = ToTerm("OUT"),
+                RNULL = ToTerm("NULL");
             #endregion
 
             #region No_Terminales
@@ -225,6 +226,7 @@ namespace Servidor.Analizador.CHISON
                 | RTRUE
                 | RFALSE
                 | RTIME
+                | RNULL
                 | RDATE;
 
             #region  LISTAS y MAPAS

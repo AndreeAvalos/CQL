@@ -113,23 +113,83 @@ namespace Servidor.NOSQL.Modelos
                     if (i == tablas.Count - 1)
                     {
                         salida += Program.getTabulaciones(num_tabs) + "<\n";
-                        salida += Program.getTabulaciones(num_tabs+1)+"\"CQL-TYPE\" = \"TABLE\",\n";
-                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\"\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"TABLE\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\",\n";
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                        salida += tablas.ElementAt(i).execColumn(num_tabs + 2);
                         salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                        salida += tablas.ElementAt(i).execCommit(num_tabs + 2);
                         salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
-                        salida += Program.getTabulaciones(num_tabs) + ">\n";
+                        if(objetos.Count!=0||procedures.Count!=0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                        else salida += Program.getTabulaciones(num_tabs) + ">\n";
                     }
                     else
                     {
                         salida += Program.getTabulaciones(num_tabs) + "<\n";
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"TABLE\",\n";
-                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\"\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\",\n";
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                        salida += tablas.ElementAt(i).execColumn(num_tabs + 2);
                         salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                        salida += tablas.ElementAt(i).execCommit(num_tabs + 2);
                         salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                        salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    }
+                }
+                for (int i = 0; i < objetos.Count; i++)
+                {
+                    if (i == objetos.Count - 1)
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"OBJECT\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + objetos.ElementAt(i).Name + "\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"ATTRS\" = [\n";
+                        salida += objetos.ElementAt(i).execCommit(num_tabs + 2);
+                        salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                        if (procedures.Count != 0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                        else salida += Program.getTabulaciones(num_tabs) + ">\n";
+
+                    }
+                    else
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"OBJECT\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + objetos.ElementAt(i).Name + "\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"ATTRS\" = [\n";
+                        salida += objetos.ElementAt(i).execCommit(num_tabs + 2);
+                        salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                        salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    }
+                }
+                for (int i = 0; i < procedures.Count; i++)
+                {
+                    if (i == procedures.Count - 1)
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"PROCEDURE\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + procedures.ElementAt(i).Name + "\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"PARAMETERS\" = [\n";
+                        salida += procedures.ElementAt(i).execCommit(num_tabs + 2);
+                        salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"INSTR\" = ";
+                        salida += procedures.ElementAt(i).Instr;
+                        salida += "\n";
+                        salida += Program.getTabulaciones(num_tabs) + ">\n";
+
+                    }
+                    else
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"PROCEDURE\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + procedures.ElementAt(i).Name + "\",\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"PARAMETERS\" = [\n";
+                        salida += procedures.ElementAt(i).execCommit(num_tabs + 2);
+                        salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                        salida += Program.getTabulaciones(num_tabs + 1) + "\"INSTR\" = ";
+                        salida += procedures.ElementAt(i).Instr;
+                        salida += "\n";
                         salida += Program.getTabulaciones(num_tabs) + ">,\n";
                     }
                 }
@@ -139,10 +199,97 @@ namespace Servidor.NOSQL.Modelos
         }
         private void writeImportFile()
         {
-            string path = "P"+link;
-            string text = "<\n";
-            text += ">";
-            File.WriteAllText(path, text);
+            int num_tabs = 0;
+            string tabs = Program.getTabulaciones(num_tabs);
+            string path = link;
+            string salida = "";
+            for (int i = 0; i < tablas.Count; i++)
+            {
+                if (i == tablas.Count - 1)
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"TABLE\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                    salida += tablas.ElementAt(i).execColumn(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                    salida += tablas.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                    if (objetos.Count != 0 || procedures.Count != 0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    else salida += Program.getTabulaciones(num_tabs) + ">\n";
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"TABLE\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + tablas.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"COLUMNS\" = [\n";
+                    salida += tablas.ElementAt(i).execColumn(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
+                    salida += tablas.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                }
+            }
+            for (int i = 0; i < objetos.Count; i++)
+            {
+                if (i == objetos.Count - 1)
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"OBJECT\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + objetos.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"ATTRS\" = [\n";
+                    salida += objetos.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                    if (procedures.Count != 0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    else salida += Program.getTabulaciones(num_tabs) + ">\n";
+
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"OBJECT\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + objetos.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"ATTRS\" = [\n";
+                    salida += objetos.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
+                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                }
+            }
+            for (int i = 0; i < procedures.Count; i++)
+            {
+                if (i == procedures.Count - 1)
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"PROCEDURE\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + procedures.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"PARAMETERS\" = [\n";
+                    salida += procedures.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"INSTR\" = ";
+                    salida += procedures.ElementAt(i).Instr;
+                    salida += "\n";
+                    salida += Program.getTabulaciones(num_tabs) + ">\n";
+
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(num_tabs) + "<\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"CQL-TYPE\" = \"PROCEDURE\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"NAME\" = \"" + procedures.ElementAt(i).Name + "\",\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"PARAMETERS\" = [\n";
+                    salida += procedures.ElementAt(i).execCommit(num_tabs + 2);
+                    salida += Program.getTabulaciones(num_tabs + 1) + "],\n";
+                    salida += Program.getTabulaciones(num_tabs + 1) + "\"INSTR\" = ";
+                    salida += procedures.ElementAt(i).Instr;
+                    salida += "\n";
+                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                }
+            }
+
+            File.WriteAllText(path, salida);
         }
 
         public string ArmarHMTL()

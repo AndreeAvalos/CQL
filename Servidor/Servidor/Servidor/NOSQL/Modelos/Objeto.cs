@@ -13,6 +13,28 @@ namespace Servidor.NOSQL.Modelos
         public string Name { get => name; set => name = value; }
         public List<Atributo> Atributos { get => atributos; set => atributos = value; }
 
+        public string execCommit(int num_tabs) {
+            string tabs = Program.getTabulaciones(num_tabs);
+            string salida = "";
+            for (int i = 0; i < atributos.Count; i++)
+            {
+                if (i == atributos.Count - 1)
+                {
+                    salida += tabs + "<\n";
+                    salida += atributos.ElementAt(i).execCommit(num_tabs + 1);
+                    salida += tabs + ">\n";
+                }
+                else {
+                    salida += tabs + "<\n";
+                    salida += atributos.ElementAt(i).execCommit(num_tabs + 1);
+                    salida += tabs + ">,\n";
+
+                }
+
+            }
+            return salida;
+        }
+
         public string ArmarRespuesta() {
             string salida = "<table> \n";
             salida += " <tr>\n  ";

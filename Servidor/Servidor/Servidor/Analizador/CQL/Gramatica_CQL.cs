@@ -53,6 +53,8 @@ namespace Servidor.Analizador.CQL
                 RIF_EXISTS = ToTerm("IF EXISTS"),
                 RTABLE = ToTerm("TABLE"),
                 RPRIMARY_KEY = ToTerm("PRIMARY KEY"),
+                RCOMMIT = ToTerm("COMMIT"),
+                RROLLBACK = ToTerm("ROLLBACK"),
                 TSTRING = ToTerm("string"),
                 TINT = ToTerm("int"),
                 TDOUBLE = ToTerm("double"),
@@ -77,7 +79,7 @@ namespace Servidor.Analizador.CQL
                 VALORES = new NonTerminal("VALORES"),
                 IFNE = new NonTerminal("IFNE"),
                 PUSE = new NonTerminal("PUSE"),
-                TRUNCATE_TABLE =new NonTerminal("TRUNCATE_TABLE"),
+                TRUNCATE_TABLE = new NonTerminal("TRUNCATE_TABLE"),
                 DROP_DB = new NonTerminal("DROP_DB"),
                 CREATE_TABLE = new NonTerminal("CREATE_TABLE"),
                 ALTER_TABLE = new NonTerminal("ALTER_TABLE"),
@@ -91,8 +93,8 @@ namespace Servidor.Analizador.CQL
                 COLUMN = new NonTerminal("COLUMN"),
                 TIPO_DATO = new NonTerminal("TIPO_DATO"),
                 IFN_PK = new NonTerminal("IFN_PK"),
-                IFC_PK = new NonTerminal("IFC_PK")
-
+                IFC_PK = new NonTerminal("IFC_PK"),
+                TCL = new NonTerminal("TCL")
                 ;
 
 
@@ -104,7 +106,8 @@ namespace Servidor.Analizador.CQL
             Instrucciones.Rule = Instrucciones + Instruccion
                 | Instruccion;
 
-            Instruccion.Rule = DDL;
+            Instruccion.Rule = DDL
+                | TCL;
 
             DDL.Rule = CREATE_DB
                 | PUSE
@@ -160,6 +163,11 @@ namespace Servidor.Analizador.CQL
 
             #endregion
 
+            #region TCL
+            TCL.Rule = RCOMMIT + PTCOMA
+                | RROLLBACK + PTCOMA;
+            #endregion
+
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | TSET
@@ -172,6 +180,7 @@ namespace Servidor.Analizador.CQL
                 | TMAP
                 | TLIST
                 | IDENTIFICADOR
+                | RNULL
                 ;
 
             // SI VIENE POR EJEMPLO 1,2,3,4 O PERSONA, PERRO, CARRO O TRUE, FALSE, TRUE

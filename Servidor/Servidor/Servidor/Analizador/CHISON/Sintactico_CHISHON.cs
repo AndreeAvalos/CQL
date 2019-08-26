@@ -73,7 +73,7 @@ namespace Servidor.Analizador.CHISON
         {
 
             string produccion = nodo.Term.Name.ToString();
-
+            int tipo_real = 0;
             switch (produccion)
             {
                 case "DATABASES2":
@@ -268,12 +268,6 @@ namespace Servidor.Analizador.CHISON
                     }
                     else return new Tipo_Objeto("table", tabla_aux);
 
-
-
-                /*
-*/
-
-
                 case "DATA3":
                     if (nodo.ChildNodes.Count == 3)
                     {
@@ -362,7 +356,7 @@ namespace Servidor.Analizador.CHISON
                 case "AS":
                     return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
                 case "IN_OUT":
-                    return nodo.ChildNodes[0].Term.Name;
+                    return nodo.ChildNodes[0].Token.Text;
 
                 case "DATA_DATA":
                     //Aqui armamos las filas;
@@ -378,6 +372,7 @@ namespace Servidor.Analizador.CHISON
                             Tipo_Objeto aux__ = new Tipo_Objeto("null", "null");
                             string link = nodo.ChildNodes.ElementAt(0).Token.Text.Replace("${ ", "");
                             link = link.Replace(" }$", "");
+                            aux__.Export = true;
                             aux__.Link = link;
                             return aux__;
                         }
@@ -421,7 +416,8 @@ namespace Servidor.Analizador.CHISON
                     }
 
                 case "DATA_DATA6":
-                    Valor val = new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                    tipo_real = getType(nodo.ChildNodes[2].ChildNodes.ElementAt(0));
+                    Valor val = new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)),tipo_real);
                     return val;
 
                 case "ATTRIBUTES":
@@ -552,27 +548,32 @@ namespace Servidor.Analizador.CHISON
                         return new List<Tipo_Objeto>();
                     }
                 case "MAPA3":
-                    return new Tipo_Objeto(nodo.ChildNodes[0].Term.Name.ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                    tipo_real = getType(nodo.ChildNodes[2].ChildNodes.ElementAt(0));
+                    Tipo_Objeto ret = new Tipo_Objeto(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                    ret.Type = tipo_real;
+                    return ret;
 
                 case "LISTAS2":
                     if (nodo.ChildNodes.Count == 3)
                     {
-                        List<string> valores = (List<string>)Ejecutar(nodo.ChildNodes.ElementAt(0));
-                        valores.Add(Ejecutar(nodo.ChildNodes.ElementAt(2)).ToString());
+                        List<Item_List> valores = (List<Item_List>)Ejecutar(nodo.ChildNodes.ElementAt(0));
+                        valores.Add((Item_List) Ejecutar(nodo.ChildNodes.ElementAt(2)));
                         return valores;
                     }
                     else if (nodo.ChildNodes.Count == 1)
                     {
-                        List<string> valores = new List<string>();
-                        valores.Add(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString());
+                        List<Item_List> valores = new List<Item_List>();
+                        valores.Add((Item_List) Ejecutar(nodo.ChildNodes.ElementAt(0)));
                         return valores;
                     }
                     else
                     {
-                        return new List<string>();
+                        return new List<Item_List>();
                     }
                 case "LISTAS3":
-                    return Ejecutar(nodo.ChildNodes.ElementAt(0));
+                    tipo_real = getType(nodo.ChildNodes[0].ChildNodes.ElementAt(0));
+
+                    return new Item_List(tipo_real, Ejecutar(nodo.ChildNodes.ElementAt(0)));
 
 
                 case "USERS2":
@@ -640,9 +641,17 @@ namespace Servidor.Analizador.CHISON
                         case "Identificador":
                             return nodo.ChildNodes[0].ToString().Replace(" (Identificador)", "");
                         case "Numero":
-                            return nodo.ChildNodes[0].ToString().Replace(" (Numero)", "");
-                        case "Decimal":
-                            return nodo.ChildNodes[0].ToString().Replace(" (Decimal)", "");
+                            return nodo.ChildNodes[0].Token.Text;
+                        case "NULL":
+                            return null;
+                        case "Time":
+                            return nodo.ChildNodes[0].Token.Text;
+                        case "FALSE":
+                            return false;
+                        case "TRUE":
+                            return true;
+                        case "Date":
+                            return nodo.ChildNodes[0].Token.Text;
                         case "LISTAS":
                             return Ejecutar(nodo.ChildNodes.ElementAt(0));
                         case "MAPA":
@@ -674,7 +683,47 @@ namespace Servidor.Analizador.CHISON
             }
             return null;
         }
+        private int getType(ParseTreeNode nodo) {
+            string opcion = nodo.Term.Name;
+            switch (opcion)
+            {
+                case "Cadena":
+                   return 7;
+                case "Numero":
+                    try
+                    {
+                        Convert.ToInt32(nodo.Token.Text);
+                        return 3;
 
+                    }
+                    catch (Exception)
+                    {
+                        
+                        Convert.ToDouble(nodo.ChildNodes[0].ChildNodes.ElementAt(0).Token.Text);
+                        return 4;
+                    }
+
+                case "LISTAS":
+                    return 2;
+                case "MAPA":
+                    return 1;
+
+                case "TRUE":
+                    return 5;
+
+                case "FALSE":
+                   return 5;
+
+                case "Date":
+                    return 6;
+                case "Time":
+                    return 8;
+                case "NULL":
+                    return 9;
+                default:
+                    return -1;
+            }
+        }
 
     }
 }

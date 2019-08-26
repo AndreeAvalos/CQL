@@ -34,7 +34,6 @@ namespace Servidor
                 sistema = sintactico.db_nosql;
                 backup_sistema = sistema;
             }
-            execCommit();
         }
         public static bool comprobarPrimitivo(string name)
         {
@@ -115,7 +114,7 @@ namespace Servidor
         }
 
         public static bool execCommit() {
-            string path = "prueba.chison";
+            string path = "Principal.chison";
             string text = "$<\n";
             text += sistema.execComit(1) +"\n";
             text += ">$";

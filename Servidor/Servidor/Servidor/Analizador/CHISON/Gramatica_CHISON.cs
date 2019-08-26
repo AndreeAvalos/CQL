@@ -50,6 +50,7 @@ namespace Servidor.Analizador.CHISON
                 RFALSE = ToTerm("FALSE"),
                 RTRUE = ToTerm("TRUE"),
                 RIN = ToTerm("IN"),
+                RNULL = ToTerm("NULL"),
                 ROUT = ToTerm("OUT");
             #endregion
 

@@ -29,7 +29,8 @@ namespace Servidor.NOSQL.Modelos
             salida += "</table> \n";
             return salida;
         }
-        public string CrearEstructura() {
+        public string CrearEstructura()
+        {
             string salida = "";
             salida += "\t\t\t[+PROCEDURE]\n";
             salida += "\t\t\t\t[+NAME]\n";
@@ -43,5 +44,29 @@ namespace Servidor.NOSQL.Modelos
         public string Name { get => name; set => name = value; }
         public string Instr { get => instr; set => instr = value; }
         public List<Parametro> Parametros { get => parametros; set => parametros = value; }
+
+        internal string execCommit(int num_tabs)
+        {
+            string tabs = Program.getTabulaciones(num_tabs);
+            string salida = "";
+            for (int i = 0; i < parametros.Count; i++)
+            {
+                if (i == parametros.Count - 1)
+                {
+                    salida += tabs + "<\n";
+                    salida += parametros.ElementAt(i).execCommit(num_tabs + 1);
+                    salida += tabs + ">\n";
+                }
+                else
+                {
+                    salida += tabs + "<\n";
+                    salida += parametros.ElementAt(i).execCommit(num_tabs + 1);
+                    salida += tabs + ">,\n";
+
+                }
+
+            }
+            return salida;
+        }
     }
 }

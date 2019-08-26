@@ -33,7 +33,8 @@ namespace Servidor.Analizador.CHISON
                 CORDER = ToTerm("]"),
                 COMA = ToTerm(","),
                 RFALSE = ToTerm("FALSE"),
-                RTRUE = ToTerm("TRUE");
+                RTRUE = ToTerm("TRUE"),
+                RNULL = ToTerm("NULL");
 
             #endregion
 
@@ -77,6 +78,7 @@ namespace Servidor.Analizador.CHISON
                 | RTRUE
                 | RFALSE
                 | RTIME
+                | RNULL
                 | RDATE;
 
             #region LISTAS y MAPAS

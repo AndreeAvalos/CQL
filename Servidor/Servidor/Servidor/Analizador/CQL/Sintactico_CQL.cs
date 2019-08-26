@@ -1,5 +1,6 @@
 ﻿using Irony.Parsing;
 using Servidor.Models;
+using Servidor.Models.TCL;
 using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
@@ -68,10 +69,13 @@ namespace Servidor.Analizador.CQL
             {
                 case "DDL":
                     return DDL(nodo.ChildNodes.ElementAt(0));
+                case "TCL":
+                    return TCL(nodo.ChildNodes.ElementAt(0));
             }
             return null;
         }
 
+        #region DDL
         private Instruccion DDL(ParseTreeNode nodo)
         {
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
@@ -241,7 +245,16 @@ namespace Servidor.Analizador.CQL
             if (nodo.ChildNodes.ElementAt(0).Term.Name.Equals("Identificador")) return nodo.ChildNodes[0].ToString().Replace(" (Identificador)", "").ToString();
             else return nodo.ChildNodes.ElementAt(0).Term.Name.ToString();
         }
+        #endregion
 
+        #region TCL
+        private Instruccion TCL(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.ElementAt(0).Term.Name.Equals("COMMIT"))
+                return new Commit();
+            else return new Rollback();
+        }
+        #endregion
         private List<Object> VALORES(ParseTreeNode nodo)
         {
             if (nodo.ChildNodes.Count == 3)
