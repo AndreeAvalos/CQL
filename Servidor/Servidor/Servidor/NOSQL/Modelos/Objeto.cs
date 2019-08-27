@@ -13,7 +13,8 @@ namespace Servidor.NOSQL.Modelos
         public string Name { get => name; set => name = value; }
         public List<Atributo> Atributos { get => atributos; set => atributos = value; }
 
-        public string execCommit(int num_tabs) {
+        public string execCommit(int num_tabs)
+        {
             string tabs = Program.getTabulaciones(num_tabs);
             string salida = "";
             for (int i = 0; i < atributos.Count; i++)
@@ -24,7 +25,8 @@ namespace Servidor.NOSQL.Modelos
                     salida += atributos.ElementAt(i).execCommit(num_tabs + 1);
                     salida += tabs + ">\n";
                 }
-                else {
+                else
+                {
                     salida += tabs + "<\n";
                     salida += atributos.ElementAt(i).execCommit(num_tabs + 1);
                     salida += tabs + ">,\n";
@@ -35,7 +37,8 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
-        public string ArmarRespuesta() {
+        public string ArmarRespuesta()
+        {
             string salida = "<table> \n";
             salida += " <tr>\n  ";
             salida += "     <th>NAME</th><th>TYPE</th>\n";
@@ -52,7 +55,8 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
-        public string CrearEstructura() {
+        public string CrearEstructura()
+        {
             string salida = "";
             salida += "\t\t\t[+TYPE]\n";
             salida += "\t\t\t\t[+NAME]\n";
@@ -69,5 +73,16 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
+        internal void deleteAtributo(string name)
+        {
+            int index = -1;
+            for (int i = 0; i < Atributos.Count; i++)
+            {
+                if (Atributos.ElementAt(i).Name.ToLower().Equals(name.ToLower())) { index = i;break; }
+            }
+            if (index != -1) {
+                atributos.RemoveAt(index);
+            }
+        }
     }
 }

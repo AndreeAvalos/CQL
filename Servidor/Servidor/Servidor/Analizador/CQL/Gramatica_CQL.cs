@@ -68,6 +68,7 @@ namespace Servidor.Analizador.CQL
                 TSET = ToTerm("Set"),
                 TLIST = ToTerm("List"),
                 RUSER = ToTerm("USER"),
+                RDELETE = ToTerm("DELETE"),
                 RGRANT = ToTerm("GRANT"),
                 RREVOKE = ToTerm("REVOKE"),
                 RON = ToTerm("ON"),
@@ -105,8 +106,14 @@ namespace Servidor.Analizador.CQL
                 IFN_PK = new NonTerminal("IFN_PK"),
                 IFC_PK = new NonTerminal("IFC_PK"),
                 TCL = new NonTerminal("TCL"),
-                DCL =new NonTerminal("DCL"),
+                DCL = new NonTerminal("DCL"),
                 DML = new NonTerminal("DML"),
+                USER_TYPE = new NonTerminal("USER_TYPE"),
+                CREATE_TYPE = new NonTerminal("CREATE_TYPE"),
+                USER_CONTENT = new NonTerminal("USER_CONTENT"),
+                USER_CONTENT2 = new NonTerminal("USER_CONTENT2"),
+                ALTER_TYPE = new NonTerminal("ALTER_TYPE"),
+                DELETE_TYPE = new NonTerminal("DELETE_TYPE"),
                 CREATE_USER = new NonTerminal("CREATE_USER"),
                 GRANT = new NonTerminal("GRANT"),
                 REVOKE = new NonTerminal("REVOKE")
@@ -121,9 +128,14 @@ namespace Servidor.Analizador.CQL
             Instrucciones.Rule = Instrucciones + Instruccion
                 | Instruccion;
 
-            Instruccion.Rule = DDL
+            Instruccion.Rule = USER_TYPE
+                | DDL
                 | TCL
                 | DCL;
+
+            USER_TYPE.Rule = CREATE_TYPE
+                | ALTER_TYPE
+                | DELETE_TYPE;
 
             DDL.Rule = CREATE_DB
                 | PUSE
@@ -136,6 +148,24 @@ namespace Servidor.Analizador.CQL
             DCL.Rule = CREATE_USER
                 | GRANT
                 | REVOKE;
+
+            #region USER TYPES
+            //CREATE TYPE IF NOT EXISTS PRUEBA (-);
+            CREATE_TYPE.Rule = RCREATE + RTYPE + IFNE + IDENTIFICADOR + PARIZQ + USER_CONTENT + PARDER + PTCOMA;
+            ///RECURSIVIDAD
+            USER_CONTENT.Rule = USER_CONTENT + COMA + USER_CONTENT2           
+                | USER_CONTENT2;
+            //CUI INT
+            USER_CONTENT2.Rule = IDENTIFICADOR + TIPO_DATO;
+
+            //ALTER TYPE ESTUDIANTE DELETE/ADD(-);
+            ALTER_TYPE.Rule = RALTER + RTYPE + IDENTIFICADOR + RADD + PARIZQ + USER_CONTENT + PARDER + PTCOMA
+                | RALTER + RTYPE + IDENTIFICADOR + RDELETE + PARIZQ + VALORES + PARDER + PTCOMA;
+
+
+            DELETE_TYPE.Rule = RDELETE + RTYPE + IDENTIFICADOR + PTCOMA;
+            #endregion
+
 
             #region DDL
             // CREATE DATABASE
@@ -244,7 +274,8 @@ namespace Servidor.Analizador.CQL
                 RALTER.Text,
                 RUSE.Text,
                 RDATABASE.Text,
-                RTYPE.Text
+                RTYPE.Text,
+                RDELETE.Text
             };
             MarkReservedWords(palabras);
             #endregion

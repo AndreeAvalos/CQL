@@ -16,6 +16,8 @@ namespace Servidor
     {
         public static Manejo sistema, backup_sistema;
         public static List<string> log_errores = new List<string>();
+
+
         public static bool bloqueada = false;//para pruebas funcionara sin logearse
         public static string user_activo = "Andree";//para pruebas 
         public static void Main(string[] args)
