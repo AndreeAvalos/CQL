@@ -124,7 +124,7 @@ namespace Servidor.Analizador.CHISON
 
                                     //aqui exportamos los archivos de bases de datos
 
-                                    String text = System.IO.File.ReadAllText(new_db.Link);
+                                    String text = System.IO.File.ReadAllText("./NOSQL/Generados/"+new_db.Link);
 
                                     LanguageData lenguaje = new LanguageData(new Gramatica_Import_DATABASE());
                                     Parser parser = new Parser(lenguaje);
@@ -231,7 +231,7 @@ namespace Servidor.Analizador.CHISON
                                 tabla_aux.Link = aux2.Link;
                                 tabla_aux.Exportada = aux2.Export;
 
-                                String text = System.IO.File.ReadAllText(tabla_aux.Link);
+                                String text = System.IO.File.ReadAllText("./NOSQL/Generados/" + tabla_aux.Link);
 
                                 LanguageData lenguaje = new LanguageData(new Gramatica_Import_DATA());
                                 Parser parser = new Parser(lenguaje);

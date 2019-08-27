@@ -24,13 +24,27 @@ namespace Servidor.Models.DCL
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
-            if (Program.sistema.existUser(user)) {
-                if (Program.sistema.existDataBase(id_db)) {
-                    Permiso new_permiso = new Permiso(id_db);
-                    if (Program.sistema.setPermission(user, new_permiso)) salida.Add(Program.buildMessage("Permisos concedidos a " + user + " para base de datos " + id_db + "."));
-                    else salida.Add(Program.buildMessage("Error interno del sistema."));
-                }else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos " + id_db + " no existe en el sistema."));
-            }else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+            if (Program.sistema.existUser(user))
+            {
+                if (!Program.sistema.existPermission(user, id_db))
+                {
+                    if (Program.sistema.existDataBase(id_db))
+                    {
+                        string bd_correct = "";
+
+                        foreach (Database item in Program.sistema.Databases)
+                        {
+                            if (item.Name.ToLower().Equals(id_db)) bd_correct = item.Name;
+                        }
+                        Permiso new_permiso = new Permiso(bd_correct);
+                        if (Program.sistema.setPermission(user, new_permiso)) salida.Add(Program.buildMessage("Permisos concedidos a " + user + " para base de datos " + id_db + "."));
+                        else salida.Add(Program.buildMessage("Error interno del sistema."));
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos " + id_db + " no existe en el sistema."));
+                }
+                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " ya tiene permiso sobre " + id_db + "."));
+            }
+            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
             return null;
         }
 

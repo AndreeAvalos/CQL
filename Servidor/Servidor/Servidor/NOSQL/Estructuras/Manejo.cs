@@ -63,6 +63,19 @@ namespace Servidor.NOSQL.Estructuras
             salida += tabulaciones + "]";
             return salida;
         }
+        public bool existPermission(string user_name, string database) {
+            foreach (Usuario item in usuarios)
+            {
+                if (item.Name.ToLower().Equals(user_name.ToLower())) {
+                    foreach (Permiso permiso in item.Permisos)
+                    {
+                        if (permiso.Name.ToLower().Equals(database.ToLower())) return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
 
         public bool setPermission(string user_name, Permiso new_permiso)
         {
