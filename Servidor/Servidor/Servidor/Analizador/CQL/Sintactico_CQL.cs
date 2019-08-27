@@ -2,6 +2,7 @@
 using Servidor.Models;
 using Servidor.Models.DCL;
 using Servidor.Models.TCL;
+using Servidor.Models.USER_TYPES;
 using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
@@ -68,6 +69,8 @@ namespace Servidor.Analizador.CQL
 
             switch (produccion)
             {
+                case "USER_TYPE":
+                    return USERTYPES(nodo.ChildNodes.ElementAt(0));
                 case "DDL":
                     return DDL(nodo.ChildNodes.ElementAt(0));
                 case "TCL":
@@ -77,6 +80,77 @@ namespace Servidor.Analizador.CQL
             }
             return null;
         }
+
+        private Instruccion USERTYPES(ParseTreeNode nodo)
+        {
+            string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
+            int linea;
+            int columna;
+            string name;
+            switch (produccion)
+            {
+                case "CREATE_TYPE":
+                    bool existe = false;
+                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).ChildNodes.Count != 0) existe = true;
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
+                    List<Atributo> atributos = ATRIBUTOS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5));
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Create_Type(name, existe, atributos, linea, columna);
+                case "ALTER_TYPE":
+                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text.ToLower().Equals("add"))
+                    {
+                        name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                        atributos = ATRIBUTOS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5));
+                        linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                        columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                        return new Alter_Type(name, atributos, linea, columna, true);
+                    }
+                    else
+                    {
+                        name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                        List<object> nombres = VALORES(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5));
+                        linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                        columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                        return new Alter_Type(name, nombres, linea, columna, false);
+                    }
+                case "DELETE_TYPE":
+                    linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                    return new Delete_Type(name,linea,columna);
+            }
+            return null;
+
+        }
+
+        private List<Atributo> ATRIBUTOS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Atributo> atributos = ATRIBUTOS(nodo.ChildNodes.ElementAt(0));
+                atributos.Add((Atributo)ATRIBUTO(nodo.ChildNodes.ElementAt(2)));
+                return atributos;
+            }
+            else
+            {
+                List<Atributo> atributos = new List<Atributo>();
+                atributos.Add((Atributo)ATRIBUTO(nodo.ChildNodes.ElementAt(0)));
+                return atributos;
+            }
+        }
+
+        private Atributo ATRIBUTO(ParseTreeNode nodo)
+        {
+            Atributo atributo = new Atributo
+            {
+                Name = nodo.ChildNodes.ElementAt(0).Token.Text,
+                Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1))
+            };
+            return atributo;
+        }
+
+
         #region DDL
         private Instruccion DDL(ParseTreeNode nodo)
         {
@@ -96,7 +170,7 @@ namespace Servidor.Analizador.CQL
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1)).ToString();
                     linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                     columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
-                    return new DDL_USE(name, linea, columna,user);
+                    return new DDL_USE(name, linea, columna, user);
                 case "DROP_DB":
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2)).ToString();
                     linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
@@ -267,7 +341,8 @@ namespace Servidor.Analizador.CQL
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
             int line;
             int column;
-            switch (produccion) {
+            switch (produccion)
+            {
                 case "CREATE_USER":
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
                     password = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5).Token.Value.ToString();
@@ -279,13 +354,13 @@ namespace Servidor.Analizador.CQL
                     db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
                     line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
                     column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
-                    return new Grant(line, column, name, db,user);
+                    return new Grant(line, column, name, db, user);
                 case "REVOKE":
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Text;
                     db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
                     line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
                     column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
-                    return new Revoke(line, column, name, db,user);
+                    return new Revoke(line, column, name, db, user);
             }
             return null;
         }

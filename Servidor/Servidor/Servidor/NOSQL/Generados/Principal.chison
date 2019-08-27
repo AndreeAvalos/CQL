@@ -88,6 +88,20 @@ $<
 					]
 				>,
 				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Prueba",
+					"ATTRS" = [
+						<
+							"NAME" = "cui",
+							"TYPE" = "int"
+						>,
+						<
+							"NAME" = "nombre",
+							"TYPE" = "string"
+						>
+					]
+				>,
+				<
 					"CQL-TYPE" = "PROCEDURE",
 					"NAME" = "Procedure1",
 					"PARAMETERS" = [
@@ -192,9 +206,6 @@ $<
 			"PASSWORD"= "1234",
 			"PERMISSIONS"= [
 				<
-					"NAME" = "Database1"
-				>,
-				<
 					"NAME" = "Database2"
 				>,
 				<
@@ -206,6 +217,9 @@ $<
 			"NAME"= "Fernando",
 			"PASSWORD"= "5678",
 			"PERMISSIONS"= [
+				<
+					"NAME" = "Database3"
+				>
 			]
 		>,
 		<

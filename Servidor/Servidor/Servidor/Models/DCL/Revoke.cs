@@ -33,7 +33,6 @@ namespace Servidor.Models.DCL
             {
                 if (Program.sistema.existUser(user))
                 {
-                    int index;
                     foreach (Usuario item in Program.sistema.Usuarios)
                     {
                         if (item.Name.ToLower().Equals(user))

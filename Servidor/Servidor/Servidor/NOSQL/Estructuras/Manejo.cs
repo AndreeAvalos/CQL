@@ -23,6 +23,8 @@ namespace Servidor.NOSQL.Estructuras
             }
             return false;
         }
+
+
         public string execComit(int num_tabs)
         {
             string tabulaciones = Program.getTabulaciones(num_tabs);
@@ -106,6 +108,20 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
+        internal bool existAtributos(string object_name, string atributo)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.existAtributo(object_name.ToLower(), atributo);
+                }
+            }
+            return false;
+        }
+
+
+
         public List<Usuario> Usuarios { get => usuarios; set => usuarios = value; }
         public List<Database> Databases { get => databases; set => databases = value; }
 
@@ -122,6 +138,31 @@ namespace Servidor.NOSQL.Estructuras
 
             return false;
         }
+
+        internal bool addAtributo(string object_name, List<Atributo> atributos)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.addAtributo(object_name.ToLower(), atributos);
+                }
+            }
+            return false;
+        }
+
+        internal void deleteAtributo(string id, string name)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    item.deleteAtributo(id.ToLower(), name.ToLower());
+                }
+            }
+   
+        }
+
         public string Crear_Estructura(string usuario)
         {
             string salida = "";
@@ -158,6 +199,7 @@ namespace Servidor.NOSQL.Estructuras
 
             return salida;
         }
+
 
         public bool En_uso()
         {
@@ -284,9 +326,35 @@ namespace Servidor.NOSQL.Estructuras
                 }
             }
             return false;
-
         }
 
+
+        internal void deleteObjeto(string name)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    item.deleteObjeto(name);
+                }
+            }
+        }
+
+
+        public bool addObjeto(Objeto new_objeto)
+        {
+
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    item.Objetos.Add(new_objeto);
+                    return true;
+                }
+            }
+            return false;
+
+        }
 
         public bool addTable(Tabla new_tabla)
         {

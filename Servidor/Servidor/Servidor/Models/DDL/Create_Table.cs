@@ -239,10 +239,12 @@ namespace Servidor.Models
                                 }
 
                             }
-                            Tabla tabla_aux = new Tabla();
-                            tabla_aux.Name = id;
-                            tabla_aux.Columnas = columnas_aux;
-                            tabla_aux.Exportada = false;
+                            Tabla tabla_aux = new Tabla
+                            {
+                                Name = id,
+                                Columnas = columnas_aux,
+                                Exportada = false
+                            };
 
                             if (Program.sistema.addTable(tabla_aux))
                             {
