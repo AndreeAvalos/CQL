@@ -121,7 +121,7 @@ namespace Servidor.NOSQL.Modelos
                         salida += Program.getTabulaciones(num_tabs + 1) + "\"DATA\" = [\n";
                         salida += tablas.ElementAt(i).execCommit(num_tabs + 2);
                         salida += Program.getTabulaciones(num_tabs + 1) + "]\n";
-                        if(objetos.Count!=0||procedures.Count!=0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                        if (objetos.Count != 0 || procedures.Count != 0) salida += Program.getTabulaciones(num_tabs) + ">,\n";
                         else salida += Program.getTabulaciones(num_tabs) + ">\n";
                     }
                     else
@@ -197,11 +197,62 @@ namespace Servidor.NOSQL.Modelos
             salida += tabs + "]\n";
             return salida;
         }
+
+        internal void deleteAtributo(string id, string name)
+        {
+            foreach (Objeto item in objetos)
+            {
+                if (item.Name.ToLower().Equals(id.ToLower())) { item.deleteAtributo(name); return; }
+            }
+        }
+
+        internal bool existAtributo(string name, string atributo)
+        {
+            foreach (Objeto item in objetos)
+            {
+                if (item.Name.ToLower().Equals(name.ToLower()))
+                {
+                    foreach (Atributo item2 in item.Atributos)
+                    {
+                        if (item2.Name.ToLower().Equals(atributo.ToLower())) return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        internal bool addAtributo(string name_object, List<Atributo> atributos)
+        {
+            foreach (Objeto item in objetos)
+            {
+                if (item.Name.ToLower().Equals(name_object))
+                {
+                    foreach (Atributo item2 in atributos)
+                    {
+                        item.Atributos.Add(item2);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal void deleteObjeto(string name)
+        {
+            int index = -1;
+            for (int i = 0; i < objetos.Count; i++)
+            {
+                if (objetos.ElementAt(i).Name.ToLower().Equals(name.ToLower())) index = i;
+            }
+            if (index != -1) objetos.RemoveAt(index);
+        }
+
         private void writeImportFile()
         {
             int num_tabs = 0;
             string tabs = Program.getTabulaciones(num_tabs);
-            string path = "./NOSQL/Generados/"+link;
+            string path = "./NOSQL/Generados/" + link;
             string salida = "";
             for (int i = 0; i < tablas.Count; i++)
             {
