@@ -12,39 +12,48 @@ namespace Servidor.Models.DCL
         int line, column;
         List<string> salida;
         string user, id_db;
+        string user_actual;
 
-        public Grant(int line, int column, string user, string id_db)
+        public Grant(int line, int column, string user, string id_db, string user_actual)
         {
             this.line = line;
             this.column = column;
             this.salida = new List<string>();
             this.user = user;
             this.id_db = id_db;
+            this.user_actual = user_actual;
         }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
-            if (Program.sistema.existUser(user))
+            if (!Program.sistema.tienePermiso(user_actual, id_db))
             {
-                if (!Program.sistema.existPermission(user, id_db))
-                {
-                    if (Program.sistema.existDataBase(id_db))
-                    {
-                        string bd_correct = "";
-
-                        foreach (Database item in Program.sistema.Databases)
-                        {
-                            if (item.Name.ToLower().Equals(id_db)) bd_correct = item.Name;
-                        }
-                        Permiso new_permiso = new Permiso(bd_correct);
-                        if (Program.sistema.setPermission(user, new_permiso)) salida.Add(Program.buildMessage("Permisos concedidos a " + user + " para base de datos " + id_db + "."));
-                        else salida.Add(Program.buildMessage("Error interno del sistema."));
-                    }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos " + id_db + " no existe en el sistema."));
-                }
-                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " ya tiene permiso sobre " + id_db + "."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user_actual + " no posee permisos en " + id_db + "."));
             }
-            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+            else
+            {
+                if (Program.sistema.existUser(user))
+                {
+                    if (!Program.sistema.existPermission(user, id_db))
+                    {
+                        if (Program.sistema.existDataBase(id_db))
+                        {
+                            string bd_correct = "";
+
+                            foreach (Database item in Program.sistema.Databases)
+                            {
+                                if (item.Name.ToLower().Equals(id_db)) bd_correct = item.Name;
+                            }
+                            Permiso new_permiso = new Permiso(bd_correct);
+                            if (Program.sistema.setPermission(user, new_permiso)) salida.Add(Program.buildMessage("Permisos concedidos a " + user + " para base de datos " + id_db + "."));
+                            else salida.Add(Program.buildMessage("Error interno del sistema."));
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos " + id_db + " no existe en el sistema."));
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " ya tiene permiso sobre " + id_db + "."));
+                }
+                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+            }
             return null;
         }
 

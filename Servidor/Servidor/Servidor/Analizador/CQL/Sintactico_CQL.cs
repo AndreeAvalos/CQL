@@ -279,13 +279,13 @@ namespace Servidor.Analizador.CQL
                     db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
                     line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
                     column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
-                    return new Grant(line, column, name, db);
+                    return new Grant(line, column, name, db,user);
                 case "REVOKE":
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Text;
                     db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
                     line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
                     column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
-                    return new Revoke(line, column, name, db);
+                    return new Revoke(line, column, name, db,user);
             }
             return null;
         }

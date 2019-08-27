@@ -27,6 +27,7 @@ namespace Servidor.Analizador.CQL
 
             #region Terminales
             KeyTerm
+                RARROBA = ToTerm("@"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
                 IGUAL = ToTerm("="),
@@ -54,6 +55,7 @@ namespace Servidor.Analizador.CQL
                 RTABLE = ToTerm("TABLE"),
                 RPRIMARY_KEY = ToTerm("PRIMARY KEY"),
                 RCOMMIT = ToTerm("COMMIT"),
+                RTYPE = ToTerm("TYPE"),
                 RROLLBACK = ToTerm("ROLLBACK"),
                 TSTRING = ToTerm("string"),
                 TINT = ToTerm("int"),
@@ -70,7 +72,9 @@ namespace Servidor.Analizador.CQL
                 RREVOKE = ToTerm("REVOKE"),
                 RON = ToTerm("ON"),
                 RWITH = ToTerm("WITH"),
-                RPASSWORD = ToTerm("PASSWORD")
+                RPASSWORD = ToTerm("PASSWORD"),
+                RINSERT = ToTerm("INSERT INTO"),
+                RVALUES = ToTerm("VALUES")
                 ;
             #endregion
 
@@ -102,6 +106,7 @@ namespace Servidor.Analizador.CQL
                 IFC_PK = new NonTerminal("IFC_PK"),
                 TCL = new NonTerminal("TCL"),
                 DCL =new NonTerminal("DCL"),
+                DML = new NonTerminal("DML"),
                 CREATE_USER = new NonTerminal("CREATE_USER"),
                 GRANT = new NonTerminal("GRANT"),
                 REVOKE = new NonTerminal("REVOKE")
@@ -223,7 +228,24 @@ namespace Servidor.Analizador.CQL
 
             #region Preferencias
             this.Root = S;
-            string[] palabras = { RPRIMARY_KEY.Text,RDROP.Text, RADD.Text, RIF_NOT_EXISTS.Text };
+            string[] palabras = {
+                RPRIMARY_KEY.Text,
+                RDROP.Text, RADD.Text,
+                RIF_NOT_EXISTS.Text,
+                RINSERT.Text,
+                RCOMMIT.Text,
+                RREVOKE.Text,
+                RGRANT.Text,
+                RCREATE.Text,
+                RDROP.Text,
+                RWITH.Text,
+                RFALSE.Text,
+                RTRUE.Text,
+                RALTER.Text,
+                RUSE.Text,
+                RDATABASE.Text,
+                RTYPE.Text
+            };
             MarkReservedWords(palabras);
             #endregion
 
