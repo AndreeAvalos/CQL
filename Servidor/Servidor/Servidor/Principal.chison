@@ -154,6 +154,34 @@ $<
 					],
 					"DATA" = [
 					]
+				>,
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "prueba_permiso",
+					"COLUMNS" = [
+						<
+							"NAME"= "num_error",
+							"TYPE"= "int",
+							"PK"= TRUE
+						>,
+						<
+							"NAME"= "token",
+							"TYPE"= "string",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "line",
+							"TYPE"= "int",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "column",
+							"TYPE"= "int",
+							"PK"= FALSE
+						>
+					],
+					"DATA" = [
+					]
 				>
 			]
 		>
@@ -178,6 +206,9 @@ $<
 			"NAME"= "Fernando",
 			"PASSWORD"= "5678",
 			"PERMISSIONS"= [
+				<
+					"NAME" = "PRUEBA_EJECUCION"
+				>
 			]
 		>,
 		<
@@ -195,6 +226,15 @@ $<
 				>,
 				<
 					"NAME" = "PRUEBA_EJECUCION"
+				>
+			]
+		>,
+		<
+			"NAME"= "andree",
+			"PASSWORD"= "1233444",
+			"PERMISSIONS"= [
+				<
+					"NAME" = "prueba_ejecucion"
 				>
 			]
 		>

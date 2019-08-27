@@ -35,11 +35,21 @@ namespace Servidor.NOSQL.Modelos
                     salida += tabs + ">,\n";
                 }
             }
-            tabs = Program.getTabulaciones(num_tabs-1);
+            tabs = Program.getTabulaciones(num_tabs - 1);
             salida += tabs + "]\n";
             return salida;
         }
 
+        public bool Revoke(string id)
+        {
+            int index = -1;
+            for (int i = 0; i < Permisos.Count; i++)
+            {
+                if (Permisos.ElementAt(i).Name.ToLower().Equals(id)) index = i;
+            }
+            if (index != -1) { Permisos.RemoveAt(index); return true; }
+            else return false;
+        }
         public string Name { get => name; set => name = value; }
         public string Password { get => password; set => password = value; }
         public List<Permiso> Permisos { get => permisos; set => permisos = value; }

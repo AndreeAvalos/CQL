@@ -65,18 +65,24 @@ namespace Servidor.Controllers
         [HttpPost]
         public IEnumerable<string> Post(entrada value)
         {
-            string text = value.Data;
-            Sintactico_LUP sintactico = new Sintactico_LUP();
-            if (sintactico.Validar(text, new Gramatica_LUP()))
+            List<string> respuesta = new List<string>();
+            if (Program.sistema != null)
             {
-                sintactico.Analizar(text, new Gramatica_LUP());
-                foreach (string item in sintactico.salida)
+                string text = value.Data;
+                Sintactico_LUP sintactico = new Sintactico_LUP();
+                if (sintactico.Validar(text, new Gramatica_LUP()))
                 {
-                    salida += item + "\n";
+                    sintactico.Analizar(text, new Gramatica_LUP());
+                    foreach (string item in sintactico.salida)
+                    {
+                        respuesta.Add(item);
+                    }
                 }
             }
-
-            return new string[] { "data", salida };
+            else {
+                respuesta.Add(Program.buildMessage("El sistma no existe."));
+            }
+            return respuesta ;
         }
 
         // PUT api/values/5
