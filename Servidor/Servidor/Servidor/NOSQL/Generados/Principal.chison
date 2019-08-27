@@ -206,9 +206,6 @@ $<
 			"NAME"= "Fernando",
 			"PASSWORD"= "5678",
 			"PERMISSIONS"= [
-				<
-					"NAME" = "PRUEBA_EJECUCION"
-				>
 			]
 		>,
 		<
@@ -230,7 +227,7 @@ $<
 			]
 		>,
 		<
-			"NAME"= "andree",
+			"NAME"= "Andree",
 			"PASSWORD"= "1233444",
 			"PERMISSIONS"= [
 				<

@@ -10,14 +10,16 @@ namespace Servidor.Analizador.LUP
     public class Sintactico_LUP
     {
         public List<string> salida = new List<string>();
-        public bool Validar(String entrada, Grammar gramatica) {
+        public bool Validar(String entrada, Grammar gramatica)
+        {
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
             ParseTree arbol = parser.Parse(entrada);
-            if (arbol.Root!=null) return true;
+            if (arbol.Root != null) return true;
             else return false;
         }
-        public ParseTreeNode Analizar(String entrada, Grammar gramatica) {
+        public ParseTreeNode Analizar(String entrada, Grammar gramatica)
+        {
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(lenguaje);
             ParseTree arbol = parser.Parse(entrada);
@@ -27,8 +29,10 @@ namespace Servidor.Analizador.LUP
             return arbol.Root.ChildNodes.ElementAt(0);
         }
 
-        private void Instrucciones(ParseTreeNode nodo) {
-            if (nodo.ChildNodes.Count == 2) {
+        private void Instrucciones(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 2)
+            {
                 Instrucciones(nodo.ChildNodes.ElementAt(0));
                 Instruccion(nodo.ChildNodes.ElementAt(1));
             }
@@ -44,22 +48,33 @@ namespace Servidor.Analizador.LUP
             else if (nodo.ChildNodes.ElementAt(0).ToString() == "STRUC") STRUC(nodo.ChildNodes.ElementAt(0));
         }
 
-        public void LOGIN(ParseTreeNode nodo) {
+        public void LOGIN(ParseTreeNode nodo)
+        {
+            if (Program.bloqueada)
+            {
+                salida.Add("[+LOGIN]\n\t[FAIL]\n[-LOGIN]");
+                salida.Add(Program.buildMessage("El sistema esta bloqueado"));
+                return;
+            }
             //obtener el user y pass
             string user = Valor(nodo.ChildNodes[4].ChildNodes[4]);
             string pass = Valor(nodo.ChildNodes[5].ChildNodes[4]);
 
             //Metodo que verifica el password y genera un resultado
 
-            LOGEAR(user,pass);
+            LOGEAR(user, pass);
 
         }
 
         private void LOGEAR(string user, string pass)
         {
-            if (Program.sistema.Buscar_Usuario(user, pass)) {
+            if (Program.sistema.Buscar_Usuario(user, pass))
+            {
+                Program.bloqueada = false;
+                Program.user_activo = user;
                 salida.Add("[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]");
-            }else salida.Add("[+LOGIN]\n\t[FAIL]\n[-LOGIN]");
+            }
+            else salida.Add("[+LOGIN]\n\t[FAIL]\n[-LOGIN]");
         }
 
         public void LOGOUT(ParseTreeNode nodo)
@@ -73,27 +88,47 @@ namespace Servidor.Analizador.LUP
         private void DESLOGEAR(string user)
         {
             //metodo para desloquerse
-            salida.Add("[+LOGOUT][SUCCESS][-LOGOUT]");
+            if (user.ToLower().Equals(Program.user_activo.ToLower()))
+            {
+                Program.bloqueada = true;
+                Program.user_activo = "";
+                salida.Add("[+LOGOUT][SUCCESS][-LOGOUT]");
+            }
+            else
+            {
+                salida.Add("[+LOGOUT][FAIL][-LOGOUT]");
+            }
+
         }
 
         private void QUERY(ParseTreeNode nodo)
         {
+
             string user = Valor(nodo.ChildNodes[4].ChildNodes[4]);
-            string data = nodo.ChildNodes[5].ChildNodes[0].Token.Text.Replace("[+DATA]","");
-            data = data.Replace("[-DATA]", "");
-            data = data.Replace("\\\"", "\"");
+            if (user.ToLower().Equals(Program.user_activo.ToLower()))
+            {
+                string data = nodo.ChildNodes[5].ChildNodes[0].Token.Text.Replace("[+DATA]", "");
+                data = data.Replace("[-DATA]", "");
+                data = data.Replace("\\\"", "\"");
+                EjecutarQuery(data, user);
+            }
+            else {
+
+                salida.Add(Program.buildMessage("El sistema esta bloqueado."));
+            }
 
 
 
 
-            EjecutarQuery(data, user);
+
+           
 
         }
 
         private void EjecutarQuery(string data, string user)
         {
             Sintactico_CQL sintactico = new Sintactico_CQL();
-            sintactico.Analizar(data, new Gramatica_CQL(),user);
+            sintactico.Analizar(data, new Gramatica_CQL(), user);
             //Ejecutar las sentencias query que traiga el string 
             salida = sintactico.salida;
         }
@@ -112,11 +147,13 @@ namespace Servidor.Analizador.LUP
 
         }
 
-        public string Valor(ParseTreeNode node) {
+        public string Valor(ParseTreeNode node)
+        {
 
             String evaluar = node.ChildNodes[0].Term.Name;
 
-            switch (evaluar) {
+            switch (evaluar)
+            {
                 case "Cadena":
                     return node.ChildNodes[0].ToString().Replace(" (Cadena)", "");
                 case "Identificador":
@@ -126,7 +163,7 @@ namespace Servidor.Analizador.LUP
                 default:
                     return "";
             }
-         
+
 
         }
     }
