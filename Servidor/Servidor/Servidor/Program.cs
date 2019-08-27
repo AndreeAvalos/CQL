@@ -25,7 +25,7 @@ namespace Servidor
 
         private static void crearDB()
         {
-            String text = File.ReadAllText("Principal.chison");
+            String text = File.ReadAllText("./NOSQL/Generados/Principal.chison");
             sistema = new Manejo();
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
 
@@ -115,7 +115,7 @@ namespace Servidor
         }
 
         public static bool execCommit() {
-            string path = "Principal.chison";
+            string path = "./NOSQL/Generados/Principal.chison";
             string text = "$<\n";
             text += sistema.execComit(1) +"\n";
             text += ">$";

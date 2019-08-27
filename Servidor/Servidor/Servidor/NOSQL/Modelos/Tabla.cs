@@ -78,7 +78,7 @@ namespace Servidor.NOSQL.Modelos
                       salida+=  filas.ElementAt(i).writeImportFile()+",\n";
                     }
                 }
-                File.WriteAllText( link, salida);
+                File.WriteAllText("./NOSQL/Generados/"+ link, salida);
                 return tabs+ "${ " + link + " }$\n";
             }
             else {

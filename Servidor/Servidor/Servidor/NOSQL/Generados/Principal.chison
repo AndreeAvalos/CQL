@@ -234,7 +234,13 @@ $<
 			"PASSWORD"= "1233444",
 			"PERMISSIONS"= [
 				<
-					"NAME" = "prueba_ejecucion"
+					"NAME" = "PRUEBA_EJECUCION"
+				>,
+				<
+					"NAME" = "Database1"
+				>,
+				<
+					"NAME" = "Database3"
 				>
 			]
 		>

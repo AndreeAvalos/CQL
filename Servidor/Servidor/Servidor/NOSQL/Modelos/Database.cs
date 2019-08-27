@@ -201,7 +201,7 @@ namespace Servidor.NOSQL.Modelos
         {
             int num_tabs = 0;
             string tabs = Program.getTabulaciones(num_tabs);
-            string path = link;
+            string path = "./NOSQL/Generados/"+link;
             string salida = "";
             for (int i = 0; i < tablas.Count; i++)
             {
