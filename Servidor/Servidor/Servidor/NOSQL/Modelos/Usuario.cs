@@ -45,7 +45,7 @@ namespace Servidor.NOSQL.Modelos
             int index = -1;
             for (int i = 0; i < Permisos.Count; i++)
             {
-                if (Permisos.ElementAt(i).Name.ToLower().Equals(id)) index = i;
+                if (Permisos.ElementAt(i).Name.ToLower().Equals(id.ToLower())) index = i;
             }
             if (index != -1) { Permisos.RemoveAt(index); return true; }
             else return false;
