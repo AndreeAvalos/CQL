@@ -16,7 +16,13 @@ namespace Servidor.NOSQL.Estructuras
             this.Usuarios = new List<Usuario>();
             this.Databases = new List<Database>();
         }
-
+        public bool existUser(string user_name) {
+            foreach (Usuario item in usuarios)
+            {
+                if (item.Name.ToLower().Equals(user_name.ToLower())) return true;
+            }
+            return false;
+        }
         public string execComit(int num_tabs)
         {
             string tabulaciones = Program.getTabulaciones(num_tabs);
@@ -56,6 +62,19 @@ namespace Servidor.NOSQL.Estructuras
             }
             salida += tabulaciones + "]";
             return salida;
+        }
+
+        public bool setPermission(string user_name, Permiso new_permiso)
+        {
+            foreach (Usuario item in usuarios)
+            {
+                if (item.Name.ToLower().Equals(user_name.ToLower()))
+                {
+                    item.Permisos.Add(new_permiso);
+                    return true;
+                }
+            }
+            return false;
         }
 
         public List<Usuario> Usuarios { get => usuarios; set => usuarios = value; }
@@ -270,6 +289,20 @@ namespace Servidor.NOSQL.Estructuras
             Database db = new Database();
             db.Name = name;
             Databases.Add(db);
+        }
+
+        public bool getPermission(string name, string database) {
+            foreach  (Usuario item in usuarios)
+            {
+                if (item.Name.ToLower().Equals(name.ToLower())) {
+                    foreach (Permiso item2 in item.Permisos)
+                    {
+                        if (item2.Name.ToLower().Equals(database.ToLower())) return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
         }
 
         //Metodo para manejar que database se usa, la primer base de datos 

@@ -46,7 +46,7 @@ namespace Servidor.Models
                 Program.sistema.addDataBase(id);
                 Program.sistema.addPermissions(user, id);
                 Program.sistema.addPermissions("admin", id);
-                salida.Add(Program.buildMessage("La base de datos fue creada con exit."));
+                salida.Add(Program.buildMessage("La base de datos fue creada con exito."));
 
             }
             return null;

@@ -26,6 +26,7 @@ namespace Servidor
         private static void crearDB()
         {
             String text = File.ReadAllText("Principal.chison");
+            sistema = new Manejo();
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
 
             if (sintactico.Validar(text, new Gramatica_CHISON()))

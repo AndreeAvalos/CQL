@@ -1,5 +1,6 @@
 ﻿using Irony.Parsing;
 using Servidor.Models;
+using Servidor.Models.DCL;
 using Servidor.Models.TCL;
 using Servidor.NOSQL.Modelos;
 using System;
@@ -71,15 +72,17 @@ namespace Servidor.Analizador.CQL
                     return DDL(nodo.ChildNodes.ElementAt(0));
                 case "TCL":
                     return TCL(nodo.ChildNodes.ElementAt(0));
+                case "DCL":
+                    return DCL(nodo.ChildNodes.ElementAt(0));
             }
             return null;
         }
-
         #region DDL
         private Instruccion DDL(ParseTreeNode nodo)
         {
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
-            int linea = 0, columna = 0;
+            int linea;
+            int columna;
             switch (produccion)
             {
                 case "CREATE_DB":
@@ -93,7 +96,7 @@ namespace Servidor.Analizador.CQL
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1)).ToString();
                     linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                     columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
-                    return new DDL_USE(name, linea, columna);
+                    return new DDL_USE(name, linea, columna,user);
                 case "DROP_DB":
                     name = VALOR(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2)).ToString();
                     linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
@@ -255,6 +258,40 @@ namespace Servidor.Analizador.CQL
             else return new Rollback();
         }
         #endregion
+
+        #region DCL
+
+        private Instruccion DCL(ParseTreeNode nodo)
+        {
+            string name, password, db;
+            string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
+            int line;
+            int column;
+            switch (produccion) {
+                case "CREATE_USER":
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                    password = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5).Token.Value.ToString();
+                    line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+                    column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+                    return new Create_User(line, column, name, password);
+                case "GRANT":
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Text;
+                    db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
+                    line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+                    column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+                    return new Grant(line, column, name, db);
+                case "REVOKE":
+                    name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Text;
+                    db = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Token.Text;
+                    line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+                    column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+                    return new Revoke(line, column, name, db);
+            }
+            return null;
+        }
+
+        #endregion
+
         private List<Object> VALORES(ParseTreeNode nodo)
         {
             if (nodo.ChildNodes.Count == 3)

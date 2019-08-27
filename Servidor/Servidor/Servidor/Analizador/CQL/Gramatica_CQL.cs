@@ -64,7 +64,13 @@ namespace Servidor.Analizador.CQL
                 TCOUNTER = ToTerm("counter"),
                 TMAP = ToTerm("Map"),
                 TSET = ToTerm("Set"),
-                TLIST = ToTerm("List")
+                TLIST = ToTerm("List"),
+                RUSER = ToTerm("USER"),
+                RGRANT = ToTerm("GRANT"),
+                RREVOKE = ToTerm("REVOKE"),
+                RON = ToTerm("ON"),
+                RWITH = ToTerm("WITH"),
+                RPASSWORD = ToTerm("PASSWORD")
                 ;
             #endregion
 
@@ -94,7 +100,11 @@ namespace Servidor.Analizador.CQL
                 TIPO_DATO = new NonTerminal("TIPO_DATO"),
                 IFN_PK = new NonTerminal("IFN_PK"),
                 IFC_PK = new NonTerminal("IFC_PK"),
-                TCL = new NonTerminal("TCL")
+                TCL = new NonTerminal("TCL"),
+                DCL =new NonTerminal("DCL"),
+                CREATE_USER = new NonTerminal("CREATE_USER"),
+                GRANT = new NonTerminal("GRANT"),
+                REVOKE = new NonTerminal("REVOKE")
                 ;
 
 
@@ -107,7 +117,8 @@ namespace Servidor.Analizador.CQL
                 | Instruccion;
 
             Instruccion.Rule = DDL
-                | TCL;
+                | TCL
+                | DCL;
 
             DDL.Rule = CREATE_DB
                 | PUSE
@@ -116,6 +127,10 @@ namespace Servidor.Analizador.CQL
                 | ALTER_TABLE
                 | DROP_TABLE
                 | TRUNCATE_TABLE;
+
+            DCL.Rule = CREATE_USER
+                | GRANT
+                | REVOKE;
 
             #region DDL
             // CREATE DATABASE
@@ -168,6 +183,14 @@ namespace Servidor.Analizador.CQL
                 | RROLLBACK + PTCOMA;
             #endregion
 
+            #region DCL
+            CREATE_USER.Rule = RCREATE + RUSER + IDENTIFICADOR + RWITH + RPASSWORD + CADENA +PTCOMA;
+
+            GRANT.Rule = RGRANT + IDENTIFICADOR + RON + IDENTIFICADOR + PTCOMA;
+
+            REVOKE.Rule = RREVOKE + IDENTIFICADOR + RON + IDENTIFICADOR + PTCOMA;
+
+            #endregion
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | TSET
