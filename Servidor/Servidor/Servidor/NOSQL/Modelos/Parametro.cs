@@ -25,7 +25,12 @@ namespace Servidor.NOSQL.Modelos
             string tabs = Program.getTabulaciones(num_tabs);
             string salida = tabs;
             salida += "\"NAME\" = \"" + name + "\",\n";
-            salida += tabs + "\"TYPE\" = \"" + type + "\",\n";
+            if (type.ToLower().Equals("set") || type.ToLower().Equals("list"))
+                salida += tabs + "\"TYPE\" = \"" + type + "<" + attr1 + ">\",\n";
+            else if (type.ToLower().Equals("map"))
+                salida += tabs + "\"TYPE\" = \"" + type + "<" + attr1 + "," + attr2 + ">\",\n";
+            else
+                salida += tabs + "\"TYPE\" = \"" + type + "\",\n";
             salida += tabs + "\"AS\" = " + out__ + "\n";
             return salida;
         }

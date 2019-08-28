@@ -32,12 +32,19 @@ namespace Servidor.Analizador.CHISON
             ParseTreeNode raiz = arbol.Root;
 
             //instanciamos un objeto para la base de datos no-sql
-            db_nosql = new Manejo();
+            
+            if (raiz != null && arbol.ParserMessages.Count == 0)
+            {
+                db_nosql = new Manejo();
+                Instrucciones(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+                return arbol.Root.ChildNodes.ElementAt(0);
+            }
+            else {
 
-            Instrucciones(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
-
-
-            return arbol.Root.ChildNodes.ElementAt(0);
+                Program.addError(arbol);
+                Program.writeErrors();
+                return null;
+            }
         }
 
         private void Instrucciones(ParseTreeNode nodo)
@@ -124,7 +131,7 @@ namespace Servidor.Analizador.CHISON
 
                                     //aqui exportamos los archivos de bases de datos
 
-                                    String text = System.IO.File.ReadAllText("./NOSQL/Generados/"+new_db.Link);
+                                    String text = System.IO.File.ReadAllText("./NOSQL/Generados/" + new_db.Link);
 
                                     LanguageData lenguaje = new LanguageData(new Gramatica_Import_DATABASE());
                                     Parser parser = new Parser(lenguaje);
@@ -318,16 +325,18 @@ namespace Servidor.Analizador.CHISON
                     foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
                     {
                         if (item.Name.ToLower().Equals("\"name\"")) new_column.Name = item.Valor.ToString();
-                        else if (item.Name.ToLower().Equals("\"type\"")) {
-                            if (item.Valor.ToString().ToLower().Contains("set")) {
+                        else if (item.Name.ToLower().Equals("\"type\""))
+                        {
+                            if (item.Valor.ToString().ToLower().Contains("set"))
+                            {
                                 new_column.Type = "SET";
-                                new_column.Attr1 = item.Valor.ToString().ToLower().Replace("set<","").Replace(">","");
+                                new_column.Attr1 = item.Valor.ToString().ToLower().Replace("set<", "").Replace(">", "");
 
                             }
                             else if (item.Valor.ToString().ToLower().Contains("map"))
                             {
                                 new_column.Type = "MAP";
-                                string [] attrsa = item.Valor.ToString().ToLower().Replace("map<", "").Replace(">", "").Split(",");
+                                string[] attrsa = item.Valor.ToString().ToLower().Replace("map<", "").Replace(">", "").Split(",");
 
                                 new_column.Attr1 = attrsa.ElementAt(0);
                                 new_column.Attr2 = attrsa.ElementAt(1);
@@ -439,7 +448,7 @@ namespace Servidor.Analizador.CHISON
 
                 case "DATA_DATA6":
                     tipo_real = getType(nodo.ChildNodes[2].ChildNodes.ElementAt(0));
-                    Valor val = new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)),tipo_real);
+                    Valor val = new Valor(Ejecutar(nodo.ChildNodes.ElementAt(0)).ToString(), Ejecutar(nodo.ChildNodes.ElementAt(2)), tipo_real);
                     return val;
 
                 case "ATTRIBUTES":
@@ -538,7 +547,7 @@ namespace Servidor.Analizador.CHISON
                     foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
                     {
                         if (item.Name.ToLower().Equals("\"name\"")) new_param.Name = item.Valor.ToString();
-                        else if (item.Name.ToLower().Equals("\"type\"")) 
+                        else if (item.Name.ToLower().Equals("\"type\""))
                         {
 
                             if (item.Valor.ToString().ToLower().Contains("set"))
@@ -629,13 +638,13 @@ namespace Servidor.Analizador.CHISON
                     if (nodo.ChildNodes.Count == 3)
                     {
                         List<Item_List> valores = (List<Item_List>)Ejecutar(nodo.ChildNodes.ElementAt(0));
-                        valores.Add((Item_List) Ejecutar(nodo.ChildNodes.ElementAt(2)));
+                        valores.Add((Item_List)Ejecutar(nodo.ChildNodes.ElementAt(2)));
                         return valores;
                     }
                     else if (nodo.ChildNodes.Count == 1)
                     {
                         List<Item_List> valores = new List<Item_List>();
-                        valores.Add((Item_List) Ejecutar(nodo.ChildNodes.ElementAt(0)));
+                        valores.Add((Item_List)Ejecutar(nodo.ChildNodes.ElementAt(0)));
                         return valores;
                     }
                     else
@@ -755,12 +764,13 @@ namespace Servidor.Analizador.CHISON
             }
             return null;
         }
-        private int getType(ParseTreeNode nodo) {
+        private int getType(ParseTreeNode nodo)
+        {
             string opcion = nodo.Term.Name;
             switch (opcion)
             {
                 case "Cadena":
-                   return 7;
+                    return 7;
                 case "Numero":
                     try
                     {
@@ -770,7 +780,7 @@ namespace Servidor.Analizador.CHISON
                     }
                     catch (Exception)
                     {
-                        
+
                         Convert.ToDouble(nodo.ChildNodes[0].ChildNodes.ElementAt(0).Token.Text);
                         return 4;
                     }
@@ -784,7 +794,7 @@ namespace Servidor.Analizador.CHISON
                     return 5;
 
                 case "FALSE":
-                   return 5;
+                    return 5;
 
                 case "Date":
                     return 6;

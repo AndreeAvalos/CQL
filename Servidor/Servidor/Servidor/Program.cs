@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Irony;
+using Irony.Parsing;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Servidor.Analizador.CHISON;
 using Servidor.NOSQL.Estructuras;
+using Servidor.NOSQL.Modelos;
 
 namespace Servidor
 {
@@ -16,8 +20,8 @@ namespace Servidor
     {
         public static Manejo sistema, backup_sistema;
         public static List<string> log_errores = new List<string>();
-
-
+        public static List<Error> errors = new List<Error>();
+        private static DateTime date;
         public static bool bloqueada = false;//para pruebas funcionara sin logearse
         public static string user_activo = "Andree";//para pruebas 
         public static void Main(string[] args)
@@ -29,6 +33,7 @@ namespace Servidor
 
         private static void crearDB()
         {
+            
             String text = File.ReadAllText("./NOSQL/Generados/Principal.chison");
             sistema = new Manejo();
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
@@ -118,16 +123,18 @@ namespace Servidor
             sistema = backup_sistema;
         }
 
-        public static bool execCommit() {
+        public static bool execCommit()
+        {
             string path = "./NOSQL/Generados/Principal.chison";
             string text = "$<\n";
-            text += sistema.execComit(1) +"\n";
+            text += sistema.execComit(1) + "\n";
             text += ">$";
             File.WriteAllText(path, text);
             return true;
         }
 
-        public static string getTabulaciones(int num_tabs) {
+        public static string getTabulaciones(int num_tabs)
+        {
 
             string tabulaciones = "";
             for (int i = 0; i < num_tabs; i++)
@@ -137,6 +144,48 @@ namespace Servidor
             }
             return tabulaciones;
         }
+
+        public static List<string> lst_Errors(ParseTree arbol)
+        {
+            List<string> salida = new List<string>();
+            foreach (LogMessage item in arbol.ParserMessages)
+            {
+                if (item.Message.ToString().Contains("Invalid character"))
+                {
+                    salida.Add(buildError(item.Location.Line, item.Location.Column, "Lexico", item.Message.ToString()));
+                }
+                else salida.Add(buildError(item.Location.Line, item.Location.Column, "Sintactico", item.Message.ToString()));
+            }
+            return salida;
+        }
+        public static void addError(ParseTree arbol)
+        {
+           
+            foreach (LogMessage item in arbol.ParserMessages)
+            {
+                if (item.Message.ToString().Contains("Invalid character"))
+                {
+                    date = DateTime.Now;
+                    errors.Add(new Error("Lexico", item.Message, item.Location.Line, item.Location.Column,date.Date.Day+"/"+date.Month+"/"+date.Year,date.Hour+":"+date.Minute+":"+date.Second));
+                   
+                }
+                else errors.Add(new Error("Sintactico", item.Message, item.Location.Line, item.Location.Column, date.Date.Day + "/" + date.Month + "/" + date.Year, date.Hour + ":" + date.Minute + ":" + date.Second));
+
+            }
+
+        }
+        public static void writeErrors()
+        {
+            string salida = JsonConvert.SerializeObject(Program.errors);
+            File.WriteAllText("./NOSQL/Generados/Log_Errors", salida);
+        }
+        public static void readErrors()
+        {
+            string entrada = File.ReadAllText("./NOSQL/Generados/Log_Errors");
+            errors = JsonConvert.DeserializeObject<List<Error>>(entrada);
+
+        }
+
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();

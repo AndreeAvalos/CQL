@@ -127,6 +127,7 @@ namespace Servidor.Analizador.CQL
 
             #region Gramatica
             S.Rule = Instrucciones;
+            S.ErrorRule = SyntaxError + CORIZQ;
 
             Instrucciones.Rule = Instrucciones + Instruccion
                 | Instruccion;
@@ -135,6 +136,7 @@ namespace Servidor.Analizador.CQL
                 | DDL
                 | TCL
                 | DCL;
+            Instruccion.ErrorRule = SyntaxError + PTCOMA;
 
             USER_TYPE.Rule = CREATE_TYPE
                 | ALTER_TYPE

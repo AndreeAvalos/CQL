@@ -125,11 +125,17 @@ namespace Servidor.NOSQL.Modelos
                 {
                     if (i == lst_aux.Count - 1)
                     {
-                        salida += lst_aux.ElementAt(i).Valor.ToString();
+                        if (lst_aux.ElementAt(i).Valor != null)
+                            salida += lst_aux.ElementAt(i).Valor.ToString();
+                        else
+                            salida += "null";
                     }
                     else
                     {
+                        if(lst_aux.ElementAt(i).Valor!=null)
                         salida += lst_aux.ElementAt(i).Valor.ToString() + ",";
+                        else
+                            salida += "null,";
                     }
 
 
