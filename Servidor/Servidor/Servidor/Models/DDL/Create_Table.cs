@@ -141,7 +141,7 @@ namespace Servidor.Models
                                         is_ok = false;
 
                                         //informar que no existe ese tipo de dato
-                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Attr1 + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Attr2 + " no es primitivo, ni es parte de los objetos de la base de datos."));
                                     }
                                 }
 
