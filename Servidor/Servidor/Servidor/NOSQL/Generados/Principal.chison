@@ -69,6 +69,11 @@ $<
 							"NAME"= "auto",
 							"TYPE"= "automovil",
 							"PK"= FALSE
+						>,
+						<
+							"NAME"= "prueba",
+							"TYPE"= "MAP<int,int>",
+							"PK"= FALSE
 						>
 					],
 					"DATA" = [
