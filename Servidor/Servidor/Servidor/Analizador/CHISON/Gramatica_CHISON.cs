@@ -135,18 +135,18 @@ namespace Servidor.Analizador.CHISON
                 | USERS;
 
             DATABASES.Rule = RDATABASES + IGUAL + CORIZQ + DATABASES2 + CORDER;
-            DATABASES.ErrorRule = SyntaxError + CORDER;
+
 
             DATABASES2.Rule = DATABASES2 + COMA + DATABASE
                 | DATABASE
                 | Empty;
+            DATABASES2.ErrorRule = SyntaxError + MENQUE;
 
             DATABASE.Rule = MENQUE + DATABASE2 + MAYQUE;
-            DATABASE.ErrorRule = SyntaxError + MAYQUE;
+
 
             DATABASE2.Rule = DATABASE2 + COMA + DATABASE3
                 | DATABASE3;
-            DATABASE2.ErrorRule = SyntaxError + COMA;
 
             DATABASE3.Rule = NAME
                 | DATA;
@@ -154,7 +154,7 @@ namespace Servidor.Analizador.CHISON
             NAME.Rule = RNAME + IGUAL + VALOR;
 
             DATA.Rule = RDATA + IGUAL + CORIZQ + DATA5 + CORDER;
-            DATA.ErrorRule = SyntaxError + CORDER;
+
 
             DATA5.Rule = DATA5 + COMA + DATA2
                 | DATA2
@@ -163,11 +163,10 @@ namespace Servidor.Analizador.CHISON
             DATA5.ErrorRule = SyntaxError + COMA;
 
             DATA2.Rule = MENQUE + DATA3 + MAYQUE;
-            DATA2.ErrorRule = SyntaxError + MAYQUE;
 
             DATA3.Rule = DATA3 + COMA + DATA4
                 | DATA4;
-            DATA3.ErrorRule = SyntaxError + COMA;
+
             DATA4.Rule = CQL_TYPE
                 | NAME
                 | TABLA
@@ -181,18 +180,18 @@ namespace Servidor.Analizador.CHISON
             CQL_TYPE.Rule = RCQL_TYPE + IGUAL + VALOR;
 
             COLUMNS.Rule = RCOLUMNS + IGUAL + CORIZQ + COLUMNS4 + CORDER;
-            COLUMNS.ErrorRule = SyntaxError + CORDER;
+
             COLUMNS4.Rule = COLUMNS4 + COMA + COLUMNS2
                 | COLUMNS2
 				| Empty;
-            COLUMNS4.ErrorRule = SyntaxError + COMA;
+
             COLUMNS2.Rule = MENQUE + COLUMNS3 + MAYQUE;
-            COLUMNS2.ErrorRule = SyntaxError + MAYQUE;    
+
 
 
             COLUMNS3.Rule = COLUMNS3 + COMA + COLUMN
                 | COLUMN;
-            COLUMNS3.ErrorRule = SyntaxError + COMA;
+
 
             COLUMN.Rule = NAME
                 | TYPE
@@ -203,34 +202,37 @@ namespace Servidor.Analizador.CHISON
             PK.Rule = RPK + IGUAL + BOOL;
 
             DATA_DATA.Rule = RDATA + IGUAL + CORIZQ + DATA_DATA2 + CORDER;
-            DATA_DATA.ErrorRule = SyntaxError + CORDER;
+
             DATA_DATA2.Rule = ruta_import
                 | DATA_DATA3
                 | Empty;
 
             DATA_DATA3.Rule = DATA_DATA3 + COMA + DATA_DATA4
                 | DATA_DATA4;
-            DATA_DATA3.ErrorRule = SyntaxError + COMA;
+
             DATA_DATA4.Rule = MENQUE + DATA_DATA5 + MAYQUE;
-            DATA_DATA4.ErrorRule = SyntaxError + MAYQUE;
+
 
             DATA_DATA5.Rule = DATA_DATA5 + COMA + DATA_DATA6
                 | DATA_DATA6;
-            DATA_DATA5.ErrorRule = SyntaxError + COMA;
+
             DATA_DATA6.Rule = VALOR + IGUAL + VALOR;
 
             OBJETO.Rule = ATTRIBUTES;
+
             ATTRIBUTES.Rule = RATTRS + IGUAL + CORIZQ + ATTRIBUTES2 + CORDER;
-            ATTRIBUTES.ErrorRule = SyntaxError + CORDER;
+
+
             ATTRIBUTES2.Rule = ATTRIBUTES2 + COMA + ATTRIBUTES3
                 | ATTRIBUTES3
                 | Empty;
-            ATTRIBUTES2.ErrorRule = SyntaxError + COMA;
+
             ATTRIBUTES3.Rule = MENQUE + ATTRIBUTES4 + MAYQUE;
-            ATTRIBUTES3.ErrorRule = SyntaxError + MAYQUE;
+
             ATTRIBUTES4.Rule = ATTRIBUTES4 + COMA + ATTRIBUTE
                 | ATTRIBUTE;
-            ATTRIBUTES4.ErrorRule = SyntaxError + COMA;
+
+
             ATTRIBUTE.Rule = NAME
                 | TYPE;
 
@@ -240,15 +242,15 @@ namespace Servidor.Analizador.CHISON
             INSTR.Rule = RINSTR + IGUAL + CONT_DATA_IMPORT;
 
             PARAMETERS.Rule = RPARAMETERS + IGUAL + CORIZQ + PARAMETERS2 + CORDER;
-            PARAMETER.ErrorRule = SyntaxError + CORDER;
 
             PARAMETERS2.Rule = PARAMETERS2 + COMA + PARAMETERS3
                 | PARAMETERS3
 				| Empty;
-            PARAMETERS2.ErrorRule = SyntaxError + COMA;
+
 
             PARAMETERS3.Rule = MENQUE + PARAMETERS4 + MAYQUE;
             PARAMETERS3.ErrorRule = SyntaxError + MAYQUE;
+
             PARAMETERS4.Rule = PARAMETERS4 + COMA + PARAMETER
                 | PARAMETER;
 
@@ -296,7 +298,7 @@ namespace Servidor.Analizador.CHISON
             #endregion
 
             USERS.Rule = RUSERS + IGUAL + CORIZQ + USERS2 + CORDER;
-            USERS.ErrorRule = SyntaxError + CORDER;
+
 
             USERS2.Rule = USERS2 + COMA + USERS3
                 | USERS3
@@ -304,7 +306,7 @@ namespace Servidor.Analizador.CHISON
             USERS2.ErrorRule = SyntaxError + COMA;
 
             USERS3.Rule = MENQUE + USERS4 + MAYQUE;
-            USERS3.ErrorRule = SyntaxError + MAYQUE;
+
 
             USERS4.Rule = USERS4 + COMA + USER
                 | USER;
@@ -316,14 +318,14 @@ namespace Servidor.Analizador.CHISON
             PASSWORD.Rule = RPASSWORD + IGUAL + VALOR;
 
             PERMISSIONS.Rule = RPERMISSIONS + IGUAL + CORIZQ + PERMISSIONS2 + CORDER;
-            PERMISSION.ErrorRule = SyntaxError + CORDER;
+
 
             PERMISSIONS2.Rule = PERMISSIONS2 + COMA + PERMISSION
                 | PERMISSION
                 | Empty;
 
             PERMISSION.Rule = MENQUE + NAME + MAYQUE;
-            PERMISSION.ErrorRule = SyntaxError + MAYQUE;
+
 
             #endregion
 

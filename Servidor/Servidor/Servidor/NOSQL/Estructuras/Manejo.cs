@@ -28,6 +28,13 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
+        public void deleteDBFROMUSER(string db) {
+
+            foreach (Usuario item in usuarios)
+            {
+                item.deletePermiso(db);
+            }
+        }
 
         public string execComit(int num_tabs)
         {

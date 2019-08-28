@@ -33,17 +33,16 @@ namespace Servidor
 
         private static void crearDB()
         {
-            
+            readErrors();
             String text = File.ReadAllText("./NOSQL/Generados/Principal.chison");
             sistema = new Manejo();
             Sintactico_CHISHON sintactico = new Sintactico_CHISHON();
 
-            if (sintactico.Validar(text, new Gramatica_CHISON()))
-            {
-                sintactico.Analizar(text, new Gramatica_CHISON());
-                sistema = sintactico.db_nosql;
-                backup_sistema = sistema;
-            }
+
+            sintactico.Analizar(text, new Gramatica_CHISON());
+            sistema = sintactico.db_nosql;
+            backup_sistema = sistema;
+
         }
         public static bool comprobarPrimitivo(string name)
         {
@@ -160,14 +159,14 @@ namespace Servidor
         }
         public static void addError(ParseTree arbol)
         {
-           
+
             foreach (LogMessage item in arbol.ParserMessages)
             {
                 if (item.Message.ToString().Contains("Invalid character"))
                 {
                     date = DateTime.Now;
-                    errors.Add(new Error("Lexico", item.Message, item.Location.Line, item.Location.Column,date.Date.Day+"/"+date.Month+"/"+date.Year,date.Hour+":"+date.Minute+":"+date.Second));
-                   
+                    errors.Add(new Error("Lexico", item.Message, item.Location.Line, item.Location.Column, date.Date.Day + "/" + date.Month + "/" + date.Year, date.Hour + ":" + date.Minute + ":" + date.Second));
+
                 }
                 else errors.Add(new Error("Sintactico", item.Message, item.Location.Line, item.Location.Column, date.Date.Day + "/" + date.Month + "/" + date.Year, date.Hour + ":" + date.Minute + ":" + date.Second));
 
@@ -177,13 +176,13 @@ namespace Servidor
         public static void writeErrors()
         {
             string salida = JsonConvert.SerializeObject(Program.errors);
-            File.WriteAllText("./NOSQL/Generados/Log_Errors", salida);
+            File.WriteAllText("./NOSQL/Generados/Log_Errors.json", salida);
         }
         public static void readErrors()
         {
-            string entrada = File.ReadAllText("./NOSQL/Generados/Log_Errors");
-            errors = JsonConvert.DeserializeObject<List<Error>>(entrada);
-
+            string entrada = File.ReadAllText("./NOSQL/Generados/Log_Errors.json");
+            if (JsonConvert.DeserializeObject<List<Error>>(entrada) != null)
+                errors = JsonConvert.DeserializeObject<List<Error>>(entrada);
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

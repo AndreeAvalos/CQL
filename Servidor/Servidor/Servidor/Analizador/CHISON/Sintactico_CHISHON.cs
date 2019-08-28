@@ -32,14 +32,15 @@ namespace Servidor.Analizador.CHISON
             ParseTreeNode raiz = arbol.Root;
 
             //instanciamos un objeto para la base de datos no-sql
-            
+
             if (raiz != null && arbol.ParserMessages.Count == 0)
             {
                 db_nosql = new Manejo();
                 Instrucciones(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
                 return arbol.Root.ChildNodes.ElementAt(0);
             }
-            else {
+            else
+            {
 
                 Program.addError(arbol);
                 Program.writeErrors();
@@ -138,12 +139,19 @@ namespace Servidor.Analizador.CHISON
                                     ParseTree arbol = parser.Parse(text);
                                     ParseTreeNode raiz = arbol.Root;
 
-
-                                    foreach (Tipo_Objeto item2 in (List<Tipo_Objeto>)Ejecutar(raiz.ChildNodes.ElementAt(0)))
+                                    if (raiz != null && arbol.ParserMessages.Count == 0)
                                     {
-                                        if (item2.Name.Equals("table")) new_db.Tablas.Add((Tabla)item2.Valor);
-                                        else if (item2.Name.Equals("object")) new_db.Objetos.Add((Objeto)item2.Valor);
-                                        else if (item2.Name.Equals("procedure")) new_db.Procedures.Add((Procedure)item2.Valor);
+                                        foreach (Tipo_Objeto item2 in (List<Tipo_Objeto>)Ejecutar(raiz.ChildNodes.ElementAt(0)))
+                                        {
+                                            if (item2.Name.Equals("table")) new_db.Tablas.Add((Tabla)item2.Valor);
+                                            else if (item2.Name.Equals("object")) new_db.Objetos.Add((Objeto)item2.Valor);
+                                            else if (item2.Name.Equals("procedure")) new_db.Procedures.Add((Procedure)item2.Valor);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Program.addError(arbol);
+
                                     }
                                 }
                             }
@@ -245,9 +253,21 @@ namespace Servidor.Analizador.CHISON
                                 ParseTree arbol = parser.Parse(text);
                                 ParseTreeNode raiz = arbol.Root;
 
+                                if (raiz != null && arbol.ParserMessages.Count == 0)
+                                {
+
+                                    tabla_aux.Filas = (List<Fila>)Ejecutar(raiz.ChildNodes.ElementAt(0));
+
+                                }
+                                else
+                                {
+                                    Program.addError(arbol);
+
+                                }
+
                                 //instanciamos un objeto para la base de datos no-sql
 
-                                tabla_aux.Filas = (List<Fila>)Ejecutar(raiz.ChildNodes.ElementAt(0));
+
 
                             }
                         }
@@ -405,6 +425,7 @@ namespace Servidor.Analizador.CHISON
                             link = link.Replace(" }$", "");
                             aux__.Export = true;
                             aux__.Link = link;
+
                             return aux__;
                         }
 
