@@ -116,7 +116,10 @@ namespace Servidor.Analizador.CQL
                 DELETE_TYPE = new NonTerminal("DELETE_TYPE"),
                 CREATE_USER = new NonTerminal("CREATE_USER"),
                 GRANT = new NonTerminal("GRANT"),
-                REVOKE = new NonTerminal("REVOKE")
+                REVOKE = new NonTerminal("REVOKE"),
+                SET = new NonTerminal("SET"),
+                MAP = new NonTerminal("MAP"),
+                LISTA = new NonTerminal("LISTA")
                 ;
 
 
@@ -153,7 +156,7 @@ namespace Servidor.Analizador.CQL
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
             CREATE_TYPE.Rule = RCREATE + RTYPE + IFNE + IDENTIFICADOR + PARIZQ + USER_CONTENT + PARDER + PTCOMA;
             ///RECURSIVIDAD
-            USER_CONTENT.Rule = USER_CONTENT + COMA + USER_CONTENT2           
+            USER_CONTENT.Rule = USER_CONTENT + COMA + USER_CONTENT2
                 | USER_CONTENT2;
             //CUI INT
             USER_CONTENT2.Rule = IDENTIFICADOR + TIPO_DATO;
@@ -219,7 +222,7 @@ namespace Servidor.Analizador.CQL
             #endregion
 
             #region DCL
-            CREATE_USER.Rule = RCREATE + RUSER + IDENTIFICADOR + RWITH + RPASSWORD + CADENA +PTCOMA;
+            CREATE_USER.Rule = RCREATE + RUSER + IDENTIFICADOR + RWITH + RPASSWORD + CADENA + PTCOMA;
 
             GRANT.Rule = RGRANT + IDENTIFICADOR + RON + IDENTIFICADOR + PTCOMA;
 
@@ -228,19 +231,22 @@ namespace Servidor.Analizador.CQL
             #endregion
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
-                | TSET
+                | SET
                 | TTIME
                 | TDATE
                 | TCOUNTER
                 | TDOUBLE
                 | TBOOLEAN
                 | TINT
-                | TMAP
-                | TLIST
+                | MAP
+                | LISTA
                 | IDENTIFICADOR
                 | RNULL
                 ;
 
+            SET.Rule = TSET + MENQUE + TIPO_DATO + MAYQUE;
+            MAP.Rule = TMAP + MENQUE + VALOR + COMA + VALOR + MAYQUE;
+            LISTA.Rule = TLIST + MENQUE + VALOR + MAYQUE;
             // SI VIENE POR EJEMPLO 1,2,3,4 O PERSONA, PERRO, CARRO O TRUE, FALSE, TRUE
             VALORES.Rule = VALORES + COMA + VALOR
                 | VALOR;

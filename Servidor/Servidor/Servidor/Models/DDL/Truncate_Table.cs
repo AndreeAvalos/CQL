@@ -52,7 +52,7 @@ namespace Servidor.Models
             else
             {
                 //no hay ninguna base de datos seleccionada.
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No existe ninguna base de datos en uso."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "UseBDException."));
             }
 
             return null;

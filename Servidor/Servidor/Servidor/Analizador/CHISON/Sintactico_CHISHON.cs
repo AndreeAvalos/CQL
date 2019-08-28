@@ -318,7 +318,29 @@ namespace Servidor.Analizador.CHISON
                     foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
                     {
                         if (item.Name.ToLower().Equals("\"name\"")) new_column.Name = item.Valor.ToString();
-                        else if (item.Name.ToLower().Equals("\"type\"")) new_column.Type = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"type\"")) {
+                            if (item.Valor.ToString().ToLower().Contains("set")) {
+                                new_column.Type = "SET";
+                                new_column.Attr1 = item.Valor.ToString().ToLower().Replace("set<","").Replace(">","");
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("map"))
+                            {
+                                new_column.Type = "MAP";
+                                string [] attrsa = item.Valor.ToString().ToLower().Replace("map<", "").Replace(">", "").Split(",");
+
+                                new_column.Attr1 = attrsa.ElementAt(0);
+                                new_column.Attr2 = attrsa.ElementAt(1);
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("list"))
+                            {
+                                new_column.Type = "LIST";
+                                new_column.Attr1 = item.Valor.ToString().ToLower().Replace("list<", "").Replace(">", "");
+
+                            }
+                            else new_column.Type = item.Valor.ToString();
+                        }
                         else if (item.Name.ToLower().Equals("\"pk\""))
                         {
                             if (item.Valor.ToString().ToLower().Equals("false")) new_column.Pk = false;
@@ -443,7 +465,32 @@ namespace Servidor.Analizador.CHISON
                     foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
                     {
                         if (item.Name.ToLower().Equals("\"name\"")) atributo_new.Name = item.Valor.ToString();
-                        else if (item.Name.ToLower().Equals("\"type\"")) atributo_new.Type = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"type\""))
+                        {
+
+                            if (item.Valor.ToString().ToLower().Contains("set"))
+                            {
+                                atributo_new.Type = "SET";
+                                atributo_new.Attr1 = item.Valor.ToString().ToLower().Replace("set<", "").Replace(">", "");
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("map"))
+                            {
+                                atributo_new.Type = "MAP";
+                                string[] attrsa = item.Valor.ToString().ToLower().Replace("map<", "").Replace(">", "").Split(",");
+
+                                atributo_new.Attr1 = attrsa.ElementAt(0);
+                                atributo_new.Attr2 = attrsa.ElementAt(1);
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("list"))
+                            {
+                                atributo_new.Type = "LIST";
+                                atributo_new.Attr1 = item.Valor.ToString().ToLower().Replace("list<", "").Replace(">", "");
+
+                            }
+                            else atributo_new.Type = item.Valor.ToString();
+                        }
                         else
                         {
                             //algun error
@@ -491,7 +538,32 @@ namespace Servidor.Analizador.CHISON
                     foreach (Tipo_Objeto item in (List<Tipo_Objeto>)Ejecutar(nodo.ChildNodes.ElementAt(1)))
                     {
                         if (item.Name.ToLower().Equals("\"name\"")) new_param.Name = item.Valor.ToString();
-                        else if (item.Name.ToLower().Equals("\"type\"")) new_param.Type = item.Valor.ToString();
+                        else if (item.Name.ToLower().Equals("\"type\"")) 
+                        {
+
+                            if (item.Valor.ToString().ToLower().Contains("set"))
+                            {
+                                new_param.Type = "SET";
+                                new_param.Attr1 = item.Valor.ToString().ToLower().Replace("set<", "").Replace(">", "");
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("map"))
+                            {
+                                new_param.Type = "MAP";
+                                string[] attrsa = item.Valor.ToString().ToLower().Replace("map<", "").Replace(">", "").Split(",");
+
+                                new_param.Attr1 = attrsa.ElementAt(0);
+                                new_param.Attr2 = attrsa.ElementAt(1);
+
+                            }
+                            else if (item.Valor.ToString().ToLower().Contains("list"))
+                            {
+                                new_param.Type = "LIST";
+                                new_param.Attr1 = item.Valor.ToString().ToLower().Replace("list<", "").Replace(">", "");
+
+                            }
+                            else new_param.Type = item.Valor.ToString();
+                        }
                         else if (item.Name.ToLower().Equals("\"as\""))
                         {
                             if (item.Valor.ToString().ToLower().Equals("in"))

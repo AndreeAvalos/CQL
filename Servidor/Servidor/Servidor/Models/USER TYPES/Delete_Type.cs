@@ -29,7 +29,7 @@ namespace Servidor.Models.USER_TYPES
                 }
                 else
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + name + " no existe en la base de datos."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", name + " TypeDontExists."));
                 }
 
 

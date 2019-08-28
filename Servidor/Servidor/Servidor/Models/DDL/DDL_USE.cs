@@ -35,7 +35,7 @@ namespace Servidor.Models
                 else
                 {
                     //informar que no existe database
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos que desea usar no existe."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists"));
                 }
             }
             else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario no posee permisos para usar la base de datos."));

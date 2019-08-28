@@ -118,7 +118,7 @@ namespace Servidor.Analizador.CQL
                     linea = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                     columna = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                     name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
-                    return new Delete_Type(name,linea,columna);
+                    return new Delete_Type(name, linea, columna);
             }
             return null;
 
@@ -145,8 +145,23 @@ namespace Servidor.Analizador.CQL
             Atributo atributo = new Atributo
             {
                 Name = nodo.ChildNodes.ElementAt(0).Token.Text,
-                Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1))
             };
+                atributo.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
+
+
+            if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("SET"))
+            {
+
+            }
+            else if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("LISTA"))
+            {
+            }
+            else if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("MAP")) {
+
+            }
+            else{
+            }
+
             return atributo;
         }
 
@@ -248,9 +263,31 @@ namespace Servidor.Analizador.CQL
             Columna columna = new Columna
             {
                 Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", ""),
-                Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1)),
                 Pk = false
             };
+            if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("SET"))
+            {
+                columna.Type = "SET";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("LISTA"))
+            {
+                columna.Type = "LIST";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("MAP"))
+            {
+                columna.Type = "MAP";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+                columna.Attr2 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
+            }
+            else
+            {
+                columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
+            }
 
             return columna;
         }
@@ -303,7 +340,31 @@ namespace Servidor.Analizador.CQL
                 Name = nodo.ChildNodes.ElementAt(0).ToString().Replace(" (Identificador)", "")
             };
             ;
-            columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
+
+            if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("SET"))
+            {
+                columna.Type = "SET";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("LISTA"))
+            {
+                columna.Type = "LIST";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("MAP"))
+            {
+                columna.Type = "MAP";
+                columna.Collection = true;
+                columna.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+                columna.Attr2 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
+            }
+            else
+            {
+                columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
+            }
+            
             if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count != 0) columna.Pk = true;
             return columna;
         }

@@ -9,13 +9,16 @@ namespace Servidor.NOSQL.Modelos
     {
         string name;
         string type;
+        string attr1, attr2;
         bool pk;
-        bool modify = false;
+        bool collection = false;
 
         public string Name { get => name; set => name = value; }
         public string Type { get => type; set => type = value; }
         public bool Pk { get => pk; set => pk = value; }
-        public bool Modify { get => modify; set => modify = value; }
+        public string Attr1 { get => attr1; set => attr1 = value; }
+        public string Attr2 { get => attr2; set => attr2 = value; }
+        public bool Collection { get => collection; set => collection = value; }
 
         public bool isCounter() {
             if (type.ToLower().Equals("counter")) return true;

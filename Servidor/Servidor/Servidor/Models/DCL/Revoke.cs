@@ -50,7 +50,7 @@ namespace Servidor.Models.DCL
                     }
                     return null;
                 }
-                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", user + " UserDontExists."));
             }
             return null;
 

@@ -36,7 +36,8 @@ namespace Servidor.NOSQL.Modelos
             return false;
         }
 
-        public string execColumn(int num_tabs) {
+        public string execColumn(int num_tabs)
+        {
             string tabs = Program.getTabulaciones(num_tabs);
             num_tabs++;
             string salida = "";
@@ -47,14 +48,25 @@ namespace Servidor.NOSQL.Modelos
                 {
                     salida += tabs + "<\n";
                     salida += tabs2 + "\"NAME\"= \"" + columnas.ElementAt(i).Name + "\",\n";
-                    salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
+                    if (columnas.ElementAt(i).Type.ToLower().Equals("set")|| columnas.ElementAt(i).Type.ToLower().Equals("list"))
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "<" + Columnas.ElementAt(i).Attr1 + ">\",\n";
+                    else if(columnas.ElementAt(i).Type.ToLower().Equals("map"))
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "<" + Columnas.ElementAt(i).Attr1 + ","+ Columnas.ElementAt(i).Attr2 +">\",\n";
+                    else
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
                     salida += tabs2 + "\"PK\"= " + columnas.ElementAt(i).Pk.ToString().ToUpper() + "\n";
                     salida += tabs + ">\n";
                 }
-                else {
+                else
+                {
                     salida += tabs + "<\n";
                     salida += tabs2 + "\"NAME\"= \"" + columnas.ElementAt(i).Name + "\",\n";
-                    salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
+                    if (columnas.ElementAt(i).Type.ToLower().Equals("set")|| columnas.ElementAt(i).Type.ToLower().Equals("set"))
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "<" + Columnas.ElementAt(i).Attr1 + ">\",\n";
+                    else if (columnas.ElementAt(i).Type.ToLower().Equals("map"))
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "<" + Columnas.ElementAt(i).Attr1 + "," + Columnas.ElementAt(i).Attr2 + ">\",\n";
+                    else
+                        salida += tabs2 + "\"TYPE\"= \"" + columnas.ElementAt(i).Type + "\",\n";
                     salida += tabs2 + "\"PK\"= " + columnas.ElementAt(i).Pk.ToString().ToUpper() + "\n";
                     salida += tabs + ">,\n";
                 }
@@ -62,9 +74,10 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
-        public string execCommit(int num_tabs) {
+        public string execCommit(int num_tabs)
+        {
             string tabs = Program.getTabulaciones(num_tabs);
-            
+
             if (exportada)
             {
                 string salida = "";
@@ -72,16 +85,18 @@ namespace Servidor.NOSQL.Modelos
                 {
                     if (filas.Count - 1 == i)
                     {
-                       salida+= filas.ElementAt(i).writeImportFile()+"\n";
+                        salida += filas.ElementAt(i).writeImportFile() + "\n";
                     }
-                    else {
-                      salida+=  filas.ElementAt(i).writeImportFile()+",\n";
+                    else
+                    {
+                        salida += filas.ElementAt(i).writeImportFile() + ",\n";
                     }
                 }
-                File.WriteAllText("./NOSQL/Generados/"+ link, salida);
-                return tabs+ "${ " + link + " }$\n";
+                File.WriteAllText("./NOSQL/Generados/" + link, salida);
+                return tabs + "${ " + link + " }$\n";
             }
-            else {
+            else
+            {
                 string salida = "";
                 for (int i = 0; i < filas.Count; i++)
                 {
@@ -97,7 +112,7 @@ namespace Servidor.NOSQL.Modelos
                 }
 
 
-                return salida ;
+                return salida;
             }
 
         }
