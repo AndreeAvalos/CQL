@@ -43,12 +43,35 @@ $<
 						>,
 						<
 							"NAME"= "Tallas",
-							"TYPE"= "List<Int>",
+							"TYPE"= "LIST<int>",
 							"PK"= FALSE
 						>
 					],
 					"DATA" = [
 						${ jeansData.chison }$
+					]
+				>,
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "Alumno",
+					"COLUMNS" = [
+						<
+							"NAME"= "Id",
+							"TYPE"= "int",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "nombre",
+							"TYPE"= "string",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "auto",
+							"TYPE"= "automovil",
+							"PK"= FALSE
+						>
+					],
+					"DATA" = [
 					]
 				>,
 				<

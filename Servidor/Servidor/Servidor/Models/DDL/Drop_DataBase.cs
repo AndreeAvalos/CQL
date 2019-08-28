@@ -30,7 +30,7 @@ namespace Servidor.Models
             {
                 //informar que no existe database
 
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos que desea eliminar no existe."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists."));
 
             }
             return null;

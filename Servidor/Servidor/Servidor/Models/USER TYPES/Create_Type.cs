@@ -33,7 +33,7 @@ namespace Servidor.Models.USER_TYPES
                     if (existe == true)
                     {
                         //no hace nada
-                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El objeto " + id + " ya existe en la base de datos."));
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id + " TypeAlreadyExists."));
                         // marcar error
                     }
                     else

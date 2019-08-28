@@ -7,6 +7,7 @@
   <ItemGroup>
     <Folder Include="Analizador\LUP\arbol\" />
     <Folder Include="Models\DML\" />
+    <Folder Include="Models\FCL\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 

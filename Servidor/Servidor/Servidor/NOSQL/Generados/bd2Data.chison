@@ -30,7 +30,7 @@
 		>,
 		<
 			"NAME" = "Pacientes",
-			"TYPE" = "Set<Mascota>"
+			"TYPE" = "SET"
 		>
 	]
 >,
@@ -40,7 +40,7 @@
 	"PARAMETERS" = [
 		<
 			"NAME" = "@Pacientes",
-			"TYPE" = "Set<Mascota>",
+			"TYPE" = "SET",
 			"AS" = In
 		>,
 		<

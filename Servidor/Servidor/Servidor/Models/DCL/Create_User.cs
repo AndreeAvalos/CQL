@@ -24,7 +24,7 @@ namespace Servidor.Models.DCL
         {
             if (Program.sistema.existUser(user))
             {
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " ya existe en el sistema."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico",  user + " UserAlreadyExists."));
             }
             else
             {

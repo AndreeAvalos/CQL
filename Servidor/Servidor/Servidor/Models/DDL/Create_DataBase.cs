@@ -39,7 +39,7 @@ namespace Servidor.Models
                 else
                 {
                     //Imprimir error ya que la tabla 
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos "+id+" ya existe."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id+ " BDAlreadyExists."));
                 }
             }
             else {
