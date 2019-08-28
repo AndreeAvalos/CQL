@@ -1,7 +1,7 @@
 <
 	"ID"= 1,
 	"Nombre"= "Brevvuiks",
-	"Tallas"= []
+	"Tallas"= [null,2]
 >,
 <
 	"ID"= 2,

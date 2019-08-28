@@ -31,18 +31,26 @@ namespace Servidor.Analizador.CQL
             ParseTree arbol = parser.Parse(entrada);
             ParseTreeNode raiz = arbol.Root;
 
-            LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
-            TablaDeSimbolos global = new TablaDeSimbolos();
-
-            foreach (Instruccion ins in AST)
+            if (raiz != null && arbol.ParserMessages.Count == 0&& Program.sistema!=null)
             {
-                ins.Ejecutar(global);
-                foreach (string item in ins.getSalida())
+                LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
+                TablaDeSimbolos global = new TablaDeSimbolos();
+
+                foreach (Instruccion ins in AST)
                 {
-                    salida.Add(item);
+                    ins.Ejecutar(global);
+                    foreach (string item in ins.getSalida())
+                    {
+                        salida.Add(item);
+                    }
                 }
+                return arbol.Root.ChildNodes.ElementAt(0);
             }
-            return arbol.Root.ChildNodes.ElementAt(0);
+            else 
+            {
+                salida = Program.lst_Errors(arbol);
+                return null;
+            }
         }
 
         private LinkedList<Instruccion> Instrucciones(ParseTreeNode nodo)
@@ -146,20 +154,30 @@ namespace Servidor.Analizador.CQL
             {
                 Name = nodo.ChildNodes.ElementAt(0).Token.Text,
             };
+
+
+            if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("SET"))
+            {
+                atributo.Type = "SET";
+                atributo.Collection = true;
+                atributo.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("LISTA"))
+            {
+                atributo.Type = "LIST";
+                atributo.Collection = true;
+                atributo.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+            }
+            else if (nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name.Equals("MAP"))
+            {
+                atributo.Type = "MAP";
+                atributo.Collection = true;
+                atributo.Attr1 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+                atributo.Attr2 = TIPO_DATO(nodo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).ChildNodes.ElementAt(4));
+            }
+            else
+            {
                 atributo.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
-
-
-            if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("SET"))
-            {
-
-            }
-            else if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("LISTA"))
-            {
-            }
-            else if (nodo.ChildNodes.ElementAt(1).Term.Name.Equals("MAP")) {
-
-            }
-            else{
             }
 
             return atributo;
@@ -364,7 +382,7 @@ namespace Servidor.Analizador.CQL
             {
                 columna.Type = TIPO_DATO(nodo.ChildNodes.ElementAt(1));
             }
-            
+
             if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count != 0) columna.Pk = true;
             return columna;
         }

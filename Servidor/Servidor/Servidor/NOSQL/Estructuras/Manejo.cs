@@ -1,6 +1,8 @@
-﻿using Servidor.NOSQL.Modelos;
+﻿using Newtonsoft.Json;
+using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,10 +13,12 @@ namespace Servidor.NOSQL.Estructuras
         List<Usuario> usuarios;
         List<Database> databases;
 
+
         public Manejo()
         {
             this.Usuarios = new List<Usuario>();
             this.Databases = new List<Database>();
+
         }
         public bool existUser(string user_name) {
             foreach (Usuario item in usuarios)
@@ -24,6 +28,13 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
+        public void deleteDBFROMUSER(string db) {
+
+            foreach (Usuario item in usuarios)
+            {
+                item.deletePermiso(db);
+            }
+        }
 
         public string execComit(int num_tabs)
         {
@@ -425,4 +436,6 @@ namespace Servidor.NOSQL.Estructuras
             if (index != -1) databases.RemoveAt(index);
         }
     }
+
+
 }

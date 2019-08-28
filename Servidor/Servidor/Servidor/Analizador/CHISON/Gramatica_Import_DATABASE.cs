@@ -119,7 +119,7 @@ namespace Servidor.Analizador.CHISON
                 | Empty;
 
             DATA2.Rule = MENQUE + DATA3 + MAYQUE;
-
+            DATA2.ErrorRule = SyntaxError + MENQUE;
 
             DATA3.Rule = DATA3 + COMA + DATA4
                 | DATA4;

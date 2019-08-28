@@ -24,6 +24,7 @@ namespace Servidor.Models
             {
                 Program.sistema.deleteDataBase(id);
                 salida.Add(Program.buildMessage("La base de datos " + id + " fue eliminada con exito."));
+                Program.sistema.deleteDBFROMUSER(id.ToLower());
 
             }
             else
