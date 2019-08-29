@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Servidor.Analizador.CHISON;
+using Servidor.Models;
 using Servidor.NOSQL.Estructuras;
 using Servidor.NOSQL.Modelos;
 
@@ -44,6 +45,81 @@ namespace Servidor
             backup_sistema = sistema;
 
         }
+
+        public static Tipo getTipo(string name) {
+            Tipo real_type = Tipo.OBJETO;
+            switch (name)
+            {
+                case "int":
+                    real_type = Tipo.ENTERO;
+                    break;
+                case "double":
+                    real_type = Tipo.DECIMAL;
+                    break;
+                case "string":
+                    real_type = Tipo.CADENA;
+                    break;
+                case "boolean":
+                    real_type = Tipo.BOOLEANO;
+                    break;
+                case "time":
+                    real_type = Tipo.TIME;
+                    break;
+                case "date":
+                    real_type = Tipo.DATE;
+                    break;
+                case "map":
+                    real_type = Tipo.MAP;
+                    break;
+                case "set":
+                    real_type = Tipo.SET;
+                    break;
+                case "list":
+                    real_type = Tipo.LIST;
+                    break;
+                case "":
+                    real_type = Tipo.OBJETO;
+                    break;
+            }
+            return real_type;
+        }
+
+        public static Tipo getTipo2(string name)
+        {
+            Tipo real_type = Tipo.OBJETO;
+            switch (name)
+            {
+                case "numero":
+                    real_type = Tipo.ENTERO;
+                    break;
+                case "cadena":
+                    real_type = Tipo.CADENA;
+                    break;
+                case "boolean":
+                    real_type = Tipo.BOOLEANO;
+                    break;
+                case "time":
+                    real_type = Tipo.TIME;
+                    break;
+                case "date":
+                    real_type = Tipo.DATE;
+                    break;
+                case "map":
+                    real_type = Tipo.MAP;
+                    break;
+                case "set":
+                    real_type = Tipo.SET;
+                    break;
+                case "list":
+                    real_type = Tipo.LIST;
+                    break;
+                case "":
+                    real_type = Tipo.OBJETO;
+                    break;
+            }
+            return real_type;
+        }
+
         public static bool comprobarPrimitivo(string name)
         {
 

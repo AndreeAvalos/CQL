@@ -181,7 +181,7 @@ namespace Servidor.NOSQL.Estructuras
 
             foreach (Usuario item in usuarios)
             {
-                if (item.Name.Equals(usuario))
+                if (item.Name.ToLower().Equals(usuario.ToLower()))
                 {
                     usuario_actual = item;
                     break;

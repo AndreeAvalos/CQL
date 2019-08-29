@@ -28,6 +28,7 @@ namespace Servidor.Analizador.CQL
             #region Terminales
             KeyTerm
                 RARROBA = ToTerm("@"),
+                RMAS = ToTerm("+"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
                 IGUAL = ToTerm("="),
@@ -75,7 +76,10 @@ namespace Servidor.Analizador.CQL
                 RWITH = ToTerm("WITH"),
                 RPASSWORD = ToTerm("PASSWORD"),
                 RINSERT = ToTerm("INSERT INTO"),
-                RVALUES = ToTerm("VALUES")
+                RVALUES = ToTerm("VALUES"),
+                RNEW = ToTerm("NEW"),
+                RAS = ToTerm("AS"),
+                RLOG = ToTerm("LOG")
                 ;
             #endregion
 
@@ -107,7 +111,7 @@ namespace Servidor.Analizador.CQL
                 IFC_PK = new NonTerminal("IFC_PK"),
                 TCL = new NonTerminal("TCL"),
                 DCL = new NonTerminal("DCL"),
-                DML = new NonTerminal("DML"),
+                FCL = new NonTerminal("FCL"),
                 USER_TYPE = new NonTerminal("USER_TYPE"),
                 CREATE_TYPE = new NonTerminal("CREATE_TYPE"),
                 USER_CONTENT = new NonTerminal("USER_CONTENT"),
@@ -119,7 +123,14 @@ namespace Servidor.Analizador.CQL
                 REVOKE = new NonTerminal("REVOKE"),
                 SET = new NonTerminal("SET"),
                 MAP = new NonTerminal("MAP"),
-                LISTA = new NonTerminal("LISTA")
+                LISTA = new NonTerminal("LISTA"),
+                ASIGNACION = new NonTerminal("ASIGNACION"),
+                VARIABLES = new NonTerminal("VARIABLES"),
+                VARIABLE = new NonTerminal("VARIABLE"),
+                INICIALIZACION = new NonTerminal("INICIALIZACION"),
+                LOG = new NonTerminal("LOG"),
+                CADENAS = new NonTerminal("CADENAS"),
+                PCADENA = new NonTerminal("PCADENA")
                 ;
 
 
@@ -130,12 +141,14 @@ namespace Servidor.Analizador.CQL
             S.ErrorRule = SyntaxError + CORIZQ;
 
             Instrucciones.Rule = Instrucciones + Instruccion
-                | Instruccion;
+                | Instruccion
+                | Empty;
 
             Instruccion.Rule = USER_TYPE
                 | DDL
                 | TCL
-                | DCL;
+                | DCL
+                | FCL;
             Instruccion.ErrorRule = SyntaxError + PTCOMA;
 
             USER_TYPE.Rule = CREATE_TYPE
@@ -154,6 +167,9 @@ namespace Servidor.Analizador.CQL
                 | GRANT
                 | REVOKE;
 
+            FCL.Rule = ASIGNACION
+                | LOG;
+
             #region USER TYPES
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
             CREATE_TYPE.Rule = RCREATE + RTYPE + IFNE + IDENTIFICADOR + PARIZQ + USER_CONTENT + PARDER + PTCOMA;
@@ -170,7 +186,6 @@ namespace Servidor.Analizador.CQL
 
             DELETE_TYPE.Rule = RDELETE + RTYPE + IDENTIFICADOR + PTCOMA;
             #endregion
-
 
             #region DDL
             // CREATE DATABASE
@@ -231,6 +246,38 @@ namespace Servidor.Analizador.CQL
             REVOKE.Rule = RREVOKE + IDENTIFICADOR + RON + IDENTIFICADOR + PTCOMA;
 
             #endregion
+
+            #region FCL
+
+            ASIGNACION.Rule = TIPO_DATO + VARIABLES + PTCOMA;
+
+            VARIABLES.Rule = VARIABLES + COMA + VARIABLE
+                | VARIABLE;
+
+            VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION;
+
+            INICIALIZACION.Rule = IGUAL + VALOR
+                | IGUAL + RARROBA + IDENTIFICADOR
+                | IGUAL + RNEW + IDENTIFICADOR
+                | IGUAL + RNEW + MAP
+                | IGUAL + RNEW + SET
+                | IGUAL + RNEW + LISTA
+                | IGUAL + CORIZQ + VALORES + CORDER + RAS + IDENTIFICADOR
+                | IGUAL + CORIZQ + VALORES + CORDER
+                | Empty;
+
+            LOG.Rule = RLOG + PARIZQ + CADENAS + PARDER + PTCOMA;
+
+            CADENAS.Rule = CADENAS + RMAS + PCADENA
+                | PCADENA;
+
+            PCADENA.Rule = CADENA
+                | RARROBA + IDENTIFICADOR
+                | RDATE
+                | RTIME
+                | NUMERO;
+
+            #endregion
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | SET
@@ -244,6 +291,9 @@ namespace Servidor.Analizador.CQL
                 | LISTA
                 | IDENTIFICADOR
                 | RNULL
+                | TMAP
+                | TSET
+                | TLIST
                 ;
 
             SET.Rule = TSET + MENQUE + TIPO_DATO + MAYQUE;
@@ -265,6 +315,8 @@ namespace Servidor.Analizador.CQL
             //agregar los tipos de datos, como collections, types.
 
             #region Preferencias
+            NonGrammarTerminals.Add(comentarioBloque);
+            NonGrammarTerminals.Add(comentarioLinea);
             this.Root = S;
             string[] palabras = {
                 RPRIMARY_KEY.Text,

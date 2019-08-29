@@ -14,27 +14,47 @@ namespace Servidor.Models
         {
             foreach (Simbolo s in this)
             {
-                if (s.Id.Equals(id))
+                if (s.Id.ToLower().Equals(id.ToLower()))
                 {
                     return s.Valor;
                 }
             }
-            Console.WriteLine("La variable " + id + " no existe en este ámbito.");
-            return "Desconocido";
+            return null;
         }
 
+        string hola = "";
+        public bool instanciada(string id) {
+            foreach (Simbolo s in this)
+            {
+                if (s.Id.ToLower().Equals(id.ToLower()))
+                {
+                    if (s.Instanciado) return true;
+                    else return false;
+                }
+            }
+            return false;
+        }
+        public bool existID(string id) {
+
+            foreach (Simbolo s in this)
+            {
+                if (s.Id.ToLower().Equals(id.ToLower()))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void setValor(String id, Object valor)
         {
             foreach (Simbolo s in this)
             {
-                if (s.Id.Equals(id))
+                if (s.Id.ToLower().Equals(id.ToLower()))
                 {
                     s.Valor = valor;
                     return;
                 }
             }
-            Console.WriteLine("La variable " + id + " no existe en este ámbito, por lo "
-                    + "que no puede asignársele un valor.");
         }
     }
 }

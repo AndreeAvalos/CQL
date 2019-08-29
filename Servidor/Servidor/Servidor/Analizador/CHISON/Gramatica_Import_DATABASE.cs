@@ -198,7 +198,8 @@ namespace Servidor.Analizador.CHISON
             PARAMETERS.Rule = RPARAMETERS + IGUAL + CORIZQ + PARAMETERS2 + CORDER;
 
             PARAMETERS2.Rule = PARAMETERS2 + COMA + PARAMETERS3
-                | PARAMETERS3;
+                | PARAMETERS3
+                | Empty;
 
             PARAMETERS3.Rule = MENQUE + PARAMETERS4 + MAYQUE;
 

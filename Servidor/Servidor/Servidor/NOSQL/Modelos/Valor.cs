@@ -1,4 +1,5 @@
 ﻿using Servidor.Analizador.CHISON;
+using Servidor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,13 @@ namespace Servidor.NOSQL.Modelos
         string id;
         object val;
         int tipo_real;
+        Tipo sub_tipo;
+
+        public Valor(object val, Tipo sub_tipo)
+        {
+            this.val = val;
+            this.sub_tipo = sub_tipo;
+        }
 
         public Valor(string id, object val, int tipo_real)
         {
@@ -21,6 +29,7 @@ namespace Servidor.NOSQL.Modelos
 
         public string Id { get => id; set => id = value; }
         public object Val { get => val; set => val = value; }
+        public Tipo Sub_tipo { get => sub_tipo; set => sub_tipo = value; }
 
         //1 = tipo objeto
         //2 = lista

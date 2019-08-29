@@ -5,10 +5,10 @@ $<
 			"DATA"= [
 				<
 					"CQL-TYPE" = "TABLE",
-					"NAME" = "Estudiante",
+					"NAME" = "Alumno",
 					"COLUMNS" = [
 						<
-							"NAME"= "ID",
+							"NAME"= "Carnet",
 							"TYPE"= "Counter",
 							"PK"= TRUE
 						>,
@@ -21,118 +21,184 @@ $<
 							"NAME"= "Edad",
 							"TYPE"= "Int",
 							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Cursos_Aprobados",
+							"TYPE"= "SET<string>",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Direccion",
+							"TYPE"= "Direccion",
+							"PK"= FALSE
 						>
 					],
 					"DATA" = [
-						${ estudiantes.chison }$
+						${ alumnos.chison }$
 					]
 				>,
 				<
 					"CQL-TYPE" = "TABLE",
-					"NAME" = "Jeans",
+					"NAME" = "Partido",
+					"COLUMNS" = [
+						<
+							"NAME"= "Hora",
+							"TYPE"= "Time",
+							"PK"= TRUE
+						>,
+						<
+							"NAME"= "Fecha",
+							"TYPE"= "Date",
+							"PK"= TRUE
+						>,
+						<
+							"NAME"= "Local",
+							"TYPE"= "Equipo",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Visita",
+							"TYPE"= "Equipo",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Resultado",
+							"TYPE"= "Resultado",
+							"PK"= FALSE
+						>
+					],
+					"DATA" = [
+						${ partido.chison }$
+					]
+				>,
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "TiendaRopa",
 					"COLUMNS" = [
 						<
 							"NAME"= "ID",
-							"TYPE"= "Counter",
+							"TYPE"= "Int",
 							"PK"= TRUE
 						>,
 						<
-							"NAME"= "Nombre",
-							"TYPE"= "String",
-							"PK"= FALSE
-						>,
-						<
-							"NAME"= "Tallas",
-							"TYPE"= "LIST<int>",
+							"NAME"= "Articulo",
+							"TYPE"= "Articulo",
 							"PK"= FALSE
 						>
 					],
 					"DATA" = [
-						${ jeansData.chison }$
-					]
-				>,
-				<
-					"CQL-TYPE" = "TABLE",
-					"NAME" = "Prueba",
-					"COLUMNS" = [
-						<
-							"NAME"= "id",
-							"TYPE"= "counter",
-							"PK"= TRUE
-						>,
-						<
-							"NAME"= "nombre",
-							"TYPE"= "string",
-							"PK"= FALSE
-						>,
-						<
-							"NAME"= "ubicacion",
-							"TYPE"= "MAP<int,int>",
-							"PK"= FALSE
-						>
-					],
-					"DATA" = [
+						${ tiendaropa.chison }$
 					]
 				>,
 				<
 					"CQL-TYPE" = "OBJECT",
-					"NAME" = "Persona",
+					"NAME" = "Direccion",
 					"ATTRS" = [
 						<
-							"NAME" = "CUI",
-							"TYPE" = "Double"
+							"NAME" = "Apartamento",
+							"TYPE" = "String"
 						>,
 						<
+							"NAME" = "Zona",
+							"TYPE" = "String"
+						>,
+						<
+							"NAME" = "Nivel",
+							"TYPE" = "Int"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Equipo",
+					"ATTRS" = [
+						<
 							"NAME" = "Nombre",
+							"TYPE" = "String"
+						>,
+						<
+							"NAME" = "Aficion",
+							"TYPE" = "Int"
+						>,
+						<
+							"NAME" = "Pais",
 							"TYPE" = "String"
 						>
 					]
 				>,
 				<
 					"CQL-TYPE" = "OBJECT",
-					"NAME" = "Automovil",
+					"NAME" = "Resultado",
 					"ATTRS" = [
+						<
+							"NAME" = "local",
+							"TYPE" = "Int"
+						>,
+						<
+							"NAME" = "visita",
+							"TYPE" = "Int"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Articulo",
+					"ATTRS" = [
+						<
+							"NAME" = "Tipo",
+							"TYPE" = "String"
+						>,
 						<
 							"NAME" = "Marca",
 							"TYPE" = "String"
 						>,
 						<
-							"NAME" = "Fecha_Compra",
-							"TYPE" = "Date"
-						>,
-						<
-							"NAME" = "Kilometraje",
+							"NAME" = "Precio",
 							"TYPE" = "Double"
 						>,
 						<
-							"NAME" = "Propietario",
-							"TYPE" = "Persona"
+							"NAME" = "Tallas",
+							"TYPE" = "SET<double>"
 						>
 					]
 				>,
 				<
-					"CQL-TYPE" = "PROCEDURE",
-					"NAME" = "Procedure1",
-					"PARAMETERS" = [
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "song",
+					"ATTRS" = [
 						<
-							"NAME" = "@Nombre",
-							"TYPE" = "String",
-							"AS" = IN
+							"NAME" = "name",
+							"TYPE" = "string"
 						>,
 						<
-							"NAME" = "@Id",
-							"TYPE" = "Int",
-							"AS" = IN
+							"NAME" = "trackNumber",
+							"TYPE" = "int"
 						>,
 						<
-							"NAME" = "@Edad",
-							"TYPE" = "Int",
-							"AS" = OUT
+							"NAME" = "duration",
+							"TYPE" = "double"
+						>,
+						<
+							"NAME" = "dateReleased",
+							"TYPE" = "date"
+						>,
+						<
+							"NAME" = "explicit",
+							"TYPE" = "boolean"
+						>,
+						<
+							"NAME" = "genre",
+							"TYPE" = "string"
+						>,
+						<
+							"NAME" = "album",
+							"TYPE" = "string"
+						>,
+						<
+							"NAME" = "artist",
+							"TYPE" = "string"
 						>
-					],
-					"INSTR" = $ 
-                                Return @val;
-                              $
+					]
 				>
 			]
 		>,
@@ -150,6 +216,21 @@ $<
 	],
 	"USERS"= [
 		<
+			"NAME"= "Fernando",
+			"PASSWORD"= "5678",
+			"PERMISSIONS"= [
+			]
+		>,
+		<
+			"NAME"= "Lilly",
+			"PASSWORD"= "Collins",
+			"PERMISSIONS"= [
+				<
+					"NAME" = "Database1"
+				>
+			]
+		>,
+		<
 			"NAME"= "Luis",
 			"PASSWORD"= "1234",
 			"PERMISSIONS"= [
@@ -162,13 +243,7 @@ $<
 			]
 		>,
 		<
-			"NAME"= "Fernando",
-			"PASSWORD"= "5678",
-			"PERMISSIONS"= [
-			]
-		>,
-		<
-			"NAME"= "admin",
+			"NAME"= "Admin",
 			"PASSWORD"= "admin",
 			"PERMISSIONS"= [
 				<
@@ -184,7 +259,7 @@ $<
 		>,
 		<
 			"NAME"= "Andree",
-			"PASSWORD"= "1234",
+			"PASSWORD"= "1222333",
 			"PERMISSIONS"= [
 				<
 					"NAME" = "Database1"

@@ -1,6 +1,7 @@
 ﻿using Irony.Parsing;
 using Servidor.Models;
 using Servidor.Models.DCL;
+using Servidor.Models.FCL;
 using Servidor.Models.TCL;
 using Servidor.Models.USER_TYPES;
 using Servidor.NOSQL.Modelos;
@@ -14,6 +15,9 @@ namespace Servidor.Analizador.CQL
     public class Sintactico_CQL
     {
         string user;
+        bool global = true;
+        bool aux_global = true;
+
         public List<string> salida = new List<string>();
         public bool Validar(String entrada, Grammar gramatica)
         {
@@ -31,26 +35,34 @@ namespace Servidor.Analizador.CQL
             ParseTree arbol = parser.Parse(entrada);
             ParseTreeNode raiz = arbol.Root;
 
-            if (raiz != null && arbol.ParserMessages.Count == 0&& Program.sistema!=null)
+            if (raiz != null && arbol.ParserMessages.Count == 0 && Program.sistema != null)
             {
                 LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
-                TablaDeSimbolos global = new TablaDeSimbolos();
-
-                foreach (Instruccion ins in AST)
+                TablaDeSimbolos ts_global = new TablaDeSimbolos();
+                if (AST != null)
                 {
-                    ins.Ejecutar(global);
-                    foreach (string item in ins.getSalida())
+
+                    foreach (Instruccion ins in AST)
                     {
-                        salida.Add(item);
+                        ins.Recolectar(ts_global);
+                    }
+                    Console.WriteLine(ts_global);
+                    foreach (Instruccion ins in AST)
+                    {
+                        ins.Ejecutar(ts_global);
+                        foreach (string item in ins.getSalida())
+                        {
+                            salida.Add(item);
+                        }
                     }
                 }
-                return arbol.Root.ChildNodes.ElementAt(0);
             }
-            else 
+            else
             {
                 salida = Program.lst_Errors(arbol);
-                return null;
+
             }
+            return null;
         }
 
         private LinkedList<Instruccion> Instrucciones(ParseTreeNode nodo)
@@ -62,12 +74,13 @@ namespace Servidor.Analizador.CQL
                 return lista;
 
             }
-            else
+            else if (nodo.ChildNodes.Count == 1)
             {
                 LinkedList<Instruccion> lista = new LinkedList<Instruccion>();
                 lista.AddLast(Instruccion(nodo.ChildNodes.ElementAt(0)));
                 return lista;
             }
+            return null;
 
         }
 
@@ -85,10 +98,16 @@ namespace Servidor.Analizador.CQL
                     return TCL(nodo.ChildNodes.ElementAt(0));
                 case "DCL":
                     return DCL(nodo.ChildNodes.ElementAt(0));
+                case "FCL":
+                    global = true;
+                    return FCL(nodo.ChildNodes.ElementAt(0));
             }
             return null;
         }
 
+
+
+        #region USER TYPES
         private Instruccion USERTYPES(ParseTreeNode nodo)
         {
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
@@ -183,6 +202,7 @@ namespace Servidor.Analizador.CQL
             return atributo;
         }
 
+        #endregion
 
         #region DDL
         private Instruccion DDL(ParseTreeNode nodo)
@@ -444,6 +464,108 @@ namespace Servidor.Analizador.CQL
             return null;
         }
 
+        #endregion
+
+        #region FCL
+        private Instruccion FCL(ParseTreeNode nodo)
+        {
+            string name;
+            string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            aux_global = global;
+            Tipo real_type = Tipo.OBJETO;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            switch (produccion)
+            {
+                case "ASIGNACION":
+                    name = TIPO_DATO(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0));
+                    List<Variable> variables = VARIABLES(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1));
+                    real_type = Program.getTipo(name.ToLower());
+
+                    return new Asignacion_Variable(real_type, name, aux_global, variables, line, column);
+                case "LOG":
+                    List<Valor> valores = CADENAS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
+                    return new LOG(line, column, valores);
+            }
+            return null;
+        }
+
+        private List<Valor> CADENAS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Valor> valores = CADENAS(nodo.ChildNodes.ElementAt(0));
+                valores.Add(CADENA(nodo.ChildNodes.ElementAt(2)));
+                return valores;
+            }
+            else
+            {
+                List<Valor> valores = new List<Valor>
+                {
+                    CADENA(nodo.ChildNodes.ElementAt(0))
+                };
+                return valores;
+            }
+        }
+
+        private Valor CADENA(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 2)
+            {
+                string name = nodo.ChildNodes.ElementAt(1).Token.Text;
+                Valor new_valor = new Valor("@" + name, Tipo.VARIABLE);
+                return new_valor;
+            }
+            else
+            {
+                Tipo real_type = Program.getTipo2(nodo.ChildNodes.ElementAt(0).Term.Name.ToLower());
+                string val = nodo.ChildNodes.ElementAt(0).Token.Value.ToString();
+                Valor new_valor = new Valor(val, real_type);
+                return new_valor;
+            }
+        }
+
+        private List<Variable> VARIABLES(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Variable> variables = VARIABLES(nodo.ChildNodes.ElementAt(0));
+                variables.Add(VARIABLE(nodo.ChildNodes.ElementAt(2)));
+                return variables;
+            }
+            else
+            {
+                List<Variable> variables = new List<Variable>();
+                variables.Add(VARIABLE(nodo.ChildNodes.ElementAt(0)));
+                return variables;
+            }
+        }
+
+        private Variable VARIABLE(ParseTreeNode nodo)
+        {
+            Variable new_variable = new Variable();
+            new_variable.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Text;
+            if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count == 0)
+            {
+                new_variable.Instanciada = false;
+                new_variable.Valor = null;
+            }
+            else
+            {
+                new_variable.Instanciada = true;
+                new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
+            }
+            return new_variable;
+        }
+
+        private object INICIALIZACION(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 2)
+            {
+                return VALOR(nodo.ChildNodes.ElementAt(1));
+            }
+            return null;
+        }
         #endregion
 
         private List<Object> VALORES(ParseTreeNode nodo)

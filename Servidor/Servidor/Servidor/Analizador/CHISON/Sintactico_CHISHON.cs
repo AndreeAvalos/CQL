@@ -802,7 +802,7 @@ namespace Servidor.Analizador.CHISON
                     catch (Exception)
                     {
 
-                        Convert.ToDouble(nodo.ChildNodes[0].ChildNodes.ElementAt(0).Token.Text);
+                        Convert.ToDouble(nodo.Token.Text);
                         return 4;
                     }
 
