@@ -89,7 +89,23 @@ namespace Servidor.Models.FCL
             {
                 return valor.ToString();
             }
-
+            else if (tipo == Tipo.INCREMENTO) {
+                Double aux = 0.0;
+                if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL) {
+                    aux = (Double)ts.getValor(valor.ToString());
+                    ts.setValor(valor.ToString(),aux + 1); }
+            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                return aux;
+            }
+            else if (tipo == Tipo.DECREMENTO)
+            {
+                Double aux = 0.0;
+                if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL) { 
+                aux = (Double)ts.getValor(valor.ToString());
+                ts.setValor(valor.ToString(), aux - 1); }
+            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                return aux;
+            }
             else if (tipo == Tipo.MAYOR_QUE)
             {
                 return ((Double)operadorIzq.Ejecutar(ts)) > ((Double)operadorDer.Ejecutar(ts));
@@ -125,7 +141,7 @@ namespace Servidor.Models.FCL
 
         public object Recolectar(TablaDeSimbolos ts)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

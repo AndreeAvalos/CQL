@@ -28,6 +28,8 @@
         NO_ACEPTADO,
         NUMERO,
         POTENCIA,
-        MODULAR
+        MODULAR,
+        INCREMENTO,
+        DECREMENTO
     }
 }

@@ -31,6 +31,8 @@ namespace Servidor.Analizador.CQL
                 RMAS = ToTerm("+"),
                 RPOTENCIA = ToTerm("**"),
                 RMENOS = ToTerm("-"),
+                RINCREMENTO = ToTerm("++"),
+                RDECREMENTO = ToTerm("--"),
                 RMUL = ToTerm("*"),
                 RDIV = ToTerm("/"),
                 RMODULAR = ToTerm("%"),
@@ -261,7 +263,9 @@ namespace Servidor.Analizador.CQL
             VARIABLES.Rule = VARIABLES + COMA + VARIABLE
                 | VARIABLE;
 
-            VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION;
+            VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION
+                |  RARROBA + IDENTIFICADOR + RINCREMENTO
+                |  RARROBA + IDENTIFICADOR + RDECREMENTO;
 
             INICIALIZACION.Rule = IGUAL + OPERACION_NUMERICA
                 | IGUAL + RNEW + IDENTIFICADOR
@@ -284,18 +288,20 @@ namespace Servidor.Analizador.CQL
                 | NUMERO;
 
             #endregion
-			
-			//TIPOS DE OPERACIONES NUMERICAS
+
+            //TIPOS DE OPERACIONES NUMERICAS
             OPERACION_NUMERICA.Rule = RMENOS + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMAS + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMENOS + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMUL + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RDIV + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMODULAR + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + RPOTENCIA +OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RPOTENCIA + OPERACION_NUMERICA
                 | PARIZQ + OPERACION_NUMERICA + PARDER
                 | VALOR
-                | RARROBA + IDENTIFICADOR;
+                | RARROBA + IDENTIFICADOR
+                | RARROBA + IDENTIFICADOR + RINCREMENTO
+                | RARROBA + IDENTIFICADOR + RDECREMENTO;
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | SET
@@ -358,14 +364,14 @@ namespace Servidor.Analizador.CQL
             NonGrammarTerminals.Add(comentarioBloque);
             NonGrammarTerminals.Add(comentarioLinea);
             //PRESEDENCIA
-            
+
             RegisterOperators(4, Associativity.Left, RMAS, RMENOS);
-            RegisterOperators(5, Associativity.Left, RMUL, RDIV,RMODULAR);
+            RegisterOperators(5, Associativity.Left, RMUL, RDIV, RMODULAR);
             RegisterOperators(6, Associativity.Left, RPOTENCIA);
 
             //RETORNAR RAIZ
             this.Root = S;
-            
+
             #endregion
 
 

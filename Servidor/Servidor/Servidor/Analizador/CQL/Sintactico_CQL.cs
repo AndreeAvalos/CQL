@@ -488,9 +488,21 @@ namespace Servidor.Analizador.CQL
                     List<Valor> valores = CADENAS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
                     return new LOG(line, column, valores);
                 case "VARIABLE":
-                    Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
-                    return new Instancia_Variable(line, column, new_var);
-
+                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("INICIALIZACION"))
+                    {
+                        Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
+                        return new Instancia_Variable(line, column, new_var);
+                    }
+                    else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("++"))
+                    {
+                        name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
+                        return new Operacion("@" + name, Tipo.INCREMENTO, line, column);
+                    }
+                    else
+                    {
+                        name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
+                        return new Operacion("@" + name, Tipo.DECREMENTO, line, column);
+                    }
             }
             return null;
         }
@@ -566,7 +578,7 @@ namespace Servidor.Analizador.CQL
             is_var = false;
             return new_variable;
         }
-   
+
 
 
         private object INICIALIZACION(ParseTreeNode nodo)
@@ -575,6 +587,8 @@ namespace Servidor.Analizador.CQL
             {
                 return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
             }
+
+            //si es igual a 4 entonces nos ponemos hacer incremento 
             return null;
         }
 
@@ -599,6 +613,10 @@ namespace Servidor.Analizador.CQL
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.POTENCIA, line, colum);
                     case "%":
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.MODULAR, line, colum);
+                    case "Identificador":
+                        if(nodo.ChildNodes.ElementAt(2).Term.Name.Equals("++"))
+                        return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.INCREMENTO, line, colum);
+                        else return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.DECREMENTO, line, colum);
                     default:
                         return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
                 }
@@ -614,7 +632,8 @@ namespace Servidor.Analizador.CQL
                     return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.VARIABLE, line, colum);
                 }
             }
-            else {
+            else
+            {
 
                 return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
             }
