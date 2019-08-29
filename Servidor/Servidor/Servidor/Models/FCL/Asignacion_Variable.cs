@@ -63,6 +63,7 @@ namespace Servidor.Models.FCL
                             try
                             {
                                 new_simbol.Valor = valor.Ejecutar(ts);
+                                if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
                             }
                             catch (Exception)
                             {
