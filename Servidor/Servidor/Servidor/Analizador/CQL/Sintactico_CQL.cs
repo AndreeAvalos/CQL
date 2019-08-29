@@ -17,8 +17,9 @@ namespace Servidor.Analizador.CQL
         string user;
         bool global = true;
         bool aux_global = true;
-
+        bool is_var = false;
         public List<string> salida = new List<string>();
+        List<string> lst_ids = new List<string>();
         public bool Validar(String entrada, Grammar gramatica)
         {
             LanguageData lenguaje = new LanguageData(gramatica);
@@ -557,18 +558,62 @@ namespace Servidor.Analizador.CQL
             else
             {
                 new_variable.Instanciada = true;
+                lst_ids = new List<string>();
                 new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
+                new_variable.Lst_variables = lst_ids;
+                new_variable.Is_var = is_var;
             }
+            is_var = false;
             return new_variable;
         }
+   
+
 
         private object INICIALIZACION(ParseTreeNode nodo)
         {
             if (nodo.ChildNodes.Count == 2)
             {
-                return VALOR(nodo.ChildNodes.ElementAt(1));
+                return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
             }
             return null;
+        }
+
+        private Operacion OPERACION_NUMERICA(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int colum = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            if (nodo.ChildNodes.Count == 3)
+            {
+                string operador = nodo.ChildNodes.ElementAt(1).Term.Name.ToString();
+                switch (operador)
+                {
+                    case "+":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.SUMA, line, colum);
+                    case "-":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.RESTA, line, colum);
+                    case "*":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.MULTIPLICACION, line, colum);
+                    case "/":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.DIVISION, line, colum);
+                    default:
+                        return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
+                }
+            }
+            else if (nodo.ChildNodes.Count == 2)
+            {
+                if (nodo.ChildNodes.ElementAt(0).Token.Value.Equals("-"))
+                    return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1)), Tipo.NEGATIVO, line, colum);
+                else
+                {
+                    is_var = true;
+                    lst_ids.Add("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString());
+                    return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.VARIABLE, line, colum);
+                }
+            }
+            else {
+
+                return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
+            }
         }
         #endregion
 

@@ -29,6 +29,9 @@ namespace Servidor.Analizador.CQL
             KeyTerm
                 RARROBA = ToTerm("@"),
                 RMAS = ToTerm("+"),
+                RMENOS = ToTerm("-"),
+                RMUL = ToTerm("*"),
+                RDIV = ToTerm("/"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
                 IGUAL = ToTerm("="),
@@ -130,7 +133,8 @@ namespace Servidor.Analizador.CQL
                 INICIALIZACION = new NonTerminal("INICIALIZACION"),
                 LOG = new NonTerminal("LOG"),
                 CADENAS = new NonTerminal("CADENAS"),
-                PCADENA = new NonTerminal("PCADENA")
+                PCADENA = new NonTerminal("PCADENA"),
+                OPERACION_NUMERICA = new NonTerminal("OPERACION_NUMERICA")
                 ;
 
 
@@ -257,8 +261,7 @@ namespace Servidor.Analizador.CQL
 
             VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION;
 
-            INICIALIZACION.Rule = IGUAL + VALOR
-                | IGUAL + RARROBA + IDENTIFICADOR
+            INICIALIZACION.Rule = IGUAL + OPERACION_NUMERICA
                 | IGUAL + RNEW + IDENTIFICADOR
                 | IGUAL + RNEW + MAP
                 | IGUAL + RNEW + SET
@@ -279,6 +282,16 @@ namespace Servidor.Analizador.CQL
                 | NUMERO;
 
             #endregion
+			
+			//TIPOS DE OPERACIONES NUMERICAS
+            OPERACION_NUMERICA.Rule = RMENOS + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RMAS + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RMENOS + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RMUL + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RDIV + OPERACION_NUMERICA
+                | PARIZQ + OPERACION_NUMERICA + PARDER
+                | VALOR
+                | RARROBA + IDENTIFICADOR;
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | SET
@@ -316,9 +329,7 @@ namespace Servidor.Analizador.CQL
             //agregar los tipos de datos, como collections, types.
 
             #region Preferencias
-            NonGrammarTerminals.Add(comentarioBloque);
-            NonGrammarTerminals.Add(comentarioLinea);
-            this.Root = S;
+            //RESERVAR PALABRAS
             string[] palabras = {
                 RPRIMARY_KEY.Text,
                 RDROP.Text, RADD.Text,
@@ -339,6 +350,17 @@ namespace Servidor.Analizador.CQL
                 RDELETE.Text
             };
             MarkReservedWords(palabras);
+            //COMENTARIOS
+            NonGrammarTerminals.Add(comentarioBloque);
+            NonGrammarTerminals.Add(comentarioLinea);
+            //PRESEDENCIA
+            RegisterOperators(4, Associativity.Left, RMAS, RMENOS);
+            RegisterOperators(5, Associativity.Left, RMUL, RDIV);
+
+
+            //RETORNAR RAIZ
+            this.Root = S;
+            
             #endregion
 
 

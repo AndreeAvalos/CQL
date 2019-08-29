@@ -23,15 +23,26 @@ namespace Servidor.Models.FCL
         {
             if (ts.existID(new_var.Id))
             {
-                Tipo type = ts.getType(new_var.Id);
-                if (Program.casteos.comprobarCasteo(type, new_var.Valor))
+                bool is_ok = true;
+                foreach (string item in new_var.Lst_variables)
                 {
-                    ts.setValor(new_var.Id, Program.casteos.castear(type, new_var.Valor));
+                    if (!ts.existID(item.ToString()))
+                    {
+                        is_ok = false;
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item + " no esta declarada en este ambito."));
+                    }
                 }
-                else {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a "+ts.tipoAsignado(new_var.Id)));
+                if (is_ok)
+                {
+                    Tipo type = ts.getType(new_var.Id);
+                    Operacion val = (Operacion)new_var.Valor;
+                    object valor = val.Ejecutar(ts);
+                    if (Program.casteos.comprobarCasteo(type, valor))
+                    {
+                        ts.setValor(new_var.Id, valor);
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
                 }
-
             }
             else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", new_var.Id + " no esta declarada en este ambito."));
             return null;
@@ -39,12 +50,12 @@ namespace Servidor.Models.FCL
 
         public int getColumn()
         {
-            return this.line;
+            return this.column;
         }
 
         public int getLine()
         {
-            return this.column;
+            return this.line;
         }
 
         public List<string> getSalida()

@@ -25,6 +25,7 @@
         ARREGLO,
         OBJETO,
         VARIABLE,
-        NO_ACEPTADO
+        NO_ACEPTADO,
+        NUMERO
     }
 }
