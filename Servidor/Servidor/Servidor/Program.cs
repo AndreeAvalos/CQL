@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Servidor.Analizador.CHISON;
 using Servidor.Models;
+using Servidor.Models.CASTEOS;
 using Servidor.NOSQL.Estructuras;
 using Servidor.NOSQL.Modelos;
 
@@ -25,6 +26,7 @@ namespace Servidor
         private static DateTime date;
         public static bool bloqueada = false;//para pruebas funcionara sin logearse
         public static string user_activo = "Andree";//para pruebas 
+        public static Casteo casteos = new Casteo();
         public static void Main(string[] args)
         {
             crearDB();

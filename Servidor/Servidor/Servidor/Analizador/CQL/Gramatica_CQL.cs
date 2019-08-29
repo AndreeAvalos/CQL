@@ -168,6 +168,7 @@ namespace Servidor.Analizador.CQL
                 | REVOKE;
 
             FCL.Rule = ASIGNACION
+                | VARIABLE + PTCOMA
                 | LOG;
 
             #region USER TYPES

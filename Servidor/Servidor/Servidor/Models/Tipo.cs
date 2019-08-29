@@ -24,6 +24,7 @@
         METODO,
         ARREGLO,
         OBJETO,
-        VARIABLE
+        VARIABLE,
+        NO_ACEPTADO
     }
 }

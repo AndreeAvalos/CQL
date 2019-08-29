@@ -24,6 +24,24 @@ namespace Servidor.Models.CASTEOS
             }
             return null;
         }
+        public bool comprobarCasteo(Tipo tipo, object valor)
+        {
 
+            try
+            {
+                if (tipo == Tipo.ENTERO)
+                {
+                    Convert.ToInt32(valor);
+                    return true;
+                }
+
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+            return false;
+        }
     }
 }

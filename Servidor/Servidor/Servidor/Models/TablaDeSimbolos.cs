@@ -22,17 +22,26 @@ namespace Servidor.Models
             return null;
         }
 
-        string hola = "";
-        public bool instanciada(string id) {
+
+        public Tipo getType(string id) {
             foreach (Simbolo s in this)
             {
                 if (s.Id.ToLower().Equals(id.ToLower()))
                 {
-                    if (s.Instanciado) return true;
-                    else return false;
+                    return s.Tipo;
                 }
             }
-            return false;
+            return Tipo.NO_ACEPTADO;
+        }
+        public string tipoAsignado(string id) {
+            foreach (Simbolo s in this)
+            {
+                if (s.Id.ToLower().Equals(id.ToLower()))
+                {
+                    return s.Tipo_asignado;
+                }
+            }
+            return "NO EXISTE EL TIPO";
         }
         public bool existID(string id) {
 

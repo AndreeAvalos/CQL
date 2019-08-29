@@ -48,38 +48,41 @@ namespace Servidor.Models.FCL
 
         public object Recolectar(TablaDeSimbolos ts)
         {
-
-            foreach (Variable item in variables_asignar)
+            if (global)
             {
-                if (!ts.existID(item.Id))
+                foreach (Variable item in variables_asignar)
                 {
-                    Simbolo new_simbolo = new Simbolo(real_type, item.Id)
+                    if (!ts.existID(item.Id))
                     {
-                        Tipo_asignado = item.Tipo,
-                        Instanciado = item.Instanciada,
-                        Sub_tipo = Tipo.VARIABLE
-                    };
-
-                    if (item.Instanciada)
-                    {
-                        Casteo casteos = new Casteo();
-                        if (real_type == Tipo.ENTERO)
+                        Simbolo new_simbolo = new Simbolo(real_type, item.Id)
                         {
-                            new_simbolo.Valor = casteos.castear(Tipo.ENTERO, item.Valor);
-                        }
-                    }
-                    else {
-                        if (real_type == Tipo.ENTERO)
-                        {
-                            new_simbolo.Valor = 0;
-                        }
+                            Tipo_asignado = type,
+                            Instanciado = item.Instanciada,
+                            Sub_tipo = Tipo.VARIABLE
+                        };
 
+                        if (item.Instanciada)
+                        {
+                            Casteo casteos = new Casteo();
+                            if (real_type == Tipo.ENTERO)
+                            {
+                                new_simbolo.Valor = casteos.castear(Tipo.ENTERO, item.Valor);
+                            }
+                        }
+                        else
+                        {
+                            if (real_type == Tipo.ENTERO)
+                            {
+                                new_simbolo.Valor = 0;
+                            }
+
+                        }
+                        ts.AddLast(new_simbolo);
                     }
-                    ts.AddLast(new_simbolo);
-                } else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
+                }
             }
-
-            return ts;
+            return null;
         }
     }
 }

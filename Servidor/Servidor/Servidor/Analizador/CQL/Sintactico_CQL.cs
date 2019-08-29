@@ -486,6 +486,10 @@ namespace Servidor.Analizador.CQL
                 case "LOG":
                     List<Valor> valores = CADENAS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
                     return new LOG(line, column, valores);
+                case "VARIABLE":
+                    Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
+                    return new Instancia_Variable(line, column, new_var);
+
             }
             return null;
         }
