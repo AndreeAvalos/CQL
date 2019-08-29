@@ -39,7 +39,7 @@ namespace Servidor.Models.FCL
                     object valor = val.Ejecutar(ts);
                     if (Program.casteos.comprobarCasteo(type, valor))
                     {
-                        ts.setValor(new_var.Id, valor);
+                        ts.setValor(new_var.Id, Program.casteos.castear(type,valor));
                     }
                     else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
                 }

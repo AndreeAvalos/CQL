@@ -14,7 +14,7 @@ namespace Servidor.Models.FCL
         private Operacion operadorIzq;
         private Object valor;
 
-        public Operacion(  Operacion operadorIzq, Operacion operadorDer, Tipo tipo, int line, int column)
+        public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo tipo, int line, int column)
         {
             this.tipo = tipo;
             this.line = line;
@@ -23,7 +23,7 @@ namespace Servidor.Models.FCL
             this.operadorIzq = operadorIzq;
         }
 
-        public Operacion( Operacion operadorIzq, Tipo tipo, int line, int column)
+        public Operacion(Operacion operadorIzq, Tipo tipo, int line, int column)
         {
             this.tipo = tipo;
             this.line = line;
@@ -31,7 +31,7 @@ namespace Servidor.Models.FCL
             this.operadorIzq = operadorIzq;
         }
 
-        public Operacion( string valor,Tipo tipo, int line, int column)
+        public Operacion(string valor, Tipo tipo, int line, int column)
         {
             this.tipo = tipo;
             this.line = line;
@@ -39,7 +39,7 @@ namespace Servidor.Models.FCL
             this.valor = valor;
         }
 
-        public Operacion( object valor,int line, int column)
+        public Operacion(object valor, int line, int column)
         {
             this.line = line;
             this.column = column;
@@ -52,6 +52,14 @@ namespace Servidor.Models.FCL
             if (tipo == Tipo.DIVISION)
             {
                 return (Double)operadorIzq.Ejecutar(ts) / (Double)operadorDer.Ejecutar(ts);
+            }
+            else if (tipo == Tipo.MODULAR)
+            {
+                return (Double)operadorIzq.Ejecutar(ts) % (Double)operadorDer.Ejecutar(ts);
+            }
+            else if (tipo == Tipo.POTENCIA)
+            {
+                return (Double)Math.Pow((Double)operadorIzq.Ejecutar(ts), (Double)operadorDer.Ejecutar(ts));
             }
             else if (tipo == Tipo.MULTIPLICACION)
             {
@@ -81,6 +89,7 @@ namespace Servidor.Models.FCL
             {
                 return valor.ToString();
             }
+
             else if (tipo == Tipo.MAYOR_QUE)
             {
                 return ((Double)operadorIzq.Ejecutar(ts)) > ((Double)operadorDer.Ejecutar(ts));

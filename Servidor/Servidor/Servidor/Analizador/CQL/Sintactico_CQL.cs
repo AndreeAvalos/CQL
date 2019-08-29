@@ -595,6 +595,10 @@ namespace Servidor.Analizador.CQL
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.MULTIPLICACION, line, colum);
                     case "/":
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.DIVISION, line, colum);
+                    case "**":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.POTENCIA, line, colum);
+                    case "%":
+                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.MODULAR, line, colum);
                     default:
                         return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
                 }
@@ -647,7 +651,15 @@ namespace Servidor.Analizador.CQL
                 case "Identificador":
                     return node.ChildNodes[0].ToString().Replace(" (Identificador)", "");
                 case "Numero":
-                    return Convert.ToInt32(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
+                    try
+                    {
+                        return Convert.ToInt32(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
+                    }
+                    catch (Exception)
+                    {
+
+                        return Convert.ToDouble(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
+                    }
                 default:
                     return "";
             }

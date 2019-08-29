@@ -29,9 +29,11 @@ namespace Servidor.Analizador.CQL
             KeyTerm
                 RARROBA = ToTerm("@"),
                 RMAS = ToTerm("+"),
+                RPOTENCIA = ToTerm("**"),
                 RMENOS = ToTerm("-"),
                 RMUL = ToTerm("*"),
                 RDIV = ToTerm("/"),
+                RMODULAR = ToTerm("%"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
                 IGUAL = ToTerm("="),
@@ -289,6 +291,8 @@ namespace Servidor.Analizador.CQL
                 | OPERACION_NUMERICA + RMENOS + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMUL + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RDIV + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RMODULAR + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RPOTENCIA +OPERACION_NUMERICA
                 | PARIZQ + OPERACION_NUMERICA + PARDER
                 | VALOR
                 | RARROBA + IDENTIFICADOR;
@@ -354,9 +358,10 @@ namespace Servidor.Analizador.CQL
             NonGrammarTerminals.Add(comentarioBloque);
             NonGrammarTerminals.Add(comentarioLinea);
             //PRESEDENCIA
+            
             RegisterOperators(4, Associativity.Left, RMAS, RMENOS);
-            RegisterOperators(5, Associativity.Left, RMUL, RDIV);
-
+            RegisterOperators(5, Associativity.Left, RMUL, RDIV,RMODULAR);
+            RegisterOperators(6, Associativity.Left, RPOTENCIA);
 
             //RETORNAR RAIZ
             this.Root = S;

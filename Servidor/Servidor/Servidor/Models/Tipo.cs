@@ -26,6 +26,8 @@
         OBJETO,
         VARIABLE,
         NO_ACEPTADO,
-        NUMERO
+        NUMERO,
+        POTENCIA,
+        MODULAR
     }
 }
