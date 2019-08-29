@@ -30,7 +30,15 @@ namespace Servidor.Models.FCL
                 {
                     if (ts.existID(item.Val.ToString()))
                     {
-                        salida2 += ts.getValor(item.Val.ToString());
+                        try
+                        {
+                            salida2+= ((Operacion) ts.getValor(item.Val.ToString())).Ejecutar(ts);
+                        }
+                        catch (Exception)
+                        {
+
+                            salida2 += ts.getValor(item.Val.ToString());
+                        }
                     }
                     else
                     {

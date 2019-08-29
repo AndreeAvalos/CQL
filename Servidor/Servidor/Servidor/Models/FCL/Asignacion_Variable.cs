@@ -53,41 +53,41 @@ namespace Servidor.Models.FCL
             {
                 foreach (Variable item in variables_asignar)
                 {
-                    if (item.Is_var)
+                    if (!ts.existID(item.Id.ToLower()))
                     {
-                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " Contiene valores no estaticos."));
-                    }
-                    else {
-                        if (!ts.existID(item.Id.ToLower()))
+                        Simbolo new_simbol = new Simbolo(real_type, item.Id);
+                        new_simbol.Tipo_asignado = type;
+                        if (item.Instanciada)
                         {
-                            Simbolo new_simbol = new Simbolo(real_type, item.Id);
-                            new_simbol.Tipo_asignado = type;
-                            if (item.Instanciada)
+                            Operacion valor = (Operacion)item.Valor;
+                            try
                             {
-                                Operacion valor = (Operacion)item.Valor;
                                 new_simbol.Valor = valor.Ejecutar(ts);
-                                
                             }
-                            else {
-                                if (real_type == Tipo.NUMERO) new_simbol.Valor = 0;
-                                if (real_type == Tipo.OBJETO|| real_type==Tipo.MAP||real_type==Tipo.LIST) new_simbol.Valor = null;
+                            catch (Exception)
+                            {
 
+                                new_simbol.Valor = valor;
                             }
-                            ts.AddLast(new_simbol);
-                        }
-                        else {
-                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
-                        }
+                            
 
+                        }
+                        else
+                        {
+                            if (real_type == Tipo.NUMERO) new_simbol.Valor = 0;
+                            if (real_type == Tipo.OBJETO || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
+
+                        }
+                        ts.AddLast(new_simbol);
+                    }
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
                     }
 
                 }
-
-
-
             }
             //else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
-
             return null;
 
         }
