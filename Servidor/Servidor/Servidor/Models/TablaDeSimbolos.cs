@@ -23,7 +23,8 @@ namespace Servidor.Models
         }
 
 
-        public Tipo getType(string id) {
+        public Tipo getType(string id)
+        {
             foreach (Simbolo s in this)
             {
                 if (s.Id.ToLower().Equals(id.ToLower()))
@@ -33,7 +34,8 @@ namespace Servidor.Models
             }
             return Tipo.NO_ACEPTADO;
         }
-        public string tipoAsignado(string id) {
+        public string tipoAsignado(string id)
+        {
             foreach (Simbolo s in this)
             {
                 if (s.Id.ToLower().Equals(id.ToLower()))
@@ -43,7 +45,8 @@ namespace Servidor.Models
             }
             return "NO EXISTE EL TIPO";
         }
-        public bool existID(string id) {
+        public bool existID(string id)
+        {
 
             foreach (Simbolo s in this)
             {
@@ -60,7 +63,18 @@ namespace Servidor.Models
             {
                 if (s.Id.ToLower().Equals(id.ToLower()))
                 {
-                    s.Valor = valor;
+                    if (s.Tipo == Tipo.ENTERO)
+                    {
+                        s.Valor = Convert.ToInt32(valor);
+                    }
+                    else if (s.Tipo == Tipo.DECIMAL)
+                    {
+                        s.Valor = Convert.ToDouble(valor);
+                    }
+                    else if (s.Tipo == Tipo.CADENA)
+                    {
+                        s.Valor = valor.ToString();
+                    }
                     return;
                 }
             }

@@ -18,7 +18,11 @@
         IDENTIFICADOR,
         CADENA,
         MAYOR_QUE,
+        MAYOR_IGUAL,
         MENOR_QUE,
+        MENOR_IGUAL,
+        IGUAL,
+        DIFERENTE,
         CONCATENACION,
         FUNCION,
         METODO,
@@ -30,6 +34,10 @@
         POTENCIA,
         MODULAR,
         INCREMENTO,
-        DECREMENTO
+        DECREMENTO,
+        MASIGUAL,
+        MENOSIGUAL,
+        MULIGUAL,
+        DIVIGUAL
     }
 }

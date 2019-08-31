@@ -36,7 +36,7 @@ namespace Servidor.Analizador.CQL
             ParseTree arbol = parser.Parse(entrada);
             ParseTreeNode raiz = arbol.Root;
 
-            if (raiz != null && arbol.ParserMessages.Count == 0 && Program.sistema != null)
+            /*if (raiz != null && arbol.ParserMessages.Count == 0 && Program.sistema != null)
             {
                 LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
                 TablaDeSimbolos ts_global = new TablaDeSimbolos();
@@ -62,7 +62,7 @@ namespace Servidor.Analizador.CQL
             {
                 salida = Program.lst_Errors(arbol);
 
-            }
+            }*/
             return null;
         }
 
@@ -488,20 +488,41 @@ namespace Servidor.Analizador.CQL
                     List<Valor> valores = CADENAS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2));
                     return new LOG(line, column, valores);
                 case "VARIABLE":
-                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("INICIALIZACION"))
+                    if (nodo.ChildNodes.ElementAt(0).ChildNodes.Count == 5)
                     {
-                        Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
-                        return new Instancia_Variable(line, column, new_var);
-                    }
-                    else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("++"))
-                    {
+                        string opcion = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.ToString();
                         name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
-                        return new Operacion("@" + name, Tipo.INCREMENTO, line, column);
+                        switch (opcion)
+                        {
+                            case "+":
+                                return new Operacion("@" + name, new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4).Token.Value.ToString(), line, column), Tipo.MASIGUAL, line, column);
+                            case "-":
+                                return new Operacion("@" + name, new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4).Token.Value.ToString(), line, column), Tipo.MENOSIGUAL, line, column);
+                            case "*":
+                                return new Operacion("@" + name, new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4).Token.Value.ToString(), line, column), Tipo.MULIGUAL, line, column);
+                            case "/":
+                                return new Operacion("@" + name, new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(4).Token.Value.ToString(), line, column), Tipo.DIVIGUAL, line, column);
+                            default:
+                                return null;
+                        }
                     }
                     else
                     {
-                        name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
-                        return new Operacion("@" + name, Tipo.DECREMENTO, line, column);
+                        if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("INICIALIZACION"))
+                        {
+                            Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
+                            return new Instancia_Variable(line, column, new_var);
+                        }
+                        else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("++"))
+                        {
+                            name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
+                            return new Operacion("@" + name, Tipo.INCREMENTO, line, column);
+                        }
+                        else
+                        {
+                            name = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
+                            return new Operacion("@" + name, Tipo.DECREMENTO, line, column);
+                        }
                     }
             }
             return null;
@@ -614,8 +635,8 @@ namespace Servidor.Analizador.CQL
                     case "%":
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.MODULAR, line, colum);
                     case "Identificador":
-                        if(nodo.ChildNodes.ElementAt(2).Term.Name.Equals("++"))
-                        return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.INCREMENTO, line, colum);
+                        if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("++"))
+                            return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.INCREMENTO, line, colum);
                         else return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.DECREMENTO, line, colum);
                     default:
                         return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));

@@ -37,11 +37,15 @@ namespace Servidor.Models.FCL
                     Tipo type = ts.getType(new_var.Id);
                     Operacion val = (Operacion)new_var.Valor;
                     object valor = val.Ejecutar(ts);
-                    if (Program.casteos.comprobarCasteo(type, valor))
+                    salida.AddRange(val.getSalida());
+                    if (valor != null)
                     {
-                        ts.setValor(new_var.Id, Program.casteos.castear(type,valor));
+                        if (Program.casteos.comprobarCasteo(type, valor))
+                        {
+                            ts.setValor(new_var.Id, Program.casteos.castear(type, valor));
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
                 }
             }
             else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", new_var.Id + " no esta declarada en este ambito."));

@@ -35,9 +35,15 @@ namespace Servidor.Analizador.CQL
                 RDECREMENTO = ToTerm("--"),
                 RMUL = ToTerm("*"),
                 RDIV = ToTerm("/"),
+                RIF = ToTerm("IF"),
+                RELSE = ToTerm("ELSE"),
                 RMODULAR = ToTerm("%"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
+                MAYIGUAL = ToTerm(">="),
+                MENIGUAL = ToTerm("<="),
+                IGUALIGUAL = ToTerm("=="),
+                RDIFERENTE = ToTerm("!="),
                 IGUAL = ToTerm("="),
                 CORIZQ = ToTerm("["),
                 CORDER = ToTerm("]"),
@@ -138,7 +144,13 @@ namespace Servidor.Analizador.CQL
                 LOG = new NonTerminal("LOG"),
                 CADENAS = new NonTerminal("CADENAS"),
                 PCADENA = new NonTerminal("PCADENA"),
-                OPERACION_NUMERICA = new NonTerminal("OPERACION_NUMERICA")
+                OPERACION_NUMERICA = new NonTerminal("OPERACION_NUMERICA"),
+                SENTENCIA_IF = new NonTerminal("SENTENCIA_IF"),
+                SENTENCIA_ELSE = new NonTerminal("SENTENCIA_ELSE"),
+                SENTENCIA_ELSE_IF = new NonTerminal("SENTENCIA_ELSE_IF"),
+                SENTENCIA_ELSE_IF2 = new NonTerminal("SENTENCIA_ELSE_IF2"),
+                EXPRESION_LOGICA = new NonTerminal("EXPRESION_LOGICA"),
+                VALORES_LOGICOS = new NonTerminal("VALORES_LOGICOS")
                 ;
 
 
@@ -177,7 +189,8 @@ namespace Servidor.Analizador.CQL
 
             FCL.Rule = ASIGNACION
                 | VARIABLE + PTCOMA
-                | LOG;
+                | LOG
+                | SENTENCIA_IF;
 
             #region USER TYPES
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
@@ -264,8 +277,12 @@ namespace Servidor.Analizador.CQL
                 | VARIABLE;
 
             VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION
-                |  RARROBA + IDENTIFICADOR + RINCREMENTO
-                |  RARROBA + IDENTIFICADOR + RDECREMENTO;
+                | RARROBA + IDENTIFICADOR + RINCREMENTO
+                | RARROBA + IDENTIFICADOR + RDECREMENTO
+                | RARROBA + IDENTIFICADOR + RMAS + IGUAL + NUMERO//@id+=10
+                | RARROBA + IDENTIFICADOR + RMENOS + IGUAL + NUMERO//@id-=10
+                | RARROBA + IDENTIFICADOR + RMUL + IGUAL + NUMERO//@id*=10
+                | RARROBA + IDENTIFICADOR + RDIV + IGUAL + NUMERO;//@id/=10
 
             INICIALIZACION.Rule = IGUAL + OPERACION_NUMERICA
                 | IGUAL + RNEW + IDENTIFICADOR
@@ -287,21 +304,45 @@ namespace Servidor.Analizador.CQL
                 | RTIME
                 | NUMERO;
 
+            //IF( CONDiCION ) { INSTRUCCIONES }
+            SENTENCIA_IF.Rule = RIF + PARIZQ + EXPRESION_LOGICA + PARDER + LLAVIZQ + Instrucciones + LLAVDER + SENTENCIA_ELSE_IF2 + SENTENCIA_ELSE;
+            
+            // SENTENCIA ELSE IF O ELSE 
+            SENTENCIA_ELSE_IF2.Rule = SENTENCIA_ELSE_IF2 + SENTENCIA_ELSE_IF
+                | SENTENCIA_ELSE_IF
+                | Empty;
+
+            //ELSE IF( CONDICION ){ INSTRUCCIONES }
+            SENTENCIA_ELSE_IF.Rule = RELSE + RIF + PARIZQ + EXPRESION_LOGICA + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
+
+            //ELSE { INSTRUCCIONES }
+            SENTENCIA_ELSE.Rule = RELSE + LLAVIZQ + Instrucciones + LLAVDER
+                | Empty;
+
+            // >,<, <=, >=, ==, !=
+            EXPRESION_LOGICA.Rule = OPERACION_NUMERICA + MAYQUE + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + MENQUE + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + MAYIGUAL + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + MENIGUAL + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + IGUALIGUAL + OPERACION_NUMERICA
+                | OPERACION_NUMERICA + RDIFERENTE + OPERACION_NUMERICA;
+
             #endregion
 
             //TIPOS DE OPERACIONES NUMERICAS
-            OPERACION_NUMERICA.Rule = RMENOS + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + RMAS + OPERACION_NUMERICA
+            OPERACION_NUMERICA.Rule = RMENOS + OPERACION_NUMERICA//-numero
+                | OPERACION_NUMERICA + RMAS + OPERACION_NUMERICA// OPERACION + OPERACION
                 | OPERACION_NUMERICA + RMENOS + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMUL + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RDIV + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RMODULAR + OPERACION_NUMERICA
                 | OPERACION_NUMERICA + RPOTENCIA + OPERACION_NUMERICA
                 | PARIZQ + OPERACION_NUMERICA + PARDER
-                | VALOR
-                | RARROBA + IDENTIFICADOR
-                | RARROBA + IDENTIFICADOR + RINCREMENTO
-                | RARROBA + IDENTIFICADOR + RDECREMENTO;
+                | VALOR//NUMERO
+                | RARROBA + IDENTIFICADOR//VARIABLE
+                | RARROBA + IDENTIFICADOR + RINCREMENTO//VAR++
+                | RARROBA + IDENTIFICADOR + RDECREMENTO;//VAR--
+
             //TIPOS DE DATOS POR EJEMPLO INT, DOUBLE, STRING, BOOLEAN, ETC.
             TIPO_DATO.Rule = TSTRING
                 | SET

@@ -31,6 +31,15 @@ namespace Servidor.Models.FCL
             this.operadorIzq = operadorIzq;
         }
 
+        public Operacion(object valor, Operacion operadorIzq, Tipo tipo, int line, int column)
+        {
+            this.tipo = tipo;
+            this.line = line;
+            this.column = column;
+            this.operadorIzq = operadorIzq;
+            this.valor = valor;
+        }
+
         public Operacion(string valor, Tipo tipo, int line, int column)
         {
             this.tipo = tipo;
@@ -89,30 +98,143 @@ namespace Servidor.Models.FCL
             {
                 return valor.ToString();
             }
-            else if (tipo == Tipo.INCREMENTO) {
-                Double aux = 0.0;
-                if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL) {
-                    aux = (Double)ts.getValor(valor.ToString());
-                    ts.setValor(valor.ToString(),aux + 1); }
-            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
-                return aux;
+            else if (tipo == Tipo.INCREMENTO)
+            {
+                Double aux;
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        aux = (Double)ts.getValor(valor.ToString());
+                        ts.setValor(valor.ToString(), aux + 1);
+                        return aux;
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
             }
             else if (tipo == Tipo.DECREMENTO)
             {
-                Double aux = 0.0;
-                if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL) { 
-                aux = (Double)ts.getValor(valor.ToString());
-                ts.setValor(valor.ToString(), aux - 1); }
-            else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
-                return aux;
+                Double aux;
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        aux = (Double)ts.getValor(valor.ToString());
+                        ts.setValor(valor.ToString(), aux - 1);
+                        return aux;
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
+            }
+            else if (tipo == Tipo.MASIGUAL)
+            {
+
+                //(Double)operadorIzq.Ejecutar(ts);
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        Double aux = (Double)ts.getValor(valor.ToString()) + (Double)operadorIzq.Ejecutar(ts);
+                        ts.setValor(valor.ToString(), aux);
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
+            }
+            else if (tipo == Tipo.MENOSIGUAL)
+            {
+
+                //(Double)operadorIzq.Ejecutar(ts);
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        Double aux = (Double)ts.getValor(valor.ToString()) - (Double)operadorIzq.Ejecutar(ts);
+                        ts.setValor(valor.ToString(), aux);
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
+            }
+            else if (tipo == Tipo.MULIGUAL)
+            {
+
+                //(Double)operadorIzq.Ejecutar(ts);
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        Double aux = (Double)ts.getValor(valor.ToString()) * (Double)operadorIzq.Ejecutar(ts);
+                        ts.setValor(valor.ToString(), aux);
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
+            }
+            else if (tipo == Tipo.DIVIGUAL)
+            {
+
+                //(Double)operadorIzq.Ejecutar(ts);
+                if (ts.existID(valor.ToString()))
+                {
+                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    {
+                        Double aux = (Double)ts.getValor(valor.ToString()) / (Double)operadorIzq.Ejecutar(ts);
+                        ts.setValor(valor.ToString(), aux);
+                    }
+                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                }
+                else
+                {
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                }
+                return null;
             }
             else if (tipo == Tipo.MAYOR_QUE)
             {
                 return ((Double)operadorIzq.Ejecutar(ts)) > ((Double)operadorDer.Ejecutar(ts));
             }
+            else if (tipo == Tipo.MAYOR_IGUAL)
+            {
+                return ((Double)operadorIzq.Ejecutar(ts)) >= ((Double)operadorDer.Ejecutar(ts));
+            }
             else if (tipo == Tipo.MENOR_QUE)
             {
                 return ((Double)operadorIzq.Ejecutar(ts)) < ((Double)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.MENOR_IGUAL)
+            {
+                return ((Double)operadorIzq.Ejecutar(ts)) <= ((Double)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.IGUAL)
+            {
+                return ((Double)operadorIzq.Ejecutar(ts)) == ((Double)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.DIFERENTE)
+            {
+                return ((Double)operadorIzq.Ejecutar(ts)) != ((Double)operadorDer.Ejecutar(ts));
             }
             else if (tipo == Tipo.CONCATENACION)
             {
