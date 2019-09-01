@@ -37,6 +37,7 @@ namespace Servidor.Analizador.CQL
                 RDIV = ToTerm("/"),
                 RIF = ToTerm("IF"),
                 RELSE = ToTerm("ELSE"),
+                RELSE_IF = ToTerm("ELSE IF"),
                 RMODULAR = ToTerm("%"),
                 MENQUE = ToTerm("<"),
                 MAYQUE = ToTerm(">"),
@@ -44,6 +45,10 @@ namespace Servidor.Analizador.CQL
                 MENIGUAL = ToTerm("<="),
                 IGUALIGUAL = ToTerm("=="),
                 RDIFERENTE = ToTerm("!="),
+                ROR = ToTerm("||"),
+                RAND = ToTerm("&&"),
+                RXOR = ToTerm("^"),
+                RNOT = ToTerm("!"),
                 IGUAL = ToTerm("="),
                 CORIZQ = ToTerm("["),
                 CORDER = ToTerm("]"),
@@ -305,27 +310,37 @@ namespace Servidor.Analizador.CQL
                 | NUMERO;
 
             //IF( CONDiCION ) { INSTRUCCIONES }
-            SENTENCIA_IF.Rule = RIF + PARIZQ + EXPRESION_LOGICA + PARDER + LLAVIZQ + Instrucciones + LLAVDER + SENTENCIA_ELSE_IF2 + SENTENCIA_ELSE;
-            
+            SENTENCIA_IF.Rule = RIF + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + Instrucciones + LLAVDER + SENTENCIA_ELSE_IF2 + SENTENCIA_ELSE;
+
             // SENTENCIA ELSE IF O ELSE 
             SENTENCIA_ELSE_IF2.Rule = SENTENCIA_ELSE_IF2 + SENTENCIA_ELSE_IF
                 | SENTENCIA_ELSE_IF
                 | Empty;
 
             //ELSE IF( CONDICION ){ INSTRUCCIONES }
-            SENTENCIA_ELSE_IF.Rule = RELSE + RIF + PARIZQ + EXPRESION_LOGICA + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
+            SENTENCIA_ELSE_IF.Rule = RELSE_IF + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
 
             //ELSE { INSTRUCCIONES }
             SENTENCIA_ELSE.Rule = RELSE + LLAVIZQ + Instrucciones + LLAVDER
                 | Empty;
 
+            // &&, ||, ^, !
+            VALORES_LOGICOS.Rule = VALORES_LOGICOS + ROR + VALORES_LOGICOS
+                | VALORES_LOGICOS + RAND + VALORES_LOGICOS
+                | VALORES_LOGICOS + RXOR + VALORES_LOGICOS
+                | RNOT + VALORES_LOGICOS
+                | PARIZQ + VALORES_LOGICOS + PARDER
+                | EXPRESION_LOGICA;
+
             // >,<, <=, >=, ==, !=
-            EXPRESION_LOGICA.Rule = OPERACION_NUMERICA + MAYQUE + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + MENQUE + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + MAYIGUAL + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + MENIGUAL + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + IGUALIGUAL + OPERACION_NUMERICA
-                | OPERACION_NUMERICA + RDIFERENTE + OPERACION_NUMERICA;
+            EXPRESION_LOGICA.Rule = EXPRESION_LOGICA + MAYQUE + EXPRESION_LOGICA
+                | EXPRESION_LOGICA + MENQUE + EXPRESION_LOGICA
+                | EXPRESION_LOGICA + MAYIGUAL + EXPRESION_LOGICA
+                | EXPRESION_LOGICA + MENIGUAL + EXPRESION_LOGICA
+                | EXPRESION_LOGICA + IGUALIGUAL + EXPRESION_LOGICA
+                | EXPRESION_LOGICA + RDIFERENTE + EXPRESION_LOGICA
+                | PARIZQ + EXPRESION_LOGICA + PARDER
+				| OPERACION_NUMERICA;
 
             #endregion
 
@@ -398,17 +413,23 @@ namespace Servidor.Analizador.CQL
                 RUSE.Text,
                 RDATABASE.Text,
                 RTYPE.Text,
-                RDELETE.Text
+                RDELETE.Text,
+                RELSE.Text,
+                RIF.Text,
+                RELSE_IF.Text
             };
             MarkReservedWords(palabras);
             //COMENTARIOS
             NonGrammarTerminals.Add(comentarioBloque);
             NonGrammarTerminals.Add(comentarioLinea);
             //PRESEDENCIA
-
-            RegisterOperators(4, Associativity.Left, RMAS, RMENOS);
-            RegisterOperators(5, Associativity.Left, RMUL, RDIV, RMODULAR);
-            RegisterOperators(6, Associativity.Left, RPOTENCIA);
+            RegisterOperators(3, Associativity.Left, ROR);
+            RegisterOperators(4, Associativity.Left, RAND);
+            RegisterOperators(5, Associativity.Left, RXOR);
+            RegisterOperators(10, Associativity.Right, RNOT);
+            RegisterOperators(8, Associativity.Left, RMAS, RMENOS);
+            RegisterOperators(9, Associativity.Left, RMUL, RDIV, RMODULAR);
+            RegisterOperators(10, Associativity.Left, RPOTENCIA);
 
             //RETORNAR RAIZ
             this.Root = S;

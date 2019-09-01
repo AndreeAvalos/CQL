@@ -38,6 +38,10 @@
         MASIGUAL,
         MENOSIGUAL,
         MULIGUAL,
-        DIVIGUAL
+        DIVIGUAL,
+        AND,
+        XOR,
+        OR,
+        NOT
     }
 }

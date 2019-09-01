@@ -236,9 +236,28 @@ namespace Servidor.Models.FCL
             {
                 return ((Double)operadorIzq.Ejecutar(ts)) != ((Double)operadorDer.Ejecutar(ts));
             }
+            else if (tipo == Tipo.AND)
+            {
+                return ((bool)operadorIzq.Ejecutar(ts)) && ((bool)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.OR)
+            {
+                return ((bool)operadorIzq.Ejecutar(ts)) || ((bool)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.XOR)
+            {
+                return ((bool)operadorIzq.Ejecutar(ts)) ^ ((bool)operadorDer.Ejecutar(ts));
+            }
+            else if (tipo == Tipo.NOT)
+            {
+                return !(bool)operadorIzq.Ejecutar(ts);
+            }
             else if (tipo == Tipo.CONCATENACION)
             {
                 return operadorIzq.Ejecutar(ts).ToString() + operadorDer.Ejecutar(ts).ToString();
+            }
+            else if (tipo == Tipo.BOOLEANO) {
+                return Convert.ToBoolean(valor);
             }
             else
             {

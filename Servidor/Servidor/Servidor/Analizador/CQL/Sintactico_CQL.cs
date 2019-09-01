@@ -36,7 +36,7 @@ namespace Servidor.Analizador.CQL
             ParseTree arbol = parser.Parse(entrada);
             ParseTreeNode raiz = arbol.Root;
 
-            /*if (raiz != null && arbol.ParserMessages.Count == 0 && Program.sistema != null)
+            if (raiz != null && arbol.ParserMessages.Count == 0 && Program.sistema != null)
             {
                 LinkedList<Instruccion> AST = Instrucciones(raiz.ChildNodes.ElementAt(0));
                 TablaDeSimbolos ts_global = new TablaDeSimbolos();
@@ -51,10 +51,7 @@ namespace Servidor.Analizador.CQL
                     foreach (Instruccion ins in AST)
                     {
                         ins.Ejecutar(ts_global);
-                        foreach (string item in ins.getSalida())
-                        {
-                            salida.Add(item);
-                        }
+                        salida.AddRange(ins.getSalida());
                     }
                 }
             }
@@ -62,7 +59,7 @@ namespace Servidor.Analizador.CQL
             {
                 salida = Program.lst_Errors(arbol);
 
-            }*/
+            }
             return null;
         }
 
@@ -81,7 +78,7 @@ namespace Servidor.Analizador.CQL
                 lista.AddLast(Instruccion(nodo.ChildNodes.ElementAt(0)));
                 return lista;
             }
-            return null;
+            return new LinkedList<Instruccion>();
 
         }
 
@@ -100,7 +97,6 @@ namespace Servidor.Analizador.CQL
                 case "DCL":
                     return DCL(nodo.ChildNodes.ElementAt(0));
                 case "FCL":
-                    global = true;
                     return FCL(nodo.ChildNodes.ElementAt(0));
             }
             return null;
@@ -473,9 +469,10 @@ namespace Servidor.Analizador.CQL
             string name;
             string produccion = nodo.ChildNodes.ElementAt(0).Term.Name;
             int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
             aux_global = global;
             Tipo real_type = Tipo.OBJETO;
-            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            
             switch (produccion)
             {
                 case "ASIGNACION":
@@ -524,8 +521,123 @@ namespace Servidor.Analizador.CQL
                             return new Operacion("@" + name, Tipo.DECREMENTO, line, column);
                         }
                     }
+                case "SENTENCIA_IF":
+
+                    global = false;
+                    Tipo_IF sentencia_if = new Tipo_IF
+                    {
+                        Condicion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2)),
+                        If_instrucciones = Instrucciones(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(5)),
+                        //obtnemos todas las sentencias else if
+                        Else_if = SENTENCIA_ELSE_IF2(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(7)),
+                        Else_instrucciones = SENTENCIA_ELSE(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(8))
+                    };
+                    global = true;
+                    return new Sentencia_If(sentencia_if, line, column);
+                   
             }
             return null;
+        }
+
+        private LinkedList<Instruccion> SENTENCIA_ELSE(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count != 0)
+            {
+                return Instrucciones(nodo.ChildNodes.ElementAt(2));
+            }
+            else return new LinkedList<Instruccion>();
+        }
+
+        private List<Tipo_IF> SENTENCIA_ELSE_IF2(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Tipo_IF> else_if = SENTENCIA_ELSE_IF2(nodo.ChildNodes.ElementAt(0));
+                else_if.Add(SENTENCIA_ELSE_IF(nodo.ChildNodes.ElementAt(1)));
+                return else_if;
+            }
+            else if (nodo.ChildNodes.Count == 1)
+            {
+                List<Tipo_IF> else_if = new List<Tipo_IF>
+                {
+                    SENTENCIA_ELSE_IF(nodo.ChildNodes.ElementAt(0))
+                };
+                return else_if;
+            }
+            else return new List<Tipo_IF>();
+        }
+
+        private Tipo_IF SENTENCIA_ELSE_IF(ParseTreeNode nodo)
+        {
+            Tipo_IF sentencia_if = new Tipo_IF
+            {
+                Condicion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2)),
+                If_instrucciones = Instrucciones(nodo.ChildNodes.ElementAt(5))
+            };
+
+            return sentencia_if;
+
+        }
+
+        private Operacion VALORES_LOGICOS(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            if (nodo.ChildNodes.Count == 3)
+            {
+                string operador = nodo.ChildNodes.ElementAt(1).Term.Name.ToString();
+                switch (operador)
+                {
+                    case "||":
+                        return new Operacion(VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0)), VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2)), Tipo.OR, line, column);
+                    case "&&":
+                        return new Operacion(VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0)), VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2)), Tipo.AND, line, column);
+                    case "^":
+                        return new Operacion(VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0)), VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2)), Tipo.XOR, line, column);
+                    default:
+                        return VALORES_LOGICOS(nodo.ChildNodes.ElementAt(1));
+                }
+            }
+            else if (nodo.ChildNodes.Count == 2)
+            {
+                return new Operacion(VALORES_LOGICOS(nodo.ChildNodes.ElementAt(1)), Tipo.NOT, line, column);
+            }
+            else
+            {
+                return OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0));
+            }
+
+        }
+
+        private Operacion OPERACION_LOGICA(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            if (nodo.ChildNodes.Count == 3)
+            {
+                string operador = nodo.ChildNodes.ElementAt(1).Term.Name.ToString();
+                switch (operador)
+                {
+                    case ">":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.MAYOR_QUE, line, column);
+                    case "<":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.MENOR_QUE, line, column);
+                    case ">=":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.MAYOR_IGUAL, line, column);
+                    case "<=":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.MENOR_IGUAL, line, column);
+                    case "==":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.IGUAL, line, column);
+                    case "!=":
+                        return new Operacion(OPERACION_LOGICA(nodo.ChildNodes.ElementAt(0)), OPERACION_LOGICA(nodo.ChildNodes.ElementAt(2)), Tipo.DIFERENTE, line, column);
+                    default:
+                        return OPERACION_LOGICA(nodo.ChildNodes.ElementAt(1));
+                }
+            }
+            else
+            {
+                return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0));
+            }
         }
 
         private List<Valor> CADENAS(ParseTreeNode nodo)
@@ -595,6 +707,7 @@ namespace Servidor.Analizador.CQL
                 new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
                 new_variable.Lst_variables = lst_ids;
                 new_variable.Is_var = is_var;
+                
             }
             is_var = false;
             return new_variable;
@@ -655,8 +768,10 @@ namespace Servidor.Analizador.CQL
             }
             else
             {
-
-                return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
+                string valor = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name;
+                if (valor.ToLower().Equals("numero"))
+                    return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
+                else return new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Value.ToString(), Tipo.BOOLEANO, line, colum);
             }
         }
         #endregion

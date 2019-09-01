@@ -28,6 +28,43 @@ namespace Servidor.Models.FCL
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
+            if (!global)
+            {
+                foreach (Variable item in variables_asignar)
+                {
+                    if (!ts.existID_AA(item.Id.ToLower()))
+                    {
+                        Simbolo new_simbol = new Simbolo(real_type, item.Id);
+                        new_simbol.Tipo_asignado = type;
+                        if (item.Instanciada)
+                        {
+                            Operacion valor = (Operacion)item.Valor;
+                            try
+                            {
+                                new_simbol.Valor = valor.Ejecutar(ts);
+                                if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
+                            }
+                            catch (Exception)
+                            {
+
+                                new_simbol.Valor = valor;
+                            }
+                        }
+                        else
+                        {
+                            if (real_type == Tipo.NUMERO) new_simbol.Valor = 0;
+                            if (real_type == Tipo.OBJETO || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
+
+                        }
+                        ts.AddLast(new_simbol);
+                    }
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists3"));
+                    }
+
+                }
+            }
             return null;
         }
 
@@ -53,7 +90,7 @@ namespace Servidor.Models.FCL
             {
                 foreach (Variable item in variables_asignar)
                 {
-                    if (!ts.existID(item.Id.ToLower()))
+                    if (!ts.existID_AA(item.Id.ToLower()))
                     {
                         Simbolo new_simbol = new Simbolo(real_type, item.Id);
                         new_simbol.Tipo_asignado = type;
@@ -70,8 +107,6 @@ namespace Servidor.Models.FCL
 
                                 new_simbol.Valor = valor;
                             }
-                            
-
                         }
                         else
                         {
@@ -83,7 +118,7 @@ namespace Servidor.Models.FCL
                     }
                     else
                     {
-                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists"));
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", item.Id + " ObjectAlreadyExists4"));
                     }
 
                 }

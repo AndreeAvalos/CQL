@@ -116,13 +116,6 @@ namespace Servidor.Analizador.LUP
 
                 salida.Add(Program.buildMessage("El sistema esta bloqueado."));
             }
-
-
-
-
-
-           
-
         }
 
         private void EjecutarQuery(string data, string user)
