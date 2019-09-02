@@ -26,11 +26,12 @@ namespace Servidor.Models.FCL
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
-            TablaDeSimbolos tabla_local = new TablaDeSimbolos();
-            tabla_local.addPadre(ts);
             int limite = 0;
             while ((bool)expresion.Ejecutar(ts))
             {
+                TablaDeSimbolos tabla_local = new TablaDeSimbolos();
+                tabla_local.addPadre(ts);
+                
                 foreach (Instruccion item in instruccions)
                 {
                     if (item.getType() == Tipo.BREAK) return null;

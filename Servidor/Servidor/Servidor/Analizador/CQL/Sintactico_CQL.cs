@@ -553,12 +553,14 @@ namespace Servidor.Analizador.CQL
 
         private Instruccion SENTENCIA_FOR(ParseTreeNode nodo)
         {
+            global = true;
             int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
             int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
             Variable var = INICIALIZAR(nodo.ChildNodes.ElementAt(2));
             Operacion expresion = OPERACION_LOGICA(nodo.ChildNodes.ElementAt(4));
             Operacion actualizacion = ACTUALIZACION(nodo.ChildNodes.ElementAt(6));
             LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(9));
+            global = false;
             return new Sentencia_For(var, expresion, actualizacion, instruccions, line, column);
 
         }
@@ -595,29 +597,35 @@ namespace Servidor.Analizador.CQL
 
         private Instruccion SENTENCIA_DO_WHILE(ParseTreeNode nodo)
         {
+            global = false;
             int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
             int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
             Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(6));
             LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(2));
+            global = true;
             return new Sentencia_Do_While(expresion, instruccions, line, column);
         }
 
         private Instruccion SENTENCIA_WHILE(ParseTreeNode nodo)
         {
+            global = false;
             int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
             int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
             Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2));
             LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(5));
+            global = true;
             return new Sentencia_While(expresion, instruccions, line, column);
         }
 
         private Tipo_Switch TIPO_SWITCH(ParseTreeNode nodo)
         {
+            global = false;
             Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2));
             List<Tipo_Case> casos = CASOS(nodo.ChildNodes.ElementAt(5));
             LinkedList<Instruccion> instrucions_default;
             if (nodo.ChildNodes.ElementAt(6).ChildNodes.Count != 0) instrucions_default = SWITCH_DEFAULT(nodo.ChildNodes.ElementAt(6));
             else instrucions_default = new LinkedList<Instruccion>();
+            global = true;
             return new Tipo_Switch(expresion, casos, instrucions_default);
         }
 
