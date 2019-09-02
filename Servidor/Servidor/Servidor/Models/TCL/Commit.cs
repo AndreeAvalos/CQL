@@ -18,6 +18,10 @@ namespace Servidor.Models.TCL
         {
             return Tipo.TCL;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public List<string> getSalida() { return salida; }
 
         public int getLine()

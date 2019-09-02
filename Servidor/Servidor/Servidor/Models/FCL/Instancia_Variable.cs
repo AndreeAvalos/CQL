@@ -18,7 +18,10 @@ namespace Servidor.Models.FCL
             this.column = column;
             this.new_var = new_var;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (ts.existID(new_var.Id))

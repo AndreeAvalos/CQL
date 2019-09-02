@@ -56,6 +56,7 @@
         USER_TYPES,
         PROCEDURE,
         WHILE,
-        DO
+        DO,
+        FOR
     }
 }

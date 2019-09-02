@@ -19,6 +19,10 @@ namespace Servidor.Models.FCL
             this.expresion = expresion;
             this.instruccions = instruccions;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
@@ -27,7 +31,6 @@ namespace Servidor.Models.FCL
             int limite = 0;
             while ((bool)expresion.Ejecutar(ts))
             {
-                salida = new List<string>();
                 foreach (Instruccion item in instruccions)
                 {
                     if (item.getType() == Tipo.BREAK) return null;
@@ -39,6 +42,7 @@ namespace Servidor.Models.FCL
                     {
                         item.Ejecutar(tabla_local);
                         salida.AddRange(item.getSalida());
+                        item.clearSalida();
                     }
                 }
 

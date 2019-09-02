@@ -22,7 +22,10 @@ namespace Servidor.Models.DCL
             this.id_db = id_db;
             this.user_actual = user_actual;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (!Program.sistema.tienePermiso(user_actual, id_db))

@@ -21,6 +21,10 @@ namespace Servidor.Models
 
             return salida;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public Alter_Table(string id_tabla, bool add_column, List<Columna> columnas_agregar, int line, int column)
         {

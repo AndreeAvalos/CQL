@@ -23,7 +23,10 @@ namespace Servidor.Models.USER_TYPES
             this.column = column;
             this.add = add;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public Alter_Type(string id, List<Atributo> atributos, int line, int column, bool add)
         {
             this.id = id;

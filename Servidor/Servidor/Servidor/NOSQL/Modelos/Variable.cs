@@ -12,6 +12,7 @@ namespace Servidor.NOSQL.Modelos
         object valor;
         Tipo real_type;
         string tipo;
+        bool asignacion = false;
         bool instanciada;
         string attr1, attr2;
         bool is_var = false;
@@ -25,5 +26,6 @@ namespace Servidor.NOSQL.Modelos
         public string Attr2 { get => attr2; set => attr2 = value; }
         public bool Is_var { get => is_var; set => is_var = value; }
         public List<string> Lst_variables { get => lst_variables; set => lst_variables = value; }
+        public bool Asignacion { get => asignacion; set => asignacion = value; }
     }
 }

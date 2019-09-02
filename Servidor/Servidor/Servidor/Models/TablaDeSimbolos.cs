@@ -15,7 +15,7 @@ namespace Servidor.Models
         {
             return getValor(id, this);
         }
-        public Object getValor(string id, TablaDeSimbolos nodo)
+        private Object getValor(string id, TablaDeSimbolos nodo)
         {
             foreach (Simbolo s in nodo)
             {

@@ -19,7 +19,10 @@ namespace Servidor.Models.DCL
             this.user = user;
             this.password = password;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (Program.sistema.existUser(user))

@@ -14,6 +14,10 @@ namespace Servidor.Models.FCL
             this.linea = linea;
             this.columna = columna;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {

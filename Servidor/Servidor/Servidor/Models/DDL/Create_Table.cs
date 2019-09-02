@@ -25,6 +25,10 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public List<string> getSalida()
         {
 

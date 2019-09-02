@@ -22,6 +22,10 @@ namespace Servidor.Models.TCL
         {
             throw new NotImplementedException();
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public int getLine()
         {

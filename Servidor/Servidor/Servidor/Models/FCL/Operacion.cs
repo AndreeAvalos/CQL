@@ -22,6 +22,10 @@ namespace Servidor.Models.FCL
             this.operadorDer = operadorDer;
             this.operadorIzq = operadorIzq;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public Operacion(Operacion operadorIzq, Tipo tipo, int line, int column)
         {

@@ -544,8 +544,53 @@ namespace Servidor.Analizador.CQL
                     return SENTENCIA_WHILE(nodo.ChildNodes.ElementAt(0));
                 case "SENTENCIA_DO_WHILE":
                     return SENTENCIA_DO_WHILE(nodo.ChildNodes.ElementAt(0));
+                case "SENTENCIA_FOR":
+                    return SENTENCIA_FOR(nodo.ChildNodes.ElementAt(0));
             }
             return null;
+        }
+
+
+        private Instruccion SENTENCIA_FOR(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            Variable var = INICIALIZAR(nodo.ChildNodes.ElementAt(2));
+            Operacion expresion = OPERACION_LOGICA(nodo.ChildNodes.ElementAt(4));
+            Operacion actualizacion = ACTUALIZACION(nodo.ChildNodes.ElementAt(6));
+            LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(9));
+            return new Sentencia_For(var, expresion, actualizacion, instruccions, line, column);
+
+        }
+
+        private Operacion ACTUALIZACION(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            string operador = nodo.ChildNodes.ElementAt(2).Term.Name.ToString();
+            if (operador.Equals("++")) return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value, Tipo.INCREMENTO, line, column);
+            else return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value, Tipo.DECREMENTO, line, column);
+        }
+
+        private Variable INICIALIZAR(ParseTreeNode nodo)
+        {
+            Variable new_var = new Variable();
+            if (nodo.ChildNodes.Count == 5)
+            {
+                new_var.Tipo = TIPO_DATO(nodo.ChildNodes.ElementAt(0));
+                new_var.Real_type = Tipo.VARIABLE;
+                new_var.Asignacion = false;
+                new_var.Id = "@" + nodo.ChildNodes.ElementAt(2).Token.Value.ToString();
+                new_var.Valor = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(4));
+            }
+            else
+            {
+                new_var.Real_type = Tipo.VARIABLE;
+                new_var.Asignacion = true;
+                new_var.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
+                new_var.Valor = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(3));
+            }
+            return new_var;
         }
 
         private Instruccion SENTENCIA_DO_WHILE(ParseTreeNode nodo)

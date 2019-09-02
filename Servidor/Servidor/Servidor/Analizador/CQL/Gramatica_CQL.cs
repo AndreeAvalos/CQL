@@ -105,7 +105,8 @@ namespace Servidor.Analizador.CQL
                 RCASE = ToTerm("CASE"),
                 RDEFAULT = ToTerm("DEFAULT"),
                 RWHILE = ToTerm("WHILE"),
-                RDO = ToTerm("DO")
+                RDO = ToTerm("DO"),
+                RFOR = ToTerm("FOR")
                 ;
             #endregion
 
@@ -169,7 +170,10 @@ namespace Servidor.Analizador.CQL
                 SWITCH_DEFAULT = new NonTerminal("SWITCH_DEFAULT"),
                 CASO = new NonTerminal("CASO"),
                 SENTENCIA_WHILE = new NonTerminal("SENTENCIA_WHILE"),
-                SENTENCIA_DO_WHILE = new NonTerminal("SENTENCIA_DO_WHILE")
+                SENTENCIA_DO_WHILE = new NonTerminal("SENTENCIA_DO_WHILE"),
+                SENTENCIA_FOR = new NonTerminal("SENTENCIA_FOR"),
+                INICIALIZAR = new NonTerminal("INICIALIZAR"),
+                ACTUALIZACION = new NonTerminal("ACTUALIZACION")
                 ;
 
 
@@ -210,10 +214,11 @@ namespace Servidor.Analizador.CQL
                 | VARIABLE + PTCOMA
                 | LOG
                 | SENTENCIA_IF
-                | RBREAK + PTCOMA 
+                | RBREAK + PTCOMA
                 | SENTENCIA_SWITCH
                 | SENTENCIA_WHILE
-                | SENTENCIA_DO_WHILE;
+                | SENTENCIA_DO_WHILE
+                | SENTENCIA_FOR;
 
             #region USER TYPES
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
@@ -358,9 +363,9 @@ namespace Servidor.Analizador.CQL
                 | EXPRESION_LOGICA + IGUALIGUAL + EXPRESION_LOGICA
                 | EXPRESION_LOGICA + RDIFERENTE + EXPRESION_LOGICA
                 | PARIZQ + EXPRESION_LOGICA + PARDER
-				| OPERACION_NUMERICA;
+                | OPERACION_NUMERICA;
             // SWITCH(VALORES_LOGICOS){ CASOS CASO_DAFAULT } 
-            SENTENCIA_SWITCH.Rule = RSWITCH + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + CASOS+ SWITCH_DEFAULT + LLAVDER;
+            SENTENCIA_SWITCH.Rule = RSWITCH + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + CASOS + SWITCH_DEFAULT + LLAVDER;
             //CASO CASO CASO CASO
             CASOS.Rule = CASOS + CASO
                 | CASO;
@@ -373,8 +378,14 @@ namespace Servidor.Analizador.CQL
             SENTENCIA_WHILE.Rule = RWHILE + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
             // DO { INSTRUCCIONES } WHILE(VALORES_LOGICOS);
             SENTENCIA_DO_WHILE.Rule = RDO + LLAVIZQ + Instrucciones + LLAVDER + RWHILE + PARIZQ + VALORES_LOGICOS + PARDER + PTCOMA;
-
-
+            //FOR(INICIALIZAR; EXPRESION_LOGICA;ACTUALIZACION){ INSTRUCCIONES }
+            SENTENCIA_FOR.Rule = RFOR + PARIZQ + INICIALIZAR + PTCOMA + EXPRESION_LOGICA + PTCOMA + ACTUALIZACION + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
+            // int @var3 = 0
+            INICIALIZAR.Rule = TIPO_DATO + RARROBA + IDENTIFICADOR + IGUAL + OPERACION_NUMERICA
+                | RARROBA + IDENTIFICADOR + IGUAL + OPERACION_NUMERICA;
+            //@var++ o @var--
+            ACTUALIZACION.Rule = RARROBA + IDENTIFICADOR + RINCREMENTO
+                | RARROBA + IDENTIFICADOR + RDECREMENTO;
             #endregion
 
             //TIPOS DE OPERACIONES NUMERICAS
@@ -453,7 +464,8 @@ namespace Servidor.Analizador.CQL
                 RSWITCH.Text,
                 RWHILE.Text,
                 RCASE.Text,
-                RDO.Text
+                RDO.Text,
+                RFOR.Text
             };
             MarkReservedWords(palabras);
             //COMENTARIOS

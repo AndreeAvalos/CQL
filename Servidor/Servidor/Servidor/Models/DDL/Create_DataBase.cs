@@ -25,6 +25,10 @@ namespace Servidor.Models
 
             return salida;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Recolectar(TablaDeSimbolos ts) {
             return null;

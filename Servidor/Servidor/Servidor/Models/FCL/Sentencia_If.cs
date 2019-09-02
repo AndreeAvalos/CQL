@@ -17,6 +17,10 @@ namespace Servidor.Models.FCL
             this.column = column;
             this.instruccion_if = instruccion_if;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
