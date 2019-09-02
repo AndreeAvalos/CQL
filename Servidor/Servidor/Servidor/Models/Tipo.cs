@@ -54,6 +54,8 @@
         TCL,
         DCL,
         USER_TYPES,
-        PROCEDURE
+        PROCEDURE,
+        WHILE,
+        DO
     }
 }

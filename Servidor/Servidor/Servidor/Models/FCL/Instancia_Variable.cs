@@ -42,7 +42,7 @@ namespace Servidor.Models.FCL
                     {
                         if (Program.casteos.comprobarCasteo(type, valor))
                         {
-                            ts.setValor(new_var.Id, Program.casteos.castear(type, valor));
+                            ts.setValor(new_var.Id, valor);
                         }
                         else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
                     }

@@ -106,7 +106,7 @@ namespace Servidor.Models
                 {
                     if (s.Tipo == Tipo.ENTERO)
                     {
-                        s.Valor = Convert.ToInt32(valor);
+                        s.Valor = Convert.ToDouble(valor);
                     }
                     else if (s.Tipo == Tipo.DECIMAL)
                     {

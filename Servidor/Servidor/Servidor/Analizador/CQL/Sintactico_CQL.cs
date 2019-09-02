@@ -50,7 +50,7 @@ namespace Servidor.Analizador.CQL
 
                     foreach (Instruccion ins in AST)
                     {
-                        if (ins.getType() == Tipo.BREAK) salida.Add(Program.buildError(ins.getLine(), ins.getColumn(), "Semantico", "Break no puede existir en el ambito global")) ;
+                        if (ins.getType() == Tipo.BREAK) salida.Add(Program.buildError(ins.getLine(), ins.getColumn(), "Semantico", "Break no puede existir en el ambito global"));
                         ins.Ejecutar(ts_global);
                         salida.AddRange(ins.getSalida());
                     }
@@ -473,7 +473,7 @@ namespace Servidor.Analizador.CQL
             int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
             aux_global = global;
             Tipo real_type = Tipo.OBJETO;
-            
+
             switch (produccion)
             {
                 case "ASIGNACION":
@@ -540,8 +540,30 @@ namespace Servidor.Analizador.CQL
                 case "SENTENCIA_SWITCH":
                     Tipo_Switch tipo_Switch = TIPO_SWITCH(nodo.ChildNodes.ElementAt(0));
                     return new Sentencia_Switch(tipo_Switch, line, column);
+                case "SENTENCIA_WHILE":
+                    return SENTENCIA_WHILE(nodo.ChildNodes.ElementAt(0));
+                case "SENTENCIA_DO_WHILE":
+                    return SENTENCIA_DO_WHILE(nodo.ChildNodes.ElementAt(0));
             }
             return null;
+        }
+
+        private Instruccion SENTENCIA_DO_WHILE(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(6));
+            LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(2));
+            return new Sentencia_Do_While(expresion, instruccions, line, column);
+        }
+
+        private Instruccion SENTENCIA_WHILE(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2));
+            LinkedList<Instruccion> instruccions = Instrucciones(nodo.ChildNodes.ElementAt(5));
+            return new Sentencia_While(expresion, instruccions, line, column);
         }
 
         private Tipo_Switch TIPO_SWITCH(ParseTreeNode nodo)
@@ -567,7 +589,8 @@ namespace Servidor.Analizador.CQL
                 casos.Add(CASO(nodo.ChildNodes.ElementAt(1)));
                 return casos;
             }
-            else {
+            else
+            {
                 List<Tipo_Case> casos = new List<Tipo_Case>
                 {
                     CASO(nodo.ChildNodes.ElementAt(0))
@@ -754,7 +777,7 @@ namespace Servidor.Analizador.CQL
                 new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
                 new_variable.Lst_variables = lst_ids;
                 new_variable.Is_var = is_var;
-                
+
             }
             is_var = false;
             return new_variable;
@@ -853,15 +876,7 @@ namespace Servidor.Analizador.CQL
                 case "Identificador":
                     return node.ChildNodes[0].ToString().Replace(" (Identificador)", "");
                 case "Numero":
-                    try
-                    {
-                        return Convert.ToInt32(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
-                    }
-                    catch (Exception)
-                    {
-
-                        return Convert.ToDouble(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
-                    }
+                    return node.ChildNodes[0].ToString().Replace(" (Numero)", "");
                 default:
                     return evaluar;
             }

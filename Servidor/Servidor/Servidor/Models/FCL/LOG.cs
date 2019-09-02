@@ -9,14 +9,13 @@ namespace Servidor.Models.FCL
     public class LOG : Instruccion
     {
         int line, column;
-        List<string> salida;
+        List<string> salida = new List<string>();
         List<Valor> valores;
 
         public LOG(int line, int column, List<Valor> valores)
         {
             this.line = line;
             this.column = column;
-            this.salida = new List<string>();
             this.valores = valores;
         }
 
