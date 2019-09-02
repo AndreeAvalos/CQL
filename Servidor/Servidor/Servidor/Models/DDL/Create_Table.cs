@@ -30,7 +30,10 @@ namespace Servidor.Models
 
             return salida;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)

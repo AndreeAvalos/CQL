@@ -59,6 +59,7 @@ namespace Servidor.Analizador.CQL
                 LLAVIZQ = ToTerm("{"),
                 LLAVDER = ToTerm("}"),
                 PTCOMA = ToTerm(";"),
+                DPUNTOS = ToTerm(":"),
                 RNULL = ToTerm("null"),
                 RFALSE = ToTerm("false"),
                 RTRUE = ToTerm("true"),
@@ -97,7 +98,12 @@ namespace Servidor.Analizador.CQL
                 RVALUES = ToTerm("VALUES"),
                 RNEW = ToTerm("NEW"),
                 RAS = ToTerm("AS"),
-                RLOG = ToTerm("LOG")
+                RLOG = ToTerm("LOG"),
+                RBREAK = ToTerm("BREAK"),
+                RRETURN = ToTerm("RETURN"),
+                RSWITCH = ToTerm("SWITCH"),
+                RCASE = ToTerm("CASE"),
+                RDEFAULT = ToTerm("DEFAULT")
                 ;
             #endregion
 
@@ -155,7 +161,11 @@ namespace Servidor.Analizador.CQL
                 SENTENCIA_ELSE_IF = new NonTerminal("SENTENCIA_ELSE_IF"),
                 SENTENCIA_ELSE_IF2 = new NonTerminal("SENTENCIA_ELSE_IF2"),
                 EXPRESION_LOGICA = new NonTerminal("EXPRESION_LOGICA"),
-                VALORES_LOGICOS = new NonTerminal("VALORES_LOGICOS")
+                VALORES_LOGICOS = new NonTerminal("VALORES_LOGICOS"),
+                SENTENCIA_SWITCH = new NonTerminal("SENTENCIA_SWITCH"),
+                CASOS = new NonTerminal("CASOS"),
+                SWITCH_DEFAULT = new NonTerminal("SWITCH_DEFAULT"),
+                CASO = new NonTerminal("CASO")
                 ;
 
 
@@ -195,7 +205,9 @@ namespace Servidor.Analizador.CQL
             FCL.Rule = ASIGNACION
                 | VARIABLE + PTCOMA
                 | LOG
-                | SENTENCIA_IF;
+                | SENTENCIA_IF
+                | RBREAK + PTCOMA 
+                | SENTENCIA_SWITCH;
 
             #region USER TYPES
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
@@ -342,6 +354,14 @@ namespace Servidor.Analizador.CQL
                 | PARIZQ + EXPRESION_LOGICA + PARDER
 				| OPERACION_NUMERICA;
 
+            SENTENCIA_SWITCH.Rule = RSWITCH + PARIZQ + VALORES_LOGICOS + PARDER + LLAVIZQ + CASOS+ SWITCH_DEFAULT + LLAVDER;
+
+            CASOS.Rule = CASOS + CASO
+                | CASO;
+
+            CASO.Rule = RCASE + VALOR + DPUNTOS + Instrucciones;
+            SWITCH_DEFAULT.Rule = RDEFAULT + DPUNTOS + Instrucciones
+                | Empty;
             #endregion
 
             //TIPOS DE OPERACIONES NUMERICAS

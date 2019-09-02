@@ -51,6 +51,11 @@ namespace Servidor.Models.DCL
             return this.salida;
         }
 
+        public Tipo getType()
+        {
+            return Tipo.DCL;
+        }
+
         public object Recolectar(TablaDeSimbolos ts)
         {
             throw new NotImplementedException();

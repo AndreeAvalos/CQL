@@ -19,6 +19,10 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public List<string> getSalida()
         {

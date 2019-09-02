@@ -18,6 +18,10 @@ namespace Servidor.Models.USER_TYPES
             this.linea = linea;
             this.columna = columna;
         }
+        public Tipo getType()
+        {
+            return Tipo.USER_TYPES;
+        }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {

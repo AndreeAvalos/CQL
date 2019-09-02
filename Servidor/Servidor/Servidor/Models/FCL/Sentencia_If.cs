@@ -27,8 +27,17 @@ namespace Servidor.Models.FCL
 
                 foreach (Instruccion item in instruccion_if.If_instrucciones)
                 {
-                    item.Ejecutar(tabla_local);
-                    salida.AddRange(item.getSalida());
+                    if (item.getType() == Tipo.BREAK) break;
+                    if (item.getType() == Tipo.USER_TYPES || item.getType() == Tipo.FUNCION || item.getType() == Tipo.METODO || item.getType() == Tipo.PROCEDURE)
+                    {
+                        salida.Add(Program.buildError(item.getLine(), item.getColumn(), "Semantico", "No puede venir instruccion del tipo: " + item.getType() + " en un ambito local."));
+                    }
+                    else
+                    {
+                        item.Ejecutar(tabla_local);
+                        salida.AddRange(item.getSalida());
+                    }
+
                 }
                 return null;
             }
@@ -40,16 +49,32 @@ namespace Servidor.Models.FCL
                     {
                         foreach (Instruccion instruccion in item.If_instrucciones)
                         {
-                            instruccion.Ejecutar(tabla_local);
-                            salida.AddRange(instruccion.getSalida());
+                            if (instruccion.getType() == Tipo.BREAK) break;
+                            if (instruccion.getType() == Tipo.USER_TYPES || instruccion.getType()==Tipo.FUNCION|| instruccion.getType() == Tipo.METODO || instruccion.getType() == Tipo.PROCEDURE)
+                            {
+                                salida.Add(Program.buildError(instruccion.getLine(), instruccion.getColumn(), "Semantico", "No puede venir instruccion del tipo: " + instruccion.getType() + " en un ambito local."));
+                            }
+                            else
+                            {
+                                instruccion.Ejecutar(tabla_local);
+                                salida.AddRange(instruccion.getSalida());
+                            }
                         }
                         return null;
                     }
                 }
                 foreach (Instruccion instruccion in instruccion_if.Else_instrucciones)
                 {
-                    instruccion.Ejecutar(tabla_local);
-                    salida.AddRange(instruccion.getSalida());
+                    if (instruccion.getType() == Tipo.BREAK) break;
+                    if (instruccion.getType() == Tipo.USER_TYPES || instruccion.getType() == Tipo.FUNCION || instruccion.getType() == Tipo.METODO || instruccion.getType() == Tipo.PROCEDURE)
+                    {
+                        salida.Add(Program.buildError(instruccion.getLine(), instruccion.getColumn(), "Semantico", instruccion.getType() + " solo es aceptada en un ambito global."));
+                    }
+                    else
+                    {
+                        instruccion.Ejecutar(tabla_local);
+                        salida.AddRange(instruccion.getSalida());
+                    }
                 }
                 return null;
             }
@@ -68,6 +93,11 @@ namespace Servidor.Models.FCL
         public List<string> getSalida()
         {
             return this.salida;
+        }
+
+        public Tipo getType()
+        {
+            return Tipo.IF;
         }
 
         public object Recolectar(TablaDeSimbolos ts)

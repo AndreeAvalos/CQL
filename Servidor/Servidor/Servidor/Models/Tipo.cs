@@ -42,6 +42,18 @@
         AND,
         XOR,
         OR,
-        NOT
+        NOT,
+        BREAK,
+        RETURN,
+        SWITCH,
+        IF,
+        OPERACION,
+        LOG,
+        DML,
+        DDL,
+        TCL,
+        DCL,
+        USER_TYPES,
+        PROCEDURE
     }
 }

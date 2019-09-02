@@ -76,5 +76,10 @@ namespace Servidor.Models.DCL
         {
             throw new NotImplementedException();
         }
+
+        public Tipo getType()
+        {
+            return Tipo.DCL;
+        }
     }
 }

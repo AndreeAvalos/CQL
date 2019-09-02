@@ -14,6 +14,10 @@ namespace Servidor.Models.TCL
             salida.Add(Program.buildMessage("Se han guardado los cambios en la base de datos."));
             return null;
         }
+        public Tipo getType()
+        {
+            return Tipo.TCL;
+        }
         public List<string> getSalida() { return salida; }
 
         public int getLine()

@@ -281,5 +281,9 @@ namespace Servidor.Models.USER_TYPES
         {
             throw new NotImplementedException();
         }
+        public Tipo getType()
+        {
+            return Tipo.USER_TYPES;
+        }
     }
 }

@@ -12,6 +12,8 @@ namespace Servidor.Models
         int getLine();
         int getColumn();
         List<string> getSalida();
+
+        Tipo getType();
     }
 }
 

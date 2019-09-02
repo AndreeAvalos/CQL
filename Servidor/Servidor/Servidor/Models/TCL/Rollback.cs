@@ -14,7 +14,10 @@ namespace Servidor.Models.TCL
             salida.Add(Program.buildMessage("Se ha restaurado la base de datos."));
             return null;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.TCL;
+        }
         public int getColumn()
         {
             throw new NotImplementedException();

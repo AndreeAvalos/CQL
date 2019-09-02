@@ -284,5 +284,10 @@ namespace Servidor.Models.FCL
         {
             return null;
         }
+
+        public Tipo getType()
+        {
+            return Tipo.OPERACION;
+        }
     }
 }

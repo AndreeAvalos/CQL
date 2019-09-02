@@ -56,6 +56,10 @@ namespace Servidor.Models.DCL
 
         }
 
+        public Tipo getType()
+        {
+            return Tipo.DCL;
+        }
         public int getColumn()
         {
             return this.line;

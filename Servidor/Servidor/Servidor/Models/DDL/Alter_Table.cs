@@ -298,5 +298,9 @@ namespace Servidor.Models
         {
             return columna;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
     }
 }

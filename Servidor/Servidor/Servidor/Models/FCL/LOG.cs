@@ -73,6 +73,11 @@ namespace Servidor.Models.FCL
             return this.salida;
         }
 
+        public Tipo getType()
+        {
+            return Tipo.LOG;
+        }
+
         public object Recolectar(TablaDeSimbolos ts)
         {
             return null;

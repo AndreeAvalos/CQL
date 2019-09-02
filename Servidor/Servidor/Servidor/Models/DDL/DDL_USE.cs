@@ -18,6 +18,10 @@ namespace Servidor.Models
             this.columna = column;
             this.user = user;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public object Recolectar(TablaDeSimbolos ts)
         {

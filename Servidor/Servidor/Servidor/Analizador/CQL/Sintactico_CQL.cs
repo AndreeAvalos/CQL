@@ -47,9 +47,10 @@ namespace Servidor.Analizador.CQL
                     {
                         ins.Recolectar(ts_global);
                     }
-                    Console.WriteLine(ts_global);
+
                     foreach (Instruccion ins in AST)
                     {
+                        if (ins.getType() == Tipo.BREAK) salida.Add(Program.buildError(ins.getLine(), ins.getColumn(), "Semantico", "Break no puede existir en el ambito global")) ;
                         ins.Ejecutar(ts_global);
                         salida.AddRange(ins.getSalida());
                     }
@@ -534,9 +535,55 @@ namespace Servidor.Analizador.CQL
                     };
                     global = true;
                     return new Sentencia_If(sentencia_if, line, column);
-                   
+                case "BREAK":
+                    return new Sentencia_Break(line, column);
+                case "SENTENCIA_SWITCH":
+                    Tipo_Switch tipo_Switch = TIPO_SWITCH(nodo.ChildNodes.ElementAt(0));
+                    return new Sentencia_Switch(tipo_Switch, line, column);
             }
             return null;
+        }
+
+        private Tipo_Switch TIPO_SWITCH(ParseTreeNode nodo)
+        {
+            Operacion expresion = VALORES_LOGICOS(nodo.ChildNodes.ElementAt(2));
+            List<Tipo_Case> casos = CASOS(nodo.ChildNodes.ElementAt(5));
+            LinkedList<Instruccion> instrucions_default;
+            if (nodo.ChildNodes.ElementAt(6).ChildNodes.Count != 0) instrucions_default = SWITCH_DEFAULT(nodo.ChildNodes.ElementAt(6));
+            else instrucions_default = new LinkedList<Instruccion>();
+            return new Tipo_Switch(expresion, casos, instrucions_default);
+        }
+
+        private LinkedList<Instruccion> SWITCH_DEFAULT(ParseTreeNode nodo)
+        {
+            return Instrucciones(nodo.ChildNodes.ElementAt(2));
+        }
+
+        private List<Tipo_Case> CASOS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 2)
+            {
+                List<Tipo_Case> casos = CASOS(nodo.ChildNodes.ElementAt(0));
+                casos.Add(CASO(nodo.ChildNodes.ElementAt(1)));
+                return casos;
+            }
+            else {
+                List<Tipo_Case> casos = new List<Tipo_Case>
+                {
+                    CASO(nodo.ChildNodes.ElementAt(0))
+                };
+                return casos;
+            }
+        }
+
+        private Tipo_Case CASO(ParseTreeNode nodo)
+        {
+            int line = nodo.ChildNodes.ElementAt(0).Span.Location.Line;
+            int column = nodo.ChildNodes.ElementAt(0).Span.Location.Column;
+            string expresion = VALOR(nodo.ChildNodes.ElementAt(1)).ToString();
+            LinkedList<Instruccion> lst = Instrucciones(nodo.ChildNodes.ElementAt(3));
+
+            return new Tipo_Case(expresion, lst, line, column);
         }
 
         private LinkedList<Instruccion> SENTENCIA_ELSE(ParseTreeNode nodo)
@@ -816,7 +863,7 @@ namespace Servidor.Analizador.CQL
                         return Convert.ToDouble(node.ChildNodes[0].ToString().Replace(" (Numero)", ""));
                     }
                 default:
-                    return "";
+                    return evaluar;
             }
         }
     }
