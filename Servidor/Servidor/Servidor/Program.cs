@@ -265,7 +265,7 @@ namespace Servidor
                     if (aux.Metodo.ToLower().Equals("get"))
                     {
                         clave = aux.Clave.Ejecutar(ts).ToString();
-                        aux.Clave.Ejecutar(ts).ToString();
+
                         if (map_actual.containsKey(clave))
                         {
                             Tipo_Collection val = (Tipo_Collection)map_actual.Get(clave);
@@ -314,6 +314,62 @@ namespace Servidor
                     {
                         clave = aux.Clave.Ejecutar(ts).ToString();
                         return map_actual.containsKey(clave);
+                    }
+                    break;
+                case Tipo.LIST:
+                    Lista lista_actual = (Lista)ts.getValor(id);
+                    aux = (Variable_Metodo)valor;
+                    if (aux.Metodo.ToLower().Equals("get"))
+                    {
+
+                        int clave2 = Convert.ToInt32(aux.Clave.Ejecutar(ts).ToString());
+
+
+                        Tipo_Collection val = (Tipo_Collection)lista_actual.Get(clave2);
+                        if (val != null)
+                        {
+                            if (val.Real_type == Tipo.OPERACION)
+                            {
+                                Operacion op = (Operacion)val.Valor;
+                                return op.Ejecutar(ts);
+                            }
+                        }
+                    }
+                    else if (aux.Metodo.ToLower().Equals("insert"))
+                    {
+                        lista_actual.Insert(aux.Valor);
+                        ts.setValor(id, lista_actual.Lista_valores);
+                        return true;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("set"))
+                    {
+                        int clave2 = Convert.ToInt32(aux.Clave.Ejecutar(ts).ToString());
+                        bool salida = lista_actual.Set(clave2, aux.Valor);
+                        ts.setValor(id, lista_actual.Lista_valores);
+                        return salida;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("remove"))
+                    {
+                        int clave2 = Convert.ToInt32(aux.Clave.Ejecutar(ts).ToString());
+                        bool salida = lista_actual.Remove(clave2);
+                        ts.setValor(id, lista_actual.Lista_valores);
+                        return salida;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("clear"))
+                    {
+                        lista_actual.Clear();
+                        ts.setValor(id, lista_actual.Lista_valores);
+
+                    }
+                    else if (aux.Metodo.ToLower().Equals("size"))
+                    {
+
+                        return Convert.ToDouble(lista_actual.Size());
+                    }
+                    else if (aux.Metodo.ToLower().Equals("contains"))
+                    {
+                        return lista_actual.Contains(aux.Valor);
+
                     }
                     break;
 

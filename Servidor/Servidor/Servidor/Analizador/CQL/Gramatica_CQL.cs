@@ -89,7 +89,7 @@ namespace Servidor.Analizador.CQL
                 RWITH = ToTerm("WITH"),
                 RPASSWORD = ToTerm("PASSWORD"),
                 RINSERT = ToTerm("INSERT INTO"),
-				R_INSERT = ToTerm("INSERT"),
+                R_INSERT = ToTerm("INSERT"),
                 RVALUES = ToTerm("VALUES"),
                 RNEW = ToTerm("NEW"),
                 RAS = ToTerm("AS"),
@@ -181,6 +181,7 @@ namespace Servidor.Analizador.CQL
                 MAP_VALS = new NonTerminal("MAP_VALS"),
                 MAP_VAL = new NonTerminal("MAP_VAL"),
                 METODOS_MAP = new NonTerminal("METODOS_MAP")
+
                 ;
 
 
@@ -325,9 +326,10 @@ namespace Servidor.Analizador.CQL
             METODOS_MAP.Rule = R_INSERT + PARIZQ + OPERACION_NUMERICA + COMA + VUT + PARDER
                 | RSIZE + PARIZQ + PARDER
                 | RCONTAINS + PARIZQ + OPERACION_NUMERICA + PARDER
-				| TSET + PARIZQ + OPERACION_NUMERICA + COMA + VUT + PARDER
-				| RREMOVE + PARIZQ + OPERACION_NUMERICA + PARDER
-				| RCLEAR + PARIZQ + PARDER
+                | TSET + PARIZQ + OPERACION_NUMERICA + COMA + VUT + PARDER
+                | RREMOVE + PARIZQ + OPERACION_NUMERICA + PARDER
+                | RCLEAR + PARIZQ + PARDER
+				| R_INSERT + PARIZQ + VUT + PARDER
                 | RGET + PARIZQ + OPERACION_NUMERICA + PARDER;
 
 
@@ -343,6 +345,7 @@ namespace Servidor.Analizador.CQL
                 | IGUAL + RARROBA + IDENTIFICADOR + VAR_ATTRS
                 | IGUAL + LLAVIZQ + VALORES2 + LLAVDER + RAS + IDENTIFICADOR
                 | IGUAL + CORIZQ + MAP_VALS + CORDER
+                | IGUAL + CORIZQ + VALORES2 + CORDER
                 | Empty;
 
             MAP_VALS.Rule = MAP_VALS + COMA + MAP_VAL
@@ -436,7 +439,7 @@ namespace Servidor.Analizador.CQL
                 | OPERACION_NUMERICA + RPOTENCIA + OPERACION_NUMERICA
                 | PARIZQ + OPERACION_NUMERICA + PARDER
                 | VALOR//NUMERO
-				| RARROBA + IDENTIFICADOR + PUNTO + METODOS_MAP 
+                | RARROBA + IDENTIFICADOR + PUNTO + METODOS_MAP
                 | RARROBA + IDENTIFICADOR//VARIABLE
                 | RARROBA + IDENTIFICADOR + RINCREMENTO//VAR++
                 | RARROBA + IDENTIFICADOR + RDECREMENTO;//VAR--
@@ -469,8 +472,8 @@ namespace Servidor.Analizador.CQL
             VALOR.Rule = IDENTIFICADOR
                 | NUMERO
                 | DECIMAL
-                | CADENA
                 | RTRUE
+				| CADENA
                 | RDATE
                 | RTIME
                 | RNULL

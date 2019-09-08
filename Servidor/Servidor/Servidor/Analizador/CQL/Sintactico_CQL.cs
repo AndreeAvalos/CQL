@@ -19,8 +19,10 @@ namespace Servidor.Analizador.CQL
         bool global = true;
         bool aux_global = true;
         bool is_var = false;
+        string clave = "", valor = "";
         public List<string> salida = new List<string>();
         List<string> lst_ids = new List<string>();
+        bool concatenacion = false;
         public bool Validar(String entrada, Grammar gramatica)
         {
             LanguageData lenguaje = new LanguageData(gramatica);
@@ -519,7 +521,8 @@ namespace Servidor.Analizador.CQL
                             new_var.Real_type = Tipo.VARIABLE_ATRIBUTOS;
                             return new Instancia_Variable(line, column, new_var);
                         }
-                        else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Term.Name.Equals("METODOS_MAP")) {
+                        else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Term.Name.Equals("METODOS_MAP"))
+                        {
                             Variable new_var = new Variable();
                             new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
                             new_var.Id = "@" + nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
@@ -814,7 +817,8 @@ namespace Servidor.Analizador.CQL
                 return new_valor;
 
             }
-            else if (nodo.ChildNodes.Count == 4) {
+            else if (nodo.ChildNodes.Count == 4)
+            {
                 Variable new_var = new Variable();
                 new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(3));
                 new_var.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
@@ -907,10 +911,18 @@ namespace Servidor.Analizador.CQL
         {
             string op = nodo.ChildNodes.ElementAt(0).Term.Name.ToString();
             Variable_Metodo new_metodo = new Variable_Metodo(op);
-            switch (op) {
+            switch (op)
+            {
                 case "INSERT":
-                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
-                    new_metodo.Valor = VUT(nodo.ChildNodes.ElementAt(4));
+                    if (nodo.ChildNodes.Count == 6)
+                    {
+                        new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                        new_metodo.Valor = VUT(nodo.ChildNodes.ElementAt(4));
+                    }
+                    else
+                    {
+                        new_metodo.Valor = VUT(nodo.ChildNodes.ElementAt(2));
+                    }
                     break;
                 case "SET":
                     new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
@@ -936,13 +948,15 @@ namespace Servidor.Analizador.CQL
 
         private Stack<string> VAR_ATTRS(ParseTreeNode nodo)
         {
-            if (nodo.ChildNodes.Count == 3) {
+            if (nodo.ChildNodes.Count == 3)
+            {
                 Stack<string> val = VAR_ATTRS(nodo.ChildNodes.ElementAt(0));
                 val.Push(VAR_ATTR(nodo.ChildNodes.ElementAt(1)));
                 return val;
             }
-            else {
-                Stack<string>  val = new Stack<string>();
+            else
+            {
+                Stack<string> val = new Stack<string>();
                 val.Push(VAR_ATTR(nodo.ChildNodes.ElementAt(0)));
                 return val;
             }
@@ -969,6 +983,10 @@ namespace Servidor.Analizador.CQL
                 {
                     return MAP(nodo.ChildNodes.ElementAt(2));
                 }
+                else if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("LISTA"))
+                {
+                    return LISTA(nodo.ChildNodes.ElementAt(2));
+                }
             }
             else if (nodo.ChildNodes.Count == 4 && nodo.ChildNodes.ElementAt(1).Token.Value.Equals("@"))
             {
@@ -979,10 +997,26 @@ namespace Servidor.Analizador.CQL
 
                 return variable;
             }
-            else if (nodo.ChildNodes.Count == 4) {
-                Map new_map = new Map("","");
-                new_map.Mapita = MAP_VALS(nodo.ChildNodes.ElementAt(2));
-                return new_map;
+            else if (nodo.ChildNodes.Count == 4)
+            {
+                if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("MAP_VALS"))
+                {
+                    Map new_map = new Map("", "");
+                    new_map.Mapita = MAP_VALS(nodo.ChildNodes.ElementAt(2));
+                    new_map.Clave = clave;
+                    new_map.Valor = valor;
+                    clave = valor = "";
+                    return new_map;
+                }
+                else
+                {
+                    Lista new_lista = new Lista("");
+                    new_lista.Lista_valores = (List<Tipo_Collection>)VALORES2(nodo.ChildNodes.ElementAt(2));
+                    new_lista.Tipo = valor;
+                    clave = valor = "";
+                    return new_lista;
+
+                }
             }
             else if (nodo.ChildNodes.Count == 6)
             {
@@ -994,6 +1028,11 @@ namespace Servidor.Analizador.CQL
             return null;
         }
 
+        private object LISTA(ParseTreeNode nodo)
+        {
+            return new Lista(VALOR(nodo.ChildNodes.ElementAt(2)).ToString());
+        }
+
         private List<Item_Map> MAP_VALS(ParseTreeNode nodo)
         {
             if (nodo.ChildNodes.Count == 3)
@@ -1002,7 +1041,8 @@ namespace Servidor.Analizador.CQL
                 lst.Add(MAP_VAL(nodo.ChildNodes.ElementAt(2)));
                 return lst;
             }
-            else {
+            else
+            {
                 List<Item_Map> lst = new List<Item_Map>();
                 lst.Add(MAP_VAL(nodo.ChildNodes.ElementAt(0)));
                 return lst;
@@ -1045,10 +1085,12 @@ namespace Servidor.Analizador.CQL
         {
             if (nodo.ChildNodes.Count == 1)
             {
+                valor = "double";
                 return new Tipo_Collection(Tipo.OPERACION, VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0)), "");
             }
             else if (nodo.ChildNodes.Count == 5)
             {
+                valor = nodo.ChildNodes.ElementAt(4).Token.Value.ToString();
                 return new Tipo_Collection(Tipo.USER_TYPES, VALORES2(nodo.ChildNodes.ElementAt(1)), nodo.ChildNodes.ElementAt(4).Token.Value.ToString());
             }
             else return null;
@@ -1064,7 +1106,12 @@ namespace Servidor.Analizador.CQL
                 switch (operador)
                 {
                     case "+":
-                        return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.SUMA, line, colum);
+                        Operacion op1, op2;
+                        concatenacion = false;
+                        op1 = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0));
+                        op2 = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                        if (!concatenacion) return new Operacion(op1, op2, Tipo.SUMA, line, colum);
+                        else return new Operacion(op1, op2, Tipo.CONCATENACION, line, colum);
                     case "-":
                         return new Operacion(OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(0)), OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2)), Tipo.RESTA, line, colum);
                     case "*":
@@ -1079,6 +1126,7 @@ namespace Servidor.Analizador.CQL
                         if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("++"))
                             return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.INCREMENTO, line, colum);
                         else return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.DECREMENTO, line, colum);
+
                     default:
                         return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
                 }
@@ -1094,7 +1142,8 @@ namespace Servidor.Analizador.CQL
                     return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.VARIABLE, line, colum);
                 }
             }
-            else if (nodo.ChildNodes.Count == 4) {
+            else if (nodo.ChildNodes.Count == 4)
+            {
                 Variable new_var = new Variable();
                 new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(3));
                 new_var.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
@@ -1105,7 +1154,12 @@ namespace Servidor.Analizador.CQL
                 string valor = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name;
                 if (valor.ToLower().Equals("numero"))
                     return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
-                else if (valor.ToLower().Equals("cadena")) return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)).ToString(), Tipo.CADENA, line, colum);
+                else if (valor.ToLower().Equals("cadena"))
+                {
+                    valor = "string";
+                    concatenacion = true;
+                    return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)).ToString(), Tipo.CADENA, line, colum);
+                }
                 else return new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Value.ToString(), Tipo.BOOLEANO, line, colum);
             }
         }
@@ -1137,10 +1191,12 @@ namespace Servidor.Analizador.CQL
             {
                 //agregar decimal, date, time, etc
                 case "Cadena":
+                    clave = "String";
                     return node.ChildNodes[0].ToString().Replace(" (Cadena)", "");
                 case "Identificador":
                     return node.ChildNodes[0].ToString().Replace(" (Identificador)", "");
                 case "Numero":
+                    clave = "double";
                     return node.ChildNodes[0].ToString().Replace(" (Numero)", "");
                 default:
                     return evaluar;

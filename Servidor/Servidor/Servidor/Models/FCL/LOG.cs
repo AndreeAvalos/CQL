@@ -71,51 +71,16 @@ namespace Servidor.Models.FCL
                     Variable aux_var = (Variable)item.Val;
                     if (ts.existID(aux_var.Id))
                     {
-                        if (ts.getType(aux_var.Id) == Tipo.MAP)
+                        
+                        Tipo tipo = ts.getType(aux_var.Id);
+                        object aux = Program.getValor(tipo, aux_var.Id, aux_var.Valor, ts);
+                        if (aux != null) salida2+= aux;
+                        else
                         {
-                            Map map_actual = (Map)ts.getValor(aux_var.Id);
-                            Variable_Metodo aux = (Variable_Metodo)aux_var.Valor;
-                            string clave;
-                            if (aux.Metodo.ToLower().Equals("get"))
-                            {
-                                clave = aux.Clave.Ejecutar(ts).ToString();
-                                aux.Clave.Ejecutar(ts).ToString();
-                                if (map_actual.containsKey(clave))
-                                {
-                                    Tipo_Collection val = (Tipo_Collection)map_actual.Get(clave);
-
-                                    if (val.Real_type == Tipo.OPERACION)
-                                    {
-                                        Operacion op = (Operacion)val.Valor;
-                                        salida2 += op.Ejecutar(ts);
-                                    }
-                                    else if (val.Real_type == Tipo.USER_TYPES)
-                                    {
-                                        salida2 += "Objeto." + val.As_type;
-                                    }
-                                }
-                                else
-                                {
-                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", clave + " IndexOutException."));
-                                    is_ok = false;
-                                }
-                            }
-                            else if (aux.Metodo.ToLower().Equals("size"))
-                            {
-                                salida2 += map_actual.Size();
-
-                            }
-                            else if (aux.Metodo.ToLower().Equals("contains"))
-                            {
-                                clave = aux.Clave.Ejecutar(ts).ToString();
-                                salida2 += map_actual.containsKey(clave);
-                            }
-                            else
-                            {
-                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", aux.Metodo + " No retorna ningun valor."));
-                                is_ok = false;
-                            }
+                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", " IndexOutException."));
+                            is_ok = false;
                         }
+
                     }
                     else
                     {
@@ -136,12 +101,12 @@ namespace Servidor.Models.FCL
 
         public int getColumn()
         {
-            return this.line;
+            return this.column;
         }
 
         public int getLine()
         {
-            return this.column;
+            return this.line;
         }
 
         public List<string> getSalida()

@@ -83,6 +83,11 @@ namespace Servidor.Models.FCL
                                 Map objeto = (Map)item.Valor;
                                 new_simbol.Valor = objeto;
                             }
+                            else if (real_type == Tipo.LIST)
+                            {
+                                Lista objeto = (Lista)item.Valor;
+                                new_simbol.Valor = objeto;
+                            }
                         }
                         else
                         {
@@ -177,6 +182,11 @@ namespace Servidor.Models.FCL
                             else if (real_type == Tipo.MAP)
                             {
                                 Map objeto = (Map)item.Valor;
+                                new_simbol.Valor = objeto;
+                            }
+                            else if (real_type == Tipo.LIST)
+                            {
+                                Lista objeto = (Lista)item.Valor;
                                 new_simbol.Valor = objeto;
                             }
                         }

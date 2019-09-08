@@ -51,6 +51,12 @@ namespace Servidor.Models.FCL
                                 salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No todos los atributos coinciden."));
 
                         }
+                        if (name.Equals("Lista"))
+                        {
+                            Lista new_lista = (Lista)new_var.Valor;
+                            ts.setValor(new_var.Id, new_lista.Lista_valores);
+                            
+                        }
                         else if (name.Equals("Variable"))
                         {
                             Variable aux_var = (Variable)new_var.Valor;

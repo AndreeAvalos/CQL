@@ -170,6 +170,9 @@ namespace Servidor.Models
                     }
                     else if (s.Tipo == Tipo.MAP) {
                         ((Map)s.Valor).Mapita =(List<Item_Map>) valor;
+                    }else if(s.Tipo == Tipo.LIST)
+                    {
+                        ((Lista)s.Valor).Lista_valores = (List<Tipo_Collection>)valor;
                     }
                     return;
                 }
