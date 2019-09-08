@@ -34,6 +34,15 @@ namespace Servidor.Models.CASTEOS
                     Convert.ToInt32(valor);
                     return true;
                 }
+                else if (tipo == Tipo.DECIMAL)
+                {
+                    Convert.ToDouble(valor);
+                    return true;
+                }
+                else if (tipo == Tipo.CADENA) {
+                    Convert.ToString(valor);
+                    return true;
+                }
 
             }
             catch (Exception)

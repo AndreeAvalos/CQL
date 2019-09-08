@@ -57,6 +57,8 @@
         PROCEDURE,
         WHILE,
         DO,
-        FOR
+        FOR,
+        VARIABLE_ATRIBUTOS,
+        VARIABLE_METODOS
     }
 }

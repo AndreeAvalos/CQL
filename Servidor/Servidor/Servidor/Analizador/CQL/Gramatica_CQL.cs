@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Irony.Ast;
-using Irony.Parsing;
+﻿using Irony.Parsing;
 
 namespace Servidor.Analizador.CQL
 {
@@ -85,7 +79,7 @@ namespace Servidor.Analizador.CQL
                 TBOOLEAN = ToTerm("boolean"),
                 TCOUNTER = ToTerm("counter"),
                 TMAP = ToTerm("Map"),
-                TSET = ToTerm("Set"),
+                TSET = ToTerm("SET"),
                 TLIST = ToTerm("List"),
                 RUSER = ToTerm("USER"),
                 RDELETE = ToTerm("DELETE"),
@@ -95,6 +89,7 @@ namespace Servidor.Analizador.CQL
                 RWITH = ToTerm("WITH"),
                 RPASSWORD = ToTerm("PASSWORD"),
                 RINSERT = ToTerm("INSERT INTO"),
+				R_INSERT = ToTerm("INSERT"),
                 RVALUES = ToTerm("VALUES"),
                 RNEW = ToTerm("NEW"),
                 RAS = ToTerm("AS"),
@@ -106,7 +101,12 @@ namespace Servidor.Analizador.CQL
                 RDEFAULT = ToTerm("DEFAULT"),
                 RWHILE = ToTerm("WHILE"),
                 RDO = ToTerm("DO"),
-                RFOR = ToTerm("FOR")
+                RFOR = ToTerm("FOR"),
+                RGET = ToTerm("GET"),
+                RREMOVE = ToTerm("REMOVE"),
+                RSIZE = ToTerm("SIZE"),
+                RCLEAR = ToTerm("CLEAR"),
+                RCONTAINS = ToTerm("CONTAINS")
                 ;
             #endregion
 
@@ -119,6 +119,8 @@ namespace Servidor.Analizador.CQL
                 CREATE_DB = new NonTerminal("CREATE_DB"),
                 VALOR = new NonTerminal("VALOR"),
                 VALORES = new NonTerminal("VALORES"),
+                VALORES2 = new NonTerminal("VALORES2"),
+                VUT = new NonTerminal("VUT"),
                 IFNE = new NonTerminal("IFNE"),
                 PUSE = new NonTerminal("PUSE"),
                 TRUNCATE_TABLE = new NonTerminal("TRUNCATE_TABLE"),
@@ -173,7 +175,12 @@ namespace Servidor.Analizador.CQL
                 SENTENCIA_DO_WHILE = new NonTerminal("SENTENCIA_DO_WHILE"),
                 SENTENCIA_FOR = new NonTerminal("SENTENCIA_FOR"),
                 INICIALIZAR = new NonTerminal("INICIALIZAR"),
-                ACTUALIZACION = new NonTerminal("ACTUALIZACION")
+                ACTUALIZACION = new NonTerminal("ACTUALIZACION"),
+                VAR_ATTRS = new NonTerminal("VAR_ATTRS"),
+                VAR_ATTR = new NonTerminal("VAR_ATTR"),
+                MAP_VALS = new NonTerminal("MAP_VALS"),
+                MAP_VAL = new NonTerminal("MAP_VAL"),
+                METODOS_MAP = new NonTerminal("METODOS_MAP")
                 ;
 
 
@@ -305,21 +312,50 @@ namespace Servidor.Analizador.CQL
                 | VARIABLE;
 
             VARIABLE.Rule = RARROBA + IDENTIFICADOR + INICIALIZACION
+                | RARROBA + IDENTIFICADOR + VAR_ATTRS + INICIALIZACION
                 | RARROBA + IDENTIFICADOR + RINCREMENTO
                 | RARROBA + IDENTIFICADOR + RDECREMENTO
+                | RARROBA + IDENTIFICADOR + PUNTO + METODOS_MAP
                 | RARROBA + IDENTIFICADOR + RMAS + IGUAL + NUMERO//@id+=10
                 | RARROBA + IDENTIFICADOR + RMENOS + IGUAL + NUMERO//@id-=10
                 | RARROBA + IDENTIFICADOR + RMUL + IGUAL + NUMERO//@id*=10
                 | RARROBA + IDENTIFICADOR + RDIV + IGUAL + NUMERO;//@id/=10
+
+
+            METODOS_MAP.Rule = R_INSERT + PARIZQ + OPERACION_NUMERICA + COMA + VUT + PARDER
+                | RSIZE + PARIZQ + PARDER
+                | RCONTAINS + PARIZQ + OPERACION_NUMERICA + PARDER
+				| TSET + PARIZQ + OPERACION_NUMERICA + COMA + VUT + PARDER
+				| RREMOVE + PARIZQ + OPERACION_NUMERICA + PARDER
+				| RCLEAR + PARIZQ + PARDER
+                | RGET + PARIZQ + OPERACION_NUMERICA + PARDER;
+
+
+            VAR_ATTRS.Rule = VAR_ATTRS + VAR_ATTR
+                | VAR_ATTR;
+            VAR_ATTR.Rule = PUNTO + IDENTIFICADOR;
 
             INICIALIZACION.Rule = IGUAL + OPERACION_NUMERICA
                 | IGUAL + RNEW + IDENTIFICADOR
                 | IGUAL + RNEW + MAP
                 | IGUAL + RNEW + SET
                 | IGUAL + RNEW + LISTA
-                | IGUAL + CORIZQ + VALORES + CORDER + RAS + IDENTIFICADOR
-                | IGUAL + CORIZQ + VALORES + CORDER
+                | IGUAL + RARROBA + IDENTIFICADOR + VAR_ATTRS
+                | IGUAL + LLAVIZQ + VALORES2 + LLAVDER + RAS + IDENTIFICADOR
+                | IGUAL + CORIZQ + MAP_VALS + CORDER
                 | Empty;
+
+            MAP_VALS.Rule = MAP_VALS + COMA + MAP_VAL
+                | MAP_VAL;
+
+            MAP_VAL.Rule = VALOR + DPUNTOS + VUT;
+
+            VALORES2.Rule = VALORES2 + COMA + VUT
+                | VUT;
+
+            VUT.Rule = LLAVIZQ + VALORES2 + LLAVDER + RAS + IDENTIFICADOR
+                | CORIZQ + MAP_VALS + CORDER
+                | VALORES_LOGICOS;
 
             LOG.Rule = RLOG + PARIZQ + CADENAS + PARDER + PTCOMA;
 
@@ -329,6 +365,8 @@ namespace Servidor.Analizador.CQL
             PCADENA.Rule = CADENA
                 | RARROBA + IDENTIFICADOR
                 | RDATE
+                | RARROBA + IDENTIFICADOR + VAR_ATTRS
+                | RARROBA + IDENTIFICADOR + PUNTO + METODOS_MAP
                 | RTIME
                 | NUMERO;
 
@@ -398,6 +436,7 @@ namespace Servidor.Analizador.CQL
                 | OPERACION_NUMERICA + RPOTENCIA + OPERACION_NUMERICA
                 | PARIZQ + OPERACION_NUMERICA + PARDER
                 | VALOR//NUMERO
+				| RARROBA + IDENTIFICADOR + PUNTO + METODOS_MAP 
                 | RARROBA + IDENTIFICADOR//VARIABLE
                 | RARROBA + IDENTIFICADOR + RINCREMENTO//VAR++
                 | RARROBA + IDENTIFICADOR + RDECREMENTO;//VAR--

@@ -16,6 +16,8 @@ namespace Servidor.NOSQL.Modelos
         bool instanciada;
         string attr1, attr2;
         bool is_var = false;
+        string as_type = "";
+        Stack<string> atributos = new Stack<string>();
         List<string> lst_variables = new List<string>();
         public string Id { get => id; set => id = value; }
         public object Valor { get => valor; set => valor = value; }
@@ -27,5 +29,7 @@ namespace Servidor.NOSQL.Modelos
         public bool Is_var { get => is_var; set => is_var = value; }
         public List<string> Lst_variables { get => lst_variables; set => lst_variables = value; }
         public bool Asignacion { get => asignacion; set => asignacion = value; }
+        public string As_type { get => as_type; set => as_type = value; }
+        public Stack<string> Atributos { get => atributos; set => atributos = value; }
     }
 }

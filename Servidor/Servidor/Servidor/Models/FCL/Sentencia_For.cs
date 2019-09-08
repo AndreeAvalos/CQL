@@ -87,8 +87,6 @@ namespace Servidor.Models.FCL
                 }
                 actualizacion.Ejecutar(tabla_local);
             }
-
-            salida.Add("-------------------------------------------------");
             return null;
         }
 

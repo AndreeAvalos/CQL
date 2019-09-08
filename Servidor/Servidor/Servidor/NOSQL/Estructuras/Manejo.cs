@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Servidor.Analizador.CHISON;
+using Servidor.Models;
 using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
@@ -104,6 +106,18 @@ namespace Servidor.NOSQL.Estructuras
                 }
             }
             return false;
+        }
+
+        internal List<Tipo_Objeto> getValor(string id, List<Tipo_Collection> objeto, TablaDeSimbolos ts)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.buildObject(id, objeto, ts);
+                }
+            }
+            return null ;
         }
 
         public bool setPermission(string user_name, Permiso new_permiso)
@@ -434,6 +448,18 @@ namespace Servidor.NOSQL.Estructuras
                 }
             }
             if (index != -1) databases.RemoveAt(index);
+        }
+
+        internal List<Tipo_Objeto> buildObject(string v)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.buildObject(v);
+                }
+            }
+            return null;
         }
     }
 

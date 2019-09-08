@@ -1,22 +1,30 @@
-﻿using System;
+﻿using Servidor.NOSQL.Modelos;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servidor.Models.FCL
 {
     public class Operacion : Instruccion
     {
-        Tipo tipo;
         int line, column;
         List<string> salida = new List<string>();
         private Operacion operadorDer;
         private Operacion operadorIzq;
-        private Object valor;
+        public Object valor;
+
+        public Operacion(object valor, Tipo tipo, int line, int column)
+        {
+            this.line = line;
+            this.column = column;
+            this.valor = valor;
+            Tipo = tipo;
+        }
+
+        public Tipo Tipo { get; set; }
 
         public Operacion(Operacion operadorIzq, Operacion operadorDer, Tipo tipo, int line, int column)
         {
-            this.tipo = tipo;
+            this.Tipo = tipo;
             this.line = line;
             this.column = column;
             this.operadorDer = operadorDer;
@@ -29,7 +37,7 @@ namespace Servidor.Models.FCL
 
         public Operacion(Operacion operadorIzq, Tipo tipo, int line, int column)
         {
-            this.tipo = tipo;
+            this.Tipo = tipo;
             this.line = line;
             this.column = column;
             this.operadorIzq = operadorIzq;
@@ -37,7 +45,7 @@ namespace Servidor.Models.FCL
 
         public Operacion(object valor, Operacion operadorIzq, Tipo tipo, int line, int column)
         {
-            this.tipo = tipo;
+            this.Tipo = tipo;
             this.line = line;
             this.column = column;
             this.operadorIzq = operadorIzq;
@@ -46,7 +54,7 @@ namespace Servidor.Models.FCL
 
         public Operacion(string valor, Tipo tipo, int line, int column)
         {
-            this.tipo = tipo;
+            this.Tipo = tipo;
             this.line = line;
             this.column = column;
             this.valor = valor;
@@ -57,214 +65,232 @@ namespace Servidor.Models.FCL
             this.line = line;
             this.column = column;
             this.valor = valor;
-            this.tipo = Tipo.NUMERO;
+            this.Tipo = Tipo.NUMERO;
         }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
-            if (tipo == Tipo.DIVISION)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) / (Double)operadorDer.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.MODULAR)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) % (Double)operadorDer.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.POTENCIA)
-            {
-                return (Double)Math.Pow((Double)operadorIzq.Ejecutar(ts), (Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.MULTIPLICACION)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) * (Double)operadorDer.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.RESTA)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) - (Double)operadorDer.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.SUMA)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) + (Double)operadorDer.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.NEGATIVO)
-            {
-                return (Double)operadorIzq.Ejecutar(ts) * -1;
-            }
-            else if (tipo == Tipo.NUMERO)
-            {
-                return Double.Parse(valor.ToString());
-            }
-            else if (tipo == Tipo.VARIABLE)
-            {
-                return ts.getValor(valor.ToString());
-            }
-            else if (tipo == Tipo.CADENA)
-            {
-                return valor.ToString();
-            }
-            else if (tipo == Tipo.INCREMENTO)
-            {
-                Double aux;
-                if (ts.existID(valor.ToString()))
+            try {
+                if (Tipo == Tipo.DIVISION)
                 {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    return (Double)operadorIzq.Ejecutar(ts) / (Double)operadorDer.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.MODULAR)
+                {
+                    return (Double)operadorIzq.Ejecutar(ts) % (Double)operadorDer.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.POTENCIA)
+                {
+                    return (Double)Math.Pow((Double)operadorIzq.Ejecutar(ts), (Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.MULTIPLICACION)
+                {
+                    return (Double)operadorIzq.Ejecutar(ts) * (Double)operadorDer.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.RESTA)
+                {
+                    return (Double)operadorIzq.Ejecutar(ts) - (Double)operadorDer.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.SUMA)
+                {
+                    return (Double)operadorIzq.Ejecutar(ts) + (Double)operadorDer.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.NEGATIVO)
+                {
+                    return (Double)operadorIzq.Ejecutar(ts) * -1;
+                }
+                else if (Tipo == Tipo.NUMERO)
+                {
+                    return Double.Parse(valor.ToString());
+                }
+                else if (Tipo == Tipo.VARIABLE)
+                {
+                    return ts.getValor(valor.ToString());
+                }
+                else if (Tipo == Tipo.CADENA)
+                {
+                    return valor.ToString();
+                }
+                else if (Tipo == Tipo.INCREMENTO)
+                {
+                    Double aux;
+                    if (ts.existID(valor.ToString()))
                     {
-                        aux = (Double)ts.getValor(valor.ToString());
-                        ts.setValor(valor.ToString(), aux + 1);
-                        return aux;
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            aux = (Double)ts.getValor(valor.ToString());
+                            ts.setValor(valor.ToString(), aux + 1);
+                            return aux;
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
-                }
-                else
-                {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
-                }
-                return null;
-            }
-            else if (tipo == Tipo.DECREMENTO)
-            {
-                Double aux;
-                if (ts.existID(valor.ToString()))
-                {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    else
                     {
-                        aux = (Double)ts.getValor(valor.ToString());
-                        ts.setValor(valor.ToString(), aux - 1);
-                        return aux;
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    return null;
                 }
-                else
+                else if (Tipo == Tipo.DECREMENTO)
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    Double aux;
+                    if (ts.existID(valor.ToString()))
+                    {
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            aux = (Double)ts.getValor(valor.ToString());
+                            ts.setValor(valor.ToString(), aux - 1);
+                            return aux;
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    }
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    }
+                    return null;
                 }
-                return null;
-            }
-            else if (tipo == Tipo.MASIGUAL)
-            {
+                else if (Tipo == Tipo.MASIGUAL)
+                {
 
-                //(Double)operadorIzq.Ejecutar(ts);
-                if (ts.existID(valor.ToString()))
-                {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    //(Double)operadorIzq.Ejecutar(ts);
+                    if (ts.existID(valor.ToString()))
                     {
-                        Double aux = (Double)ts.getValor(valor.ToString()) + (Double)operadorIzq.Ejecutar(ts);
-                        ts.setValor(valor.ToString(), aux);
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            Double aux = (Double)ts.getValor(valor.ToString()) + (Double)operadorIzq.Ejecutar(ts);
+                            ts.setValor(valor.ToString(), aux);
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    }
+                    return null;
                 }
-                else
+                else if (Tipo == Tipo.MENOSIGUAL)
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
-                }
-                return null;
-            }
-            else if (tipo == Tipo.MENOSIGUAL)
-            {
 
-                //(Double)operadorIzq.Ejecutar(ts);
-                if (ts.existID(valor.ToString()))
-                {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    //(Double)operadorIzq.Ejecutar(ts);
+                    if (ts.existID(valor.ToString()))
                     {
-                        Double aux = (Double)ts.getValor(valor.ToString()) - (Double)operadorIzq.Ejecutar(ts);
-                        ts.setValor(valor.ToString(), aux);
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            Double aux = (Double)ts.getValor(valor.ToString()) - (Double)operadorIzq.Ejecutar(ts);
+                            ts.setValor(valor.ToString(), aux);
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    }
+                    return null;
                 }
-                else
+                else if (Tipo == Tipo.MULIGUAL)
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
-                }
-                return null;
-            }
-            else if (tipo == Tipo.MULIGUAL)
-            {
 
-                //(Double)operadorIzq.Ejecutar(ts);
-                if (ts.existID(valor.ToString()))
-                {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    //(Double)operadorIzq.Ejecutar(ts);
+                    if (ts.existID(valor.ToString()))
                     {
-                        Double aux = (Double)ts.getValor(valor.ToString()) * (Double)operadorIzq.Ejecutar(ts);
-                        ts.setValor(valor.ToString(), aux);
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            Double aux = (Double)ts.getValor(valor.ToString()) * (Double)operadorIzq.Ejecutar(ts);
+                            ts.setValor(valor.ToString(), aux);
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    }
+                    return null;
                 }
-                else
+                else if (Tipo == Tipo.DIVIGUAL)
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
-                }
-                return null;
-            }
-            else if (tipo == Tipo.DIVIGUAL)
-            {
 
-                //(Double)operadorIzq.Ejecutar(ts);
-                if (ts.existID(valor.ToString()))
-                {
-                    if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                    //(Double)operadorIzq.Ejecutar(ts);
+                    if (ts.existID(valor.ToString()))
                     {
-                        Double aux = (Double)ts.getValor(valor.ToString()) / (Double)operadorIzq.Ejecutar(ts);
-                        ts.setValor(valor.ToString(), aux);
+                        if (ts.getType(valor.ToString()) == Tipo.ENTERO || ts.getType(valor.ToString()) == Tipo.DECIMAL)
+                        {
+                            Double aux = (Double)ts.getValor(valor.ToString()) / (Double)operadorIzq.Ejecutar(ts);
+                            ts.setValor(valor.ToString(), aux);
+                        }
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
                     }
-                    else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No es un numero."));
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    }
+                    return null;
+                }
+                else if (Tipo == Tipo.MAYOR_QUE)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) > ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.MAYOR_IGUAL)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) >= ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.MENOR_QUE)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) < ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.MENOR_IGUAL)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) <= ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.IGUAL)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) == ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.DIFERENTE)
+                {
+                    return ((Double)operadorIzq.Ejecutar(ts)) != ((Double)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.AND)
+                {
+                    return ((bool)operadorIzq.Ejecutar(ts)) && ((bool)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.OR)
+                {
+                    return ((bool)operadorIzq.Ejecutar(ts)) || ((bool)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.XOR)
+                {
+                    return ((bool)operadorIzq.Ejecutar(ts)) ^ ((bool)operadorDer.Ejecutar(ts));
+                }
+                else if (Tipo == Tipo.NOT)
+                {
+                    return !(bool)operadorIzq.Ejecutar(ts);
+                }
+                else if (Tipo == Tipo.CONCATENACION)
+                {
+                    return operadorIzq.Ejecutar(ts).ToString() + operadorDer.Ejecutar(ts).ToString();
+                }
+                else if (Tipo == Tipo.BOOLEANO)
+                {
+                    return Convert.ToBoolean(valor);
+                }
+                else if (Tipo == Tipo.VARIABLE_METODOS)
+                {
+                    Variable var = (Variable)valor;
+                    Tipo tipo = ts.getType(var.Id);
+                    object aux = Program.getValor(tipo, var.Id, var.Valor, ts);
+                    if (aux != null) return aux;
+                    else
+                    {
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", " IndexOutException."));
+                        return null;
+                    }
                 }
                 else
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", valor.ToString() + " No existe en el ambito actual"));
+                    return null;
                 }
-                return null;
-            }
-            else if (tipo == Tipo.MAYOR_QUE)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) > ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.MAYOR_IGUAL)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) >= ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.MENOR_QUE)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) < ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.MENOR_IGUAL)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) <= ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.IGUAL)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) == ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.DIFERENTE)
-            {
-                return ((Double)operadorIzq.Ejecutar(ts)) != ((Double)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.AND)
-            {
-                return ((bool)operadorIzq.Ejecutar(ts)) && ((bool)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.OR)
-            {
-                return ((bool)operadorIzq.Ejecutar(ts)) || ((bool)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.XOR)
-            {
-                return ((bool)operadorIzq.Ejecutar(ts)) ^ ((bool)operadorDer.Ejecutar(ts));
-            }
-            else if (tipo == Tipo.NOT)
-            {
-                return !(bool)operadorIzq.Ejecutar(ts);
-            }
-            else if (tipo == Tipo.CONCATENACION)
-            {
-                return operadorIzq.Ejecutar(ts).ToString() + operadorDer.Ejecutar(ts).ToString();
-            }
-            else if (tipo == Tipo.BOOLEANO) {
-                return Convert.ToBoolean(valor);
-            }
-            else
-            {
+            } catch {
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", " No se puede operar el tipo."));
                 return null;
             }
         }

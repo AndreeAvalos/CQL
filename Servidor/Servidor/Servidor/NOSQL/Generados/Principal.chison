@@ -161,44 +161,6 @@ $<
 							"TYPE" = "SET<double>"
 						>
 					]
-				>,
-				<
-					"CQL-TYPE" = "OBJECT",
-					"NAME" = "song",
-					"ATTRS" = [
-						<
-							"NAME" = "name",
-							"TYPE" = "string"
-						>,
-						<
-							"NAME" = "trackNumber",
-							"TYPE" = "int"
-						>,
-						<
-							"NAME" = "duration",
-							"TYPE" = "double"
-						>,
-						<
-							"NAME" = "dateReleased",
-							"TYPE" = "date"
-						>,
-						<
-							"NAME" = "explicit",
-							"TYPE" = "boolean"
-						>,
-						<
-							"NAME" = "genre",
-							"TYPE" = "string"
-						>,
-						<
-							"NAME" = "album",
-							"TYPE" = "string"
-						>,
-						<
-							"NAME" = "artist",
-							"TYPE" = "string"
-						>
-					]
 				>
 			]
 		>,
@@ -243,8 +205,8 @@ $<
 			]
 		>,
 		<
-			"NAME"= "Admin",
-			"PASSWORD"= "admin",
+			"NAME"= "Andree",
+			"PASSWORD"= "1222",
 			"PERMISSIONS"= [
 				<
 					"NAME" = "Database1"
@@ -258,8 +220,8 @@ $<
 			]
 		>,
 		<
-			"NAME"= "Andree",
-			"PASSWORD"= "1222333",
+			"NAME"= "admin",
+			"PASSWORD"= "admin",
 			"PERMISSIONS"= [
 				<
 					"NAME" = "Database1"

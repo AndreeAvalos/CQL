@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Servidor.Analizador.CHISON;
+using Servidor.Models;
+using Servidor.Models.FCL;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -377,6 +380,65 @@ namespace Servidor.NOSQL.Modelos
             }
             return false;
         }
+        private Objeto getTipo(string id)
+        {
+
+            foreach (Objeto item in Objetos)
+            {
+                if (item.Name.ToLower().Equals(id)) return item;
+            }
+            return null;
+        }
+        public List<Tipo_Objeto> buildObject(string id)
+        {
+            Objeto proto = getTipo(id);
+            List<Tipo_Objeto> lst_valores = new List<Tipo_Objeto>();
+            foreach (Atributo item in proto.Atributos)
+            {
+                lst_valores.Add(new Tipo_Objeto(item.Name.ToLower(), ""));
+            }
+            return lst_valores;
+        }
+
+
+
+        public List<Tipo_Objeto> buildObject(string id, List<Tipo_Collection> objeto, TablaDeSimbolos ts)
+        {
+            List<Tipo_Objeto> lst_valores = new List<Tipo_Objeto>();
+            Objeto proto = getTipo(id);
+            if (proto.Atributos.Count == objeto.Count)
+            {
+
+                for (int i = 0; i < objeto.Count; i++)
+                {
+                    if (objeto.ElementAt(i).Real_type == Tipo.USER_TYPES)
+                    {
+                        List<Tipo_Collection> lst = (List<Tipo_Collection>)objeto.ElementAt(i).Valor;
+                        lst_valores.Add(new Tipo_Objeto(proto.Atributos.ElementAt(i).Name.ToLower(), buildObject(id, lst, ts)));
+
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Operacion valor = (Operacion)objeto.ElementAt(i).Valor;
+                            lst_valores.Add(new Tipo_Objeto(proto.Atributos.ElementAt(i).Name.ToLower(), valor.Ejecutar(ts)));
+                        }
+                        catch
+                        {
+                            lst_valores.Add(new Tipo_Objeto(proto.Atributos.ElementAt(i).Name.ToLower(), objeto.ElementAt(i).Valor));
+                        }
+
+                    }
+                }
+                return lst_valores;
+
+
+            }
+            return null;
+        }
+
+
 
         public string CrearEstructura()
         {
@@ -408,6 +470,7 @@ namespace Servidor.NOSQL.Modelos
             salida += "\t[-DATABASE]\n";
             return salida;
         }
+
 
         public string Name { get => name; set => name = value; }
         public List<Tabla> Tablas { get => tablas; set => tablas = value; }

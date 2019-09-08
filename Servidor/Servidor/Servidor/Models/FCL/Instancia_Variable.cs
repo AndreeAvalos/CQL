@@ -37,17 +37,79 @@ namespace Servidor.Models.FCL
                 }
                 if (is_ok)
                 {
-                    Tipo type = ts.getType(new_var.Id);
-                    Operacion val = (Operacion)new_var.Valor;
-                    object valor = val.Ejecutar(ts);
-                    salida.AddRange(val.getSalida());
-                    if (valor != null)
+                    if (new_var.Real_type == Tipo.VARIABLE)
                     {
-                        if (Program.casteos.comprobarCasteo(type, valor))
+                        string name = new_var.Valor.GetType().Name;
+                        if (name.Equals("Map"))
                         {
-                            ts.setValor(new_var.Id, valor);
+                            Map new_map = (Map)new_var.Valor;
+                            Map maux = (Map)ts.getValor(new_var.Id);
+                            new_map.Clave = maux.Clave;
+                            if (new_map.comprobarTipo())
+                                ts.setValor(new_var.Id, new_map.Mapita);
+                            else
+                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No todos los atributos coinciden."));
+
                         }
-                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
+                        else if (name.Equals("Variable"))
+                        {
+                            Variable aux_var = (Variable)new_var.Valor;
+                            if (ts.existID(aux_var.Id))
+                            {
+                                object valor = ts.getValorByAttr(aux_var.Id, aux_var.Atributos);
+                                if (valor == null)
+                                {
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "NO EXISTE ATRIBUTO"));
+                                }
+                                else
+                                {
+                                    ts.setValor(new_var.Id, valor);
+                                }
+                            }
+                            else
+                            {
+                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "Variable " + aux_var.Valor + " no se ha declarado."));
+                            }
+                        }
+                        else if (name.Equals("Operacion"))
+                        {
+                            Tipo type = ts.getType(new_var.Id);
+                            Operacion val = (Operacion)new_var.Valor;
+                            object valor = val.Ejecutar(ts);
+                            salida.AddRange(val.getSalida());
+                            if (valor != null)
+                            {
+                                if (Program.casteos.comprobarCasteo(type, valor))
+                                {
+                                    ts.setValor(new_var.Id, valor);
+                                }
+                                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No se puede convertir a" + ts.tipoAsignado(new_var.Id)));
+                            }
+                        }
+                    }
+                    else if (new_var.Real_type == Tipo.VARIABLE_ATRIBUTOS)
+                    {
+                        if (new_var.Instanciada)
+                        {
+                            try
+                            {
+
+                                Operacion val = (Operacion)new_var.Valor;
+                                object valor = val.Ejecutar(ts);
+                                if (!ts.setValorByAttr(new_var.Id, valor, new_var.Atributos))
+                                {
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "NO EXISTE ATRIBUTO"));
+                                }
+                            }
+                            catch
+                            {
+                                if (!ts.setValorByAttr(new_var.Id, new_var.Valor, new_var.Atributos))
+                                {
+                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "NO EXISTE ATRIBUTO"));
+                                }
+                            }
+                        }
+
                     }
                 }
             }

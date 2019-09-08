@@ -1,9 +1,7 @@
-﻿using Servidor.Models.CASTEOS;
+﻿using Servidor.Analizador.CHISON;
 using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servidor.Models.FCL
 {
@@ -40,24 +38,56 @@ namespace Servidor.Models.FCL
                     {
                         Simbolo new_simbol = new Simbolo(real_type, item.Id);
                         new_simbol.Tipo_asignado = type;
+                        string name = item.Valor.GetType().Name;
                         if (item.Instanciada)
                         {
-                            Operacion valor = (Operacion)item.Valor;
-                            try
+                            if (real_type == Tipo.USER_TYPES)
                             {
-                                new_simbol.Valor = valor.Ejecutar(ts);
-                                if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
+                                if (name.Equals("Tipo_Objeto"))
+                                {
+                                    Tipo_Objeto objext = (Tipo_Objeto)item.Valor;
+                                    List<Tipo_Objeto> objeto = (List<Tipo_Objeto>)Program.sistema.buildObject(objext.Name.ToLower());
+                                    new_simbol.Valor = objeto;
+                                }
+                                else
+                                {
+                                    List<Tipo_Collection> objeto = (List<Tipo_Collection>)item.Valor;
+                                    new_simbol.Valor = Program.sistema.getValor(type.ToLower(), objeto, ts);
+                                }
                             }
-                            catch (Exception)
+                            else if (real_type == Tipo.NUMERO || real_type == Tipo.ENTERO)
                             {
+                                if (name.Equals("Variable"))
+                                {
+                                    Variable aux_var = (Variable)item.Valor;
 
-                                new_simbol.Valor = valor;
+                                    object valor = ts.getValorByAttr(aux_var.Id, aux_var.Atributos);
+                                    new_simbol.Valor = valor;
+                                }
+                                else
+                                {
+                                    Operacion valor = (Operacion)item.Valor;
+                                    try
+                                    {
+                                        new_simbol.Valor = valor.Ejecutar(ts);
+                                        if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        new_simbol.Valor = valor;
+                                    }
+                                }
+                            }
+                            else if (real_type == Tipo.MAP)
+                            {
+                                Map objeto = (Map)item.Valor;
+                                new_simbol.Valor = objeto;
                             }
                         }
                         else
                         {
                             if (real_type == Tipo.NUMERO) new_simbol.Valor = 0;
-                            if (real_type == Tipo.OBJETO || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
+                            if (real_type == Tipo.USER_TYPES || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
 
                         }
                         ts.AddLast(new_simbol);
@@ -100,26 +130,60 @@ namespace Servidor.Models.FCL
                 {
                     if (!ts.existID_AA(item.Id.ToLower()))
                     {
-                        Simbolo new_simbol = new Simbolo(real_type, item.Id);
-                        new_simbol.Tipo_asignado = type;
+                        Simbolo new_simbol = new Simbolo(real_type, item.Id)
+                        {
+                            Tipo_asignado = type
+                        };
+                        string name = item.Valor.GetType().Name;
                         if (item.Instanciada)
                         {
-                            Operacion valor = (Operacion)item.Valor;
-                            try
+                            if (real_type == Tipo.USER_TYPES)
                             {
-                                new_simbol.Valor = valor.Ejecutar(ts);
-                                if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
+                                if (name.Equals("Tipo_Objeto"))
+                                {
+                                    Tipo_Objeto objext = (Tipo_Objeto)item.Valor;
+                                    List<Tipo_Objeto> objeto = (List<Tipo_Objeto>)Program.sistema.buildObject(objext.Name.ToLower());
+                                    new_simbol.Valor = objeto;
+                                }
+                                else
+                                {
+                                    List<Tipo_Collection> objeto = (List<Tipo_Collection>)item.Valor;
+                                    new_simbol.Valor = Program.sistema.getValor(type.ToLower(), objeto, ts);
+                                }
                             }
-                            catch (Exception)
+                            else if (real_type == Tipo.NUMERO || real_type == Tipo.ENTERO)
                             {
+                                if (name.Equals("Variable"))
+                                {
+                                    Variable aux_var = (Variable)item.Valor;
 
-                                new_simbol.Valor = valor;
+                                    object valor = ts.getValorByAttr(aux_var.Id, aux_var.Atributos);
+                                    new_simbol.Valor = valor;
+                                }
+                                else
+                                {
+                                    Operacion valor = (Operacion)item.Valor;
+                                    try
+                                    {
+                                        new_simbol.Valor = valor.Ejecutar(ts);
+                                        if (new_simbol.Valor == null) new_simbol.Valor = item.Valor;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        new_simbol.Valor = valor;
+                                    }
+                                }
+                            }
+                            else if (real_type == Tipo.MAP)
+                            {
+                                Map objeto = (Map)item.Valor;
+                                new_simbol.Valor = objeto;
                             }
                         }
                         else
                         {
                             if (real_type == Tipo.NUMERO) new_simbol.Valor = 0;
-                            if (real_type == Tipo.OBJETO || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
+                            if (real_type == Tipo.USER_TYPES || real_type == Tipo.MAP || real_type == Tipo.LIST) new_simbol.Valor = null;
 
                         }
                         ts.AddLast(new_simbol);

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Servidor.Analizador.CHISON;
 using Servidor.Models;
 using Servidor.Models.CASTEOS;
+using Servidor.Models.FCL;
 using Servidor.NOSQL.Estructuras;
 using Servidor.NOSQL.Modelos;
 
@@ -48,7 +49,8 @@ namespace Servidor
 
         }
 
-        public static Tipo getTipo(string name) {
+        public static Tipo getTipo(string name)
+        {
             Tipo real_type = Tipo.OBJETO;
             switch (name)
             {
@@ -79,8 +81,8 @@ namespace Servidor
                 case "list":
                     real_type = Tipo.LIST;
                     break;
-                case "":
-                    real_type = Tipo.OBJETO;
+                default:
+                    real_type = Tipo.USER_TYPES;
                     break;
             }
             return real_type;
@@ -115,8 +117,8 @@ namespace Servidor
                 case "list":
                     real_type = Tipo.LIST;
                     break;
-                case "":
-                    real_type = Tipo.OBJETO;
+                default:
+                    real_type = Tipo.USER_TYPES;
                     break;
             }
             return real_type;
@@ -251,6 +253,76 @@ namespace Servidor
             }
 
         }
+
+        public static object getValor(Tipo tipo, string id, object valor, TablaDeSimbolos ts)
+        {
+            switch (tipo)
+            {
+                case Tipo.MAP:
+                    Map map_actual = (Map)ts.getValor(id);
+                    Variable_Metodo aux = (Variable_Metodo)valor;
+                    string clave;
+                    if (aux.Metodo.ToLower().Equals("get"))
+                    {
+                        clave = aux.Clave.Ejecutar(ts).ToString();
+                        aux.Clave.Ejecutar(ts).ToString();
+                        if (map_actual.containsKey(clave))
+                        {
+                            Tipo_Collection val = (Tipo_Collection)map_actual.Get(clave);
+
+                            if (val.Real_type == Tipo.OPERACION)
+                            {
+                                Operacion op = (Operacion)val.Valor;
+                                return op.Ejecutar(ts);
+                            }
+
+                        }
+                    }
+                    else if (aux.Metodo.ToLower().Equals("insert"))
+                    {
+                        clave = aux.Clave.Ejecutar(ts).ToString();
+                        bool salida = map_actual.insert(clave, aux.Valor);
+                        ts.setValor(id, map_actual.Mapita);
+                        return salida;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("set"))
+                    {
+                        clave = aux.Clave.Ejecutar(ts).ToString();
+                        bool salida = map_actual.Set(clave, aux.Valor);
+                        ts.setValor(id, map_actual.Mapita);
+                        return salida;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("remove"))
+                    {
+                        clave = aux.Clave.Ejecutar(ts).ToString();
+                        bool salida = map_actual.Remove(clave);
+                        ts.setValor(id, map_actual.Mapita);
+                        return salida;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("clear"))
+                    {
+                        map_actual.clear();
+                        ts.setValor(id, map_actual.Mapita);
+                        return true;
+                    }
+                    else if (aux.Metodo.ToLower().Equals("size"))
+                    {
+                        return Convert.ToDouble(map_actual.Size());
+
+                    }
+                    else if (aux.Metodo.ToLower().Equals("contains"))
+                    {
+                        clave = aux.Clave.Ejecutar(ts).ToString();
+                        return map_actual.containsKey(clave);
+                    }
+                    break;
+
+                default:
+                    return null;
+            }
+            return null;
+        }
+
         public static void writeErrors()
         {
             string salida = JsonConvert.SerializeObject(Program.errors);

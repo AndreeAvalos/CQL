@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Servidor.Analizador.CHISON;
+using System;
 using System.Collections.Generic;
 
 namespace Servidor.Models
@@ -64,6 +65,57 @@ namespace Servidor.Models
             else
                 return "NO EXISTE EL TIPO";
         }
+
+        public bool setValorByAttr(string id, object valor, Stack<string> atributos) {
+            object val = getValor(id);
+            return setValorByAttr(val, valor, atributos);
+        }
+        public bool setValorByAttr(object val2, object valor, Stack<string> atributos) {
+            List<Tipo_Objeto> val = (List<Tipo_Objeto>)val2;
+            string atributo = atributos.Pop();
+            foreach (Tipo_Objeto item in val)
+            {
+                if (item.Name.ToLower().Equals(atributo))
+                {
+                    if (atributos.Count != 0)
+                    {
+                        object val3 = item.Valor;
+                        return setValorByAttr(val3, valor, atributos);
+                    }
+                    else
+                    {
+                        item.Valor = valor;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public object getValorByAttr(string id, Stack<string> atributos)
+        {
+            object valor = getValor(id);
+            return getValorByAttr(valor, atributos);
+        }
+        private object getValorByAttr(object valor, Stack<string> atributos) {
+            List<Tipo_Objeto> val = (List<Tipo_Objeto>)valor;
+            string atributo = atributos.Pop();
+            foreach (Tipo_Objeto item in val)
+            {
+                if (item.Name.ToLower().Equals(atributo)) {
+                    if (atributos.Count != 0)
+                    {
+                        object val2 = item.Valor;
+                        return getValorByAttr(valor, atributos);
+                    }
+                    else {
+                        return item.Valor;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         //Si existe el id en el ambito actual, solo se utiliza para declarar variables
 
         public bool existID(string id)
@@ -115,6 +167,9 @@ namespace Servidor.Models
                     else if (s.Tipo == Tipo.CADENA)
                     {
                         s.Valor = valor.ToString();
+                    }
+                    else if (s.Tipo == Tipo.MAP) {
+                        ((Map)s.Valor).Mapita =(List<Item_Map>) valor;
                     }
                     return;
                 }

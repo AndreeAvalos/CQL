@@ -1,4 +1,5 @@
 ﻿using Irony.Parsing;
+using Servidor.Analizador.CHISON;
 using Servidor.Models;
 using Servidor.Models.DCL;
 using Servidor.Models.FCL;
@@ -509,7 +510,20 @@ namespace Servidor.Analizador.CQL
                         if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("INICIALIZACION"))
                         {
                             Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
+                            new_var.Real_type = Tipo.VARIABLE;
                             return new Instancia_Variable(line, column, new_var);
+                        }
+                        else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("VAR_ATTRS"))
+                        {
+                            Variable new_var = VARIABLE(nodo.ChildNodes.ElementAt(0));
+                            new_var.Real_type = Tipo.VARIABLE_ATRIBUTOS;
+                            return new Instancia_Variable(line, column, new_var);
+                        }
+                        else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3).Term.Name.Equals("METODOS_MAP")) {
+                            Variable new_var = new Variable();
+                            new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
+                            new_var.Id = "@" + nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Value.ToString();
+                            return new Operacion(new_var, Tipo.VARIABLE_METODOS, line, column);
                         }
                         else if (nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Term.Name.Equals("++"))
                         {
@@ -789,6 +803,23 @@ namespace Servidor.Analizador.CQL
                 Valor new_valor = new Valor("@" + name, Tipo.VARIABLE);
                 return new_valor;
             }
+            else if (nodo.ChildNodes.Count == 3)
+            {
+
+                string name = nodo.ChildNodes.ElementAt(1).Token.Text;
+                Variable variable = new Variable();
+                variable.Atributos = VAR_ATTRS(nodo.ChildNodes.ElementAt(2));
+                variable.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
+                Valor new_valor = new Valor(variable, Tipo.VARIABLE_ATRIBUTOS);
+                return new_valor;
+
+            }
+            else if (nodo.ChildNodes.Count == 4) {
+                Variable new_var = new Variable();
+                new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(3));
+                new_var.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
+                return new Valor(new_var, Tipo.VARIABLE_METODOS);
+            }
             else
             {
                 Tipo real_type = Program.getTipo2(nodo.ChildNodes.ElementAt(0).Term.Name.ToLower());
@@ -813,30 +844,114 @@ namespace Servidor.Analizador.CQL
                 return variables;
             }
         }
-
+        string as_type = "";
         private Variable VARIABLE(ParseTreeNode nodo)
         {
             Variable new_variable = new Variable();
             new_variable.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Text;
-            if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count == 0)
+            if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("VAR_ATTRS") && nodo.ChildNodes.Count == 4)
             {
-                new_variable.Instanciada = false;
-                new_variable.Valor = null;
+
+                if (nodo.ChildNodes.ElementAt(3).ChildNodes.Count == 0)
+                {
+                    new_variable.Instanciada = false;
+                    new_variable.Valor = null;
+                    new_variable.Atributos = VAR_ATTRS(nodo.ChildNodes.ElementAt(2));
+                }
+                else
+                {
+                    new_variable.Instanciada = true;
+                    lst_ids = new List<string>();
+                    as_type = "";
+                    new_variable.Atributos = VAR_ATTRS(nodo.ChildNodes.ElementAt(2));
+                    new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(3));
+                    new_variable.Lst_variables = lst_ids;
+                    lst_ids = new List<string>();
+                    new_variable.As_type = as_type;
+                    new_variable.Is_var = is_var;
+
+                }
             }
+            /*else if (nodo.ChildNodes.Count == 4) {
+                Variable_Metodo new_var = METODOS(nodo.ChildNodes.ElementAt(3));
+                new_var.Id = "@"+ nodo.ChildNodes.ElementAt(1);
+                return new_var;
+
+            }*/
             else
             {
-                new_variable.Instanciada = true;
-                lst_ids = new List<string>();
-                new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
-                new_variable.Lst_variables = lst_ids;
-                new_variable.Is_var = is_var;
+                if (nodo.ChildNodes.ElementAt(2).ChildNodes.Count == 0)
+                {
+                    new_variable.Instanciada = false;
+                    new_variable.Valor = null;
+                }
+                else
+                {
+                    new_variable.Instanciada = true;
+                    lst_ids = new List<string>();
+                    as_type = "";
+                    new_variable.Valor = INICIALIZACION(nodo.ChildNodes.ElementAt(2));
+                    new_variable.Lst_variables = lst_ids;
+                    lst_ids = new List<string>();
+                    new_variable.As_type = as_type;
+                    new_variable.Is_var = is_var;
 
+                }
             }
+
             is_var = false;
             return new_variable;
         }
 
+        private Variable_Metodo METODOS(ParseTreeNode nodo)
+        {
+            string op = nodo.ChildNodes.ElementAt(0).Term.Name.ToString();
+            Variable_Metodo new_metodo = new Variable_Metodo(op);
+            switch (op) {
+                case "INSERT":
+                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                    new_metodo.Valor = VUT(nodo.ChildNodes.ElementAt(4));
+                    break;
+                case "SET":
+                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                    new_metodo.Valor = VUT(nodo.ChildNodes.ElementAt(4));
+                    break;
+                case "REMOVE":
+                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                    break;
+                case "CLEAR":
+                    break;
+                case "GET":
+                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                    break;
+                case "SIZE":
+                    break;
+                case "CONTAINS":
+                    new_metodo.Clave = OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(2));
+                    break;
+            }
 
+            return new_metodo;
+        }
+
+        private Stack<string> VAR_ATTRS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3) {
+                Stack<string> val = VAR_ATTRS(nodo.ChildNodes.ElementAt(0));
+                val.Push(VAR_ATTR(nodo.ChildNodes.ElementAt(1)));
+                return val;
+            }
+            else {
+                Stack<string>  val = new Stack<string>();
+                val.Push(VAR_ATTR(nodo.ChildNodes.ElementAt(0)));
+                return val;
+            }
+        }
+
+        private string VAR_ATTR(ParseTreeNode nodo)
+        {
+            return nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
+        }
 
         private object INICIALIZACION(ParseTreeNode nodo)
         {
@@ -844,9 +959,99 @@ namespace Servidor.Analizador.CQL
             {
                 return OPERACION_NUMERICA(nodo.ChildNodes.ElementAt(1));
             }
+            else if (nodo.ChildNodes.Count == 3)
+            {
+                if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("Identificador"))
+                {
+                    return new Tipo_Objeto(nodo.ChildNodes.ElementAt(2).Token.Value.ToString(), "");
+                }
+                else if (nodo.ChildNodes.ElementAt(2).Term.Name.Equals("MAP"))
+                {
+                    return MAP(nodo.ChildNodes.ElementAt(2));
+                }
+            }
+            else if (nodo.ChildNodes.Count == 4 && nodo.ChildNodes.ElementAt(1).Token.Value.Equals("@"))
+            {
+
+                Variable variable = new Variable();
+                variable.Atributos = VAR_ATTRS(nodo.ChildNodes.ElementAt(3));
+                variable.Id = "@" + nodo.ChildNodes.ElementAt(2).Token.Value.ToString();
+
+                return variable;
+            }
+            else if (nodo.ChildNodes.Count == 4) {
+                Map new_map = new Map("","");
+                new_map.Mapita = MAP_VALS(nodo.ChildNodes.ElementAt(2));
+                return new_map;
+            }
+            else if (nodo.ChildNodes.Count == 6)
+            {
+                as_type = nodo.ChildNodes.ElementAt(5).Token.Value.ToString();
+                return VALORES2(nodo.ChildNodes.ElementAt(2));
+            }
 
             //si es igual a 4 entonces nos ponemos hacer incremento 
             return null;
+        }
+
+        private List<Item_Map> MAP_VALS(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Item_Map> lst = MAP_VALS(nodo.ChildNodes.ElementAt(0));
+                lst.Add(MAP_VAL(nodo.ChildNodes.ElementAt(2)));
+                return lst;
+            }
+            else {
+                List<Item_Map> lst = new List<Item_Map>();
+                lst.Add(MAP_VAL(nodo.ChildNodes.ElementAt(0)));
+                return lst;
+
+            }
+        }
+
+        private Item_Map MAP_VAL(ParseTreeNode nodo)
+        {
+            return new Item_Map(VALOR(nodo.ChildNodes.ElementAt(0)).ToString(), VUT(nodo.ChildNodes.ElementAt(2)));
+        }
+
+        private object MAP(ParseTreeNode nodo)
+        {
+            string attr1 = VALOR(nodo.ChildNodes.ElementAt(2)).ToString();
+            string attr2 = VALOR(nodo.ChildNodes.ElementAt(4)).ToString();
+
+            return new Map(attr1, attr2);
+        }
+
+        private List<Tipo_Collection> VALORES2(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 3)
+            {
+                List<Tipo_Collection> lst_valores = VALORES2(nodo.ChildNodes.ElementAt(0));
+                lst_valores.Add(VUT(nodo.ChildNodes.ElementAt(2)));
+                return lst_valores;
+            }
+            else
+            {
+                List<Tipo_Collection> lst_valores = new List<Tipo_Collection>
+                {
+                    VUT(nodo.ChildNodes.ElementAt(0))
+                };
+                return lst_valores;
+            }
+        }
+
+        private Tipo_Collection VUT(ParseTreeNode nodo)
+        {
+            if (nodo.ChildNodes.Count == 1)
+            {
+                return new Tipo_Collection(Tipo.OPERACION, VALORES_LOGICOS(nodo.ChildNodes.ElementAt(0)), "");
+            }
+            else if (nodo.ChildNodes.Count == 5)
+            {
+                return new Tipo_Collection(Tipo.USER_TYPES, VALORES2(nodo.ChildNodes.ElementAt(1)), nodo.ChildNodes.ElementAt(4).Token.Value.ToString());
+            }
+            else return null;
         }
 
         private Operacion OPERACION_NUMERICA(ParseTreeNode nodo)
@@ -889,11 +1094,18 @@ namespace Servidor.Analizador.CQL
                     return new Operacion("@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString(), Tipo.VARIABLE, line, colum);
                 }
             }
+            else if (nodo.ChildNodes.Count == 4) {
+                Variable new_var = new Variable();
+                new_var.Valor = METODOS(nodo.ChildNodes.ElementAt(3));
+                new_var.Id = "@" + nodo.ChildNodes.ElementAt(1).Token.Value.ToString();
+                return new Operacion(new_var, Tipo.VARIABLE_METODOS, line, colum);
+            }
             else
             {
                 string valor = nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Term.Name;
                 if (valor.ToLower().Equals("numero"))
                     return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)), line, colum);
+                else if (valor.ToLower().Equals("cadena")) return new Operacion(VALOR(nodo.ChildNodes.ElementAt(0)).ToString(), Tipo.CADENA, line, colum);
                 else return new Operacion(nodo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Value.ToString(), Tipo.BOOLEANO, line, colum);
             }
         }
