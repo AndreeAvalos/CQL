@@ -30,7 +30,7 @@ namespace Servidor.Analizador.CHISON
                 CORIZQ = ToTerm("["),
                 CORDER = ToTerm("]"),
                 COMA = ToTerm(","),
-
+                RNAME = ToTerm("\"NAME\""),
                 RUSERS = ToTerm("\"USERS\""),
                 RPASSWORD = ToTerm("\"PASSWORD\""),
                 RPERMISSIONS = ToTerm("\"PERMISSIONS\"");
@@ -56,6 +56,7 @@ namespace Servidor.Analizador.CHISON
             #region GRAMATICA
             S.Rule = USERS2;
 
+            NAME.Rule = RNAME + IGUAL + VALOR;
 
             USERS2.Rule = USERS2 + COMA + USERS3
                 | USERS3
@@ -72,6 +73,13 @@ namespace Servidor.Analizador.CHISON
                 | PASSWORD
                 | PERMISSIONS;
 
+            VALOR.Rule = CADENA
+                | DECIMAL
+                | IDENTIFICADOR
+                | NUMERO
+                | RTIME
+                | RDATE;
+
             PASSWORD.Rule = RPASSWORD + IGUAL + VALOR;
 
             PERMISSIONS.Rule = RPERMISSIONS + IGUAL + CORIZQ + PERMISSIONS2 + CORDER;
@@ -83,6 +91,12 @@ namespace Servidor.Analizador.CHISON
 
             PERMISSION.Rule = MENQUE + NAME + MAYQUE;
             #endregion
+
+            #region PREFERENCIAS
+            this.Root = S;
+
+            #endregion
+
         }
     }
 }
