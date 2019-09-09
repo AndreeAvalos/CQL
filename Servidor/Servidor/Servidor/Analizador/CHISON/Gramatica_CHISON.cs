@@ -275,6 +275,7 @@ namespace Servidor.Analizador.CHISON
                 | RTRUE
                 | RFALSE
                 | RTIME
+                | RNULL
                 | RDATE;
 
             #region  LISTAS y MAPAS
@@ -298,10 +299,12 @@ namespace Servidor.Analizador.CHISON
             #endregion
 
             USERS.Rule = RUSERS + IGUAL + CORIZQ + USERS2 + CORDER;
+                
 
 
             USERS2.Rule = USERS2 + COMA + USERS3
                 | USERS3
+				| ruta_import
                 | Empty;
             USERS2.ErrorRule = SyntaxError + COMA;
 

@@ -180,7 +180,8 @@ namespace Servidor.Analizador.CQL
                 VAR_ATTR = new NonTerminal("VAR_ATTR"),
                 MAP_VALS = new NonTerminal("MAP_VALS"),
                 MAP_VAL = new NonTerminal("MAP_VAL"),
-                METODOS_MAP = new NonTerminal("METODOS_MAP")
+                METODOS_MAP = new NonTerminal("METODOS_MAP"),
+                SENTENCIA_FUNCION = new NonTerminal("SENTENCIA_FUNCION")
 
                 ;
 

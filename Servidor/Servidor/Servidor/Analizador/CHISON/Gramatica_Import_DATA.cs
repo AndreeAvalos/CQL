@@ -83,7 +83,7 @@ namespace Servidor.Analizador.CHISON
                 | RNULL
                 | RDATE;
 
-            #region LISTAS y MAPAS
+            #region  LISTAS y MAPAS
             LISTAS.Rule = CORIZQ + LISTAS2 + CORDER;
 
             LISTAS2.Rule = LISTAS2 + COMA + LISTAS3

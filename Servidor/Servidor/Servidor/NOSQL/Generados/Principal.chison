@@ -177,62 +177,6 @@ $<
 		>
 	],
 	"USERS"= [
-		<
-			"NAME"= "Fernando",
-			"PASSWORD"= "5678",
-			"PERMISSIONS"= [
-			]
-		>,
-		<
-			"NAME"= "Lilly",
-			"PASSWORD"= "Collins",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database1"
-				>
-			]
-		>,
-		<
-			"NAME"= "Luis",
-			"PASSWORD"= "1234",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database1"
-				>,
-				<
-					"NAME" = "Database2"
-				>
-			]
-		>,
-		<
-			"NAME"= "Andree",
-			"PASSWORD"= "1222",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database1"
-				>,
-				<
-					"NAME" = "Database2"
-				>,
-				<
-					"NAME" = "Database3"
-				>
-			]
-		>,
-		<
-			"NAME"= "admin",
-			"PASSWORD"= "admin",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database1"
-				>,
-				<
-					"NAME" = "Database2"
-				>,
-				<
-					"NAME" = "Database3"
-				>
-			]
-		>
+		${ users.chison }$
 	]
 >$
