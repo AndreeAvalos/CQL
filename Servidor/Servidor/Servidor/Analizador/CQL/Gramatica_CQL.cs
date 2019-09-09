@@ -106,7 +106,8 @@ namespace Servidor.Analizador.CQL
                 RREMOVE = ToTerm("REMOVE"),
                 RSIZE = ToTerm("SIZE"),
                 RCLEAR = ToTerm("CLEAR"),
-                RCONTAINS = ToTerm("CONTAINS")
+                RCONTAINS = ToTerm("CONTAINS"),
+                RPROCEDURE = ToTerm("PROCEDURE")
                 ;
             #endregion
 
@@ -169,6 +170,7 @@ namespace Servidor.Analizador.CQL
                 VALORES_LOGICOS = new NonTerminal("VALORES_LOGICOS"),
                 SENTENCIA_SWITCH = new NonTerminal("SENTENCIA_SWITCH"),
                 CASOS = new NonTerminal("CASOS"),
+                PARAMS = new NonTerminal("PARAMS"),
                 SWITCH_DEFAULT = new NonTerminal("SWITCH_DEFAULT"),
                 CASO = new NonTerminal("CASO"),
                 SENTENCIA_WHILE = new NonTerminal("SENTENCIA_WHILE"),
@@ -181,7 +183,10 @@ namespace Servidor.Analizador.CQL
                 MAP_VALS = new NonTerminal("MAP_VALS"),
                 MAP_VAL = new NonTerminal("MAP_VAL"),
                 METODOS_MAP = new NonTerminal("METODOS_MAP"),
-                SENTENCIA_FUNCION = new NonTerminal("SENTENCIA_FUNCION")
+                SENTENCIA_FUNCION = new NonTerminal("SENTENCIA_FUNCION"),
+                PARAMETROS = new NonTerminal("PARAMETROS"),
+                PARAMETRO = new NonTerminal("PARAMETRO"),
+                SENTENCIA_PROCEDURE = new NonTerminal("SENTENCIA_PROCEDURE")
 
                 ;
 
@@ -224,10 +229,13 @@ namespace Servidor.Analizador.CQL
                 | LOG
                 | SENTENCIA_IF
                 | RBREAK + PTCOMA
+                | RRETURN + PARAMS + PTCOMA
                 | SENTENCIA_SWITCH
                 | SENTENCIA_WHILE
                 | SENTENCIA_DO_WHILE
-                | SENTENCIA_FOR;
+                | SENTENCIA_FOR
+                | SENTENCIA_FUNCION
+                | SENTENCIA_PROCEDURE;
 
             #region USER TYPES
             //CREATE TYPE IF NOT EXISTS PRUEBA (-);
@@ -428,6 +436,17 @@ namespace Servidor.Analizador.CQL
             //@var++ o @var--
             ACTUALIZACION.Rule = RARROBA + IDENTIFICADOR + RINCREMENTO
                 | RARROBA + IDENTIFICADOR + RDECREMENTO;
+
+            SENTENCIA_FUNCION.Rule = TIPO_DATO + IDENTIFICADOR + PARIZQ + PARAMETROS + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
+            PARAMETROS.Rule = MakeStarRule(PARAMETROS, COMA, PARAMETRO);
+            PARAMETRO.Rule = TIPO_DATO + RARROBA + IDENTIFICADOR;
+
+            PARAMS.Rule = PARAMS + COMA + VALORES_LOGICOS
+                | VALORES_LOGICOS
+                | Empty;
+
+            SENTENCIA_PROCEDURE.Rule = RPROCEDURE + IDENTIFICADOR+ PARIZQ + PARAMETROS + PARDER+COMA + PARIZQ + PARAMETROS + PARDER + LLAVIZQ + Instrucciones + LLAVDER;
+
             #endregion
 
             //TIPOS DE OPERACIONES NUMERICAS
