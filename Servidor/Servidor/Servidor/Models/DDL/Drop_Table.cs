@@ -19,6 +19,10 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public List<string> getSalida()
         {
@@ -26,7 +30,10 @@ namespace Servidor.Models
             return salida;
         }
 
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
         {
@@ -40,7 +47,7 @@ namespace Servidor.Models
                     }
                     else
                     {
-                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La tabla "+ id_tabla+ "no puede eliminarse porque no existe en la base de datos."));
+                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id_tabla+ " TableDontExists."));
                         // marcar error
                     }
                 }
@@ -64,7 +71,7 @@ namespace Servidor.Models
             else
             {
                 //no hay ninguna base de datos seleccionada.
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No existe ninguna base de datos en uso."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "UseBDException."));
             }
             return null;
         }

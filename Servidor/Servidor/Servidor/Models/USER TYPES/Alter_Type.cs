@@ -23,7 +23,10 @@ namespace Servidor.Models.USER_TYPES
             this.column = column;
             this.add = add;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public Alter_Type(string id, List<Atributo> atributos, int line, int column, bool add)
         {
             this.id = id;
@@ -78,23 +81,89 @@ namespace Servidor.Models.USER_TYPES
                             foreach (Atributo item in atributos)
                             {
 
-                                if (!Program.comprobarPrimitivo(item.Type.ToLower()))
+                                if (item.Collection)
                                 {
-                                    is_primitivo = false;
-                                    if (!Program.sistema.existeObjeto(item.Type.ToLower())) is_objeto = false;
-                                    else { is_primitivo = true; is_objeto = true; }
+                                    if (item.Type.ToLower().Equals("set") || item.Type.ToLower().Equals("list"))
+                                    {
+                                        if (!Program.comprobarPrimitivo(item.Attr1.ToLower()))
+                                        {
+                                            is_primitivo = false;
+                                            if (!Program.sistema.existeObjeto(item.Attr1.ToLower())) is_objeto = false;
+                                            else { is_primitivo = true; is_objeto = true; }
+                                        }
+                                        else
+                                        {
+                                            is_primitivo = true; is_objeto = true;
+                                        }
+
+                                        if (!is_primitivo && !is_objeto)
+                                        {
+                                            is_ok = false;
+
+                                            //informar que no existe ese tipo de dato
+                                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Attr1 + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (!Program.comprobarPrimitivo(item.Attr1.ToLower()))
+                                        {
+                                            is_primitivo = false;
+                                            if (!Program.sistema.existeObjeto(item.Attr1.ToLower())) is_objeto = false;
+                                            else { is_primitivo = true; is_objeto = true; }
+                                        }
+                                        else
+                                        {
+                                            is_primitivo = true; is_objeto = true;
+                                        }
+
+                                        if (!is_primitivo && !is_objeto)
+                                        {
+                                            is_ok = false;
+
+                                            //informar que no existe ese tipo de dato
+                                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Attr1 + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                        }
+                                        if (!Program.comprobarPrimitivo(item.Attr2.ToLower()))
+                                        {
+                                            is_primitivo = false;
+                                            if (!Program.sistema.existeObjeto(item.Attr2.ToLower())) is_objeto = false;
+                                            else { is_primitivo = true; is_objeto = true; }
+                                        }
+                                        else
+                                        {
+                                            is_primitivo = true; is_objeto = true;
+                                        }
+
+                                        if (!is_primitivo && !is_objeto)
+                                        {
+                                            is_ok = false;
+
+                                            //informar que no existe ese tipo de dato
+                                            salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Attr2 + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                        }
+                                    }
+
                                 }
                                 else
                                 {
-                                    is_primitivo = true; is_objeto = true;
-                                }
+                                    if (!Program.comprobarPrimitivo(item.Type.ToLower()))
+                                    {
+                                        is_primitivo = false;
+                                        if (!Program.sistema.existeObjeto(item.Type.ToLower())) is_objeto = false;
+                                        else { is_primitivo = true; is_objeto = true; }
+                                    }
+                                    else
+                                    {
+                                        is_primitivo = true; is_objeto = true;
+                                    }
 
-                                if (!is_primitivo && !is_objeto)
-                                {
-                                    is_ok = false;
+                                    if (!is_primitivo && !is_objeto)
+                                    {
+                                        is_ok = false;
 
-                                    //informar que no existe ese tipo de dato
-                                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Type + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                        salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + item.Type + " no es primitivo, ni es parte de los objetos de la base de datos."));
+                                    }
                                 }
 
                             }
@@ -183,7 +252,7 @@ namespace Servidor.Models.USER_TYPES
                 }
                 else
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El tipo " + id + " no existe en la base de datos."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id + " TypeDontExists."));
                 }
 
 
@@ -214,6 +283,10 @@ namespace Servidor.Models.USER_TYPES
         public object Recolectar(TablaDeSimbolos ts)
         {
             throw new NotImplementedException();
+        }
+        public Tipo getType()
+        {
+            return Tipo.USER_TYPES;
         }
     }
 }

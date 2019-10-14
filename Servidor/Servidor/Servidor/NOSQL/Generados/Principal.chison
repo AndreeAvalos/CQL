@@ -5,10 +5,10 @@ $<
 			"DATA"= [
 				<
 					"CQL-TYPE" = "TABLE",
-					"NAME" = "Estudiante",
+					"NAME" = "Alumno",
 					"COLUMNS" = [
 						<
-							"NAME"= "ID",
+							"NAME"= "Carnet",
 							"TYPE"= "Counter",
 							"PK"= TRUE
 						>,
@@ -21,109 +21,146 @@ $<
 							"NAME"= "Edad",
 							"TYPE"= "Int",
 							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Cursos_Aprobados",
+							"TYPE"= "SET<string>",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Direccion",
+							"TYPE"= "Direccion",
+							"PK"= FALSE
 						>
 					],
 					"DATA" = [
-						${ estudiantes.chison }$
+						${ alumnos.chison }$
 					]
 				>,
 				<
 					"CQL-TYPE" = "TABLE",
-					"NAME" = "Jeans",
+					"NAME" = "Partido",
 					"COLUMNS" = [
 						<
-							"NAME"= "ID",
-							"TYPE"= "Counter",
+							"NAME"= "Hora",
+							"TYPE"= "Time",
 							"PK"= TRUE
 						>,
 						<
-							"NAME"= "Nombre",
-							"TYPE"= "String",
+							"NAME"= "Fecha",
+							"TYPE"= "Date",
+							"PK"= TRUE
+						>,
+						<
+							"NAME"= "Local",
+							"TYPE"= "Equipo",
 							"PK"= FALSE
 						>,
 						<
-							"NAME"= "Tallas",
-							"TYPE"= "List<Int>",
+							"NAME"= "Visita",
+							"TYPE"= "Equipo",
+							"PK"= FALSE
+						>,
+						<
+							"NAME"= "Resultado",
+							"TYPE"= "Resultado",
 							"PK"= FALSE
 						>
 					],
 					"DATA" = [
-						${ jeansData.chison }$
+						${ partido.chison }$
+					]
+				>,
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "TiendaRopa",
+					"COLUMNS" = [
+						<
+							"NAME"= "ID",
+							"TYPE"= "Int",
+							"PK"= TRUE
+						>,
+						<
+							"NAME"= "Articulo",
+							"TYPE"= "Articulo",
+							"PK"= FALSE
+						>
+					],
+					"DATA" = [
+						${ tiendaropa.chison }$
 					]
 				>,
 				<
 					"CQL-TYPE" = "OBJECT",
-					"NAME" = "Persona",
+					"NAME" = "Direccion",
 					"ATTRS" = [
 						<
-							"NAME" = "CUI",
-							"TYPE" = "Double"
+							"NAME" = "Apartamento",
+							"TYPE" = "String"
 						>,
 						<
+							"NAME" = "Zona",
+							"TYPE" = "String"
+						>,
+						<
+							"NAME" = "Nivel",
+							"TYPE" = "Int"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Equipo",
+					"ATTRS" = [
+						<
 							"NAME" = "Nombre",
+							"TYPE" = "String"
+						>,
+						<
+							"NAME" = "Aficion",
+							"TYPE" = "Int"
+						>,
+						<
+							"NAME" = "Pais",
 							"TYPE" = "String"
 						>
 					]
 				>,
 				<
 					"CQL-TYPE" = "OBJECT",
-					"NAME" = "Automovil",
+					"NAME" = "Resultado",
 					"ATTRS" = [
+						<
+							"NAME" = "local",
+							"TYPE" = "Int"
+						>,
+						<
+							"NAME" = "visita",
+							"TYPE" = "Int"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Articulo",
+					"ATTRS" = [
+						<
+							"NAME" = "Tipo",
+							"TYPE" = "String"
+						>,
 						<
 							"NAME" = "Marca",
 							"TYPE" = "String"
 						>,
 						<
-							"NAME" = "Fecha_Compra",
-							"TYPE" = "Date"
-						>,
-						<
-							"NAME" = "Kilometraje",
+							"NAME" = "Precio",
 							"TYPE" = "Double"
 						>,
 						<
-							"NAME" = "Propietario",
-							"TYPE" = "Persona"
+							"NAME" = "Tallas",
+							"TYPE" = "SET<double>"
 						>
 					]
-				>,
-				<
-					"CQL-TYPE" = "OBJECT",
-					"NAME" = "Prueba",
-					"ATTRS" = [
-						<
-							"NAME" = "cui",
-							"TYPE" = "int"
-						>,
-						<
-							"NAME" = "nombre",
-							"TYPE" = "string"
-						>
-					]
-				>,
-				<
-					"CQL-TYPE" = "PROCEDURE",
-					"NAME" = "Procedure1",
-					"PARAMETERS" = [
-						<
-							"NAME" = "@Nombre",
-							"TYPE" = "String",
-							"AS" = IN
-						>,
-						<
-							"NAME" = "@Id",
-							"TYPE" = "Int",
-							"AS" = IN
-						>,
-						<
-							"NAME" = "@Edad",
-							"TYPE" = "Int",
-							"AS" = OUT
-						>
-					],
-					"INSTR" = $ 
-                                Return @val;
-                              $
 				>
 			]
 		>,
@@ -137,123 +174,9 @@ $<
 			"NAME"= "Database3",
 			"DATA"= [
 			]
-		>,
-		<
-			"NAME"= "PRUEBA_EJECUCION",
-			"DATA"= [
-				<
-					"CQL-TYPE" = "TABLE",
-					"NAME" = "Maestro",
-					"COLUMNS" = [
-						<
-							"NAME"= "id",
-							"TYPE"= "int",
-							"PK"= TRUE
-						>,
-						<
-							"NAME"= "cui",
-							"TYPE"= "string",
-							"PK"= TRUE
-						>,
-						<
-							"NAME"= "correo",
-							"TYPE"= "string",
-							"PK"= FALSE
-						>,
-						<
-							"NAME"= "telefono",
-							"TYPE"= "int",
-							"PK"= FALSE
-						>
-					],
-					"DATA" = [
-					]
-				>,
-				<
-					"CQL-TYPE" = "TABLE",
-					"NAME" = "prueba_permiso",
-					"COLUMNS" = [
-						<
-							"NAME"= "num_error",
-							"TYPE"= "int",
-							"PK"= TRUE
-						>,
-						<
-							"NAME"= "token",
-							"TYPE"= "string",
-							"PK"= FALSE
-						>,
-						<
-							"NAME"= "line",
-							"TYPE"= "int",
-							"PK"= FALSE
-						>,
-						<
-							"NAME"= "column",
-							"TYPE"= "int",
-							"PK"= FALSE
-						>
-					],
-					"DATA" = [
-					]
-				>
-			]
 		>
 	],
 	"USERS"= [
-		<
-			"NAME"= "Luis",
-			"PASSWORD"= "1234",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database2"
-				>,
-				<
-					"NAME" = "PRUEBA_EJECUCION"
-				>
-			]
-		>,
-		<
-			"NAME"= "Fernando",
-			"PASSWORD"= "5678",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database3"
-				>
-			]
-		>,
-		<
-			"NAME"= "admin",
-			"PASSWORD"= "admin",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "Database1"
-				>,
-				<
-					"NAME" = "Database2"
-				>,
-				<
-					"NAME" = "Database3"
-				>,
-				<
-					"NAME" = "PRUEBA_EJECUCION"
-				>
-			]
-		>,
-		<
-			"NAME"= "Andree",
-			"PASSWORD"= "1233444",
-			"PERMISSIONS"= [
-				<
-					"NAME" = "PRUEBA_EJECUCION"
-				>,
-				<
-					"NAME" = "Database1"
-				>,
-				<
-					"NAME" = "Database3"
-				>
-			]
-		>
+		${ users.chison }$
 	]
 >$

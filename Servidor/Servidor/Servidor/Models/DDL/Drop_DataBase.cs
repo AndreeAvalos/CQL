@@ -16,6 +16,14 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
@@ -24,13 +32,14 @@ namespace Servidor.Models
             {
                 Program.sistema.deleteDataBase(id);
                 salida.Add(Program.buildMessage("La base de datos " + id + " fue eliminada con exito."));
+                Program.sistema.deleteDBFROMUSER(id.ToLower());
 
             }
             else
             {
                 //informar que no existe database
 
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos que desea eliminar no existe."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists."));
 
             }
             return null;

@@ -1,6 +1,10 @@
-﻿using Servidor.NOSQL.Modelos;
+﻿using Newtonsoft.Json;
+using Servidor.Analizador.CHISON;
+using Servidor.Models;
+using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,13 +14,18 @@ namespace Servidor.NOSQL.Estructuras
     {
         List<Usuario> usuarios;
         List<Database> databases;
+        string link = "";
+        bool importada = false;
+
 
         public Manejo()
         {
             this.Usuarios = new List<Usuario>();
             this.Databases = new List<Database>();
+
         }
-        public bool existUser(string user_name) {
+        public bool existUser(string user_name)
+        {
             foreach (Usuario item in usuarios)
             {
                 if (item.Name.ToLower().Equals(user_name.ToLower())) return true;
@@ -24,6 +33,14 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
+        public void deleteDBFROMUSER(string db)
+        {
+
+            foreach (Usuario item in usuarios)
+            {
+                item.deletePermiso(db);
+            }
+        }
 
         public string execComit(int num_tabs)
         {
@@ -47,30 +64,61 @@ namespace Servidor.NOSQL.Estructuras
             }
             salida += tabulaciones + "],\n";
             salida += tabulaciones + "\"USERS\"= [\n";
-            for (int i = 0; i < usuarios.Count; i++)
+            if (importada)
             {
-                if (i == usuarios.Count - 1)
+                salida +=tabulaciones+ " \t ${ " + link + " }$\n";
+                WriteUser();
+            }
+            else
+            {
+                for (int i = 0; i < usuarios.Count; i++)
                 {
-                    salida += Program.getTabulaciones(num_tabs) + "<\n";
-                    salida += usuarios.ElementAt(i).execCommit(num_tabs);
-                    salida += Program.getTabulaciones(num_tabs) + ">\n";
-                }
-                else
-                {
-                    salida += Program.getTabulaciones(num_tabs) + "<\n";
-                    salida += usuarios.ElementAt(i).execCommit(num_tabs);
-                    salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    if (i == usuarios.Count - 1)
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += usuarios.ElementAt(i).execCommit(num_tabs);
+                        salida += Program.getTabulaciones(num_tabs) + ">\n";
+                    }
+                    else
+                    {
+                        salida += Program.getTabulaciones(num_tabs) + "<\n";
+                        salida += usuarios.ElementAt(i).execCommit(num_tabs);
+                        salida += Program.getTabulaciones(num_tabs) + ">,\n";
+                    }
                 }
             }
             salida += tabulaciones + "]";
             return salida;
         }
 
+        private void WriteUser()
+        {
+            string salida = "";
+            string path = "./NOSQL/Generados/" + link;
+            for (int i = 0; i < usuarios.Count; i++)
+            {
+                if (i == usuarios.Count - 1)
+                {
+                    salida += Program.getTabulaciones(0) + "<\n";
+                    salida += usuarios.ElementAt(i).execCommit(1);
+                    salida += Program.getTabulaciones(0) + ">\n";
+                }
+                else
+                {
+                    salida += Program.getTabulaciones(0) + "<\n";
+                    salida += usuarios.ElementAt(i).execCommit(1);
+                    salida += Program.getTabulaciones(0) + ">,\n";
+                }
+            }
+            File.WriteAllText(path, salida);
+        }
+
         internal bool tienePermiso(string user_actual, string id_db)
         {
             foreach (Usuario item in usuarios)
             {
-                if (item.Name.ToLower().Equals(user_actual.ToLower())) {
+                if (item.Name.ToLower().Equals(user_actual.ToLower()))
+                {
                     foreach (Permiso item2 in item.Permisos)
                     {
                         if (item2.Name.ToLower().Equals(id_db.ToLower())) return true;
@@ -81,10 +129,12 @@ namespace Servidor.NOSQL.Estructuras
             return false;
         }
 
-        public bool existPermission(string user_name, string database) {
+        public bool existPermission(string user_name, string database)
+        {
             foreach (Usuario item in usuarios)
             {
-                if (item.Name.ToLower().Equals(user_name.ToLower())) {
+                if (item.Name.ToLower().Equals(user_name.ToLower()))
+                {
                     foreach (Permiso permiso in item.Permisos)
                     {
                         if (permiso.Name.ToLower().Equals(database.ToLower())) return true;
@@ -93,6 +143,18 @@ namespace Servidor.NOSQL.Estructuras
                 }
             }
             return false;
+        }
+
+        internal List<Tipo_Objeto> getValor(string id, List<Tipo_Collection> objeto, TablaDeSimbolos ts)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.buildObject(id, objeto, ts);
+                }
+            }
+            return null;
         }
 
         public bool setPermission(string user_name, Permiso new_permiso)
@@ -124,6 +186,8 @@ namespace Servidor.NOSQL.Estructuras
 
         public List<Usuario> Usuarios { get => usuarios; set => usuarios = value; }
         public List<Database> Databases { get => databases; set => databases = value; }
+        public string Link { get => link; set => link = value; }
+        public bool Importada { get => importada; set => importada = value; }
 
         public bool Buscar_Usuario(string user, string password)
         {
@@ -160,7 +224,7 @@ namespace Servidor.NOSQL.Estructuras
                     item.deleteAtributo(id.ToLower(), name.ToLower());
                 }
             }
-   
+
         }
 
         public string Crear_Estructura(string usuario)
@@ -170,7 +234,7 @@ namespace Servidor.NOSQL.Estructuras
 
             foreach (Usuario item in usuarios)
             {
-                if (item.Name.Equals(usuario))
+                if (item.Name.ToLower().Equals(usuario.ToLower()))
                 {
                     usuario_actual = item;
                     break;
@@ -388,10 +452,12 @@ namespace Servidor.NOSQL.Estructuras
             Databases.Add(db);
         }
 
-        public bool getPermission(string name, string database) {
-            foreach  (Usuario item in usuarios)
+        public bool getPermission(string name, string database)
+        {
+            foreach (Usuario item in usuarios)
             {
-                if (item.Name.ToLower().Equals(name.ToLower())) {
+                if (item.Name.ToLower().Equals(name.ToLower()))
+                {
                     foreach (Permiso item2 in item.Permisos)
                     {
                         if (item2.Name.ToLower().Equals(database.ToLower())) return true;
@@ -424,5 +490,19 @@ namespace Servidor.NOSQL.Estructuras
             }
             if (index != -1) databases.RemoveAt(index);
         }
+
+        internal List<Tipo_Objeto> buildObject(string v)
+        {
+            foreach (Database item in databases)
+            {
+                if (item.En_uso)
+                {
+                    return item.buildObject(v);
+                }
+            }
+            return null;
+        }
     }
+
+
 }

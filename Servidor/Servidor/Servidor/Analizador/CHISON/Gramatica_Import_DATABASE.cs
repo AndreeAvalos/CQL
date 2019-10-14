@@ -114,12 +114,12 @@ namespace Servidor.Analizador.CHISON
 
 
             DATA5.Rule = DATA5 + COMA + DATA2
-                | DATA2
-                | ruta_import
-                | Empty;
+                 | DATA2
+                 | ruta_import
+                 | Empty;
+            DATA5.ErrorRule = SyntaxError + COMA;
 
             DATA2.Rule = MENQUE + DATA3 + MAYQUE;
-
 
             DATA3.Rule = DATA3 + COMA + DATA4
                 | DATA4;
@@ -132,7 +132,6 @@ namespace Servidor.Analizador.CHISON
 
             TABLA.Rule = COLUMNS
                 | DATA_DATA;
-
 
             CQL_TYPE.Rule = RCQL_TYPE + IGUAL + VALOR;
 
@@ -176,7 +175,9 @@ namespace Servidor.Analizador.CHISON
             DATA_DATA6.Rule = VALOR + IGUAL + VALOR;
 
             OBJETO.Rule = ATTRIBUTES;
+
             ATTRIBUTES.Rule = RATTRS + IGUAL + CORIZQ + ATTRIBUTES2 + CORDER;
+
 
             ATTRIBUTES2.Rule = ATTRIBUTES2 + COMA + ATTRIBUTES3
                 | ATTRIBUTES3
@@ -186,6 +187,7 @@ namespace Servidor.Analizador.CHISON
 
             ATTRIBUTES4.Rule = ATTRIBUTES4 + COMA + ATTRIBUTE
                 | ATTRIBUTE;
+
 
             ATTRIBUTE.Rule = NAME
                 | TYPE;
@@ -198,9 +200,12 @@ namespace Servidor.Analizador.CHISON
             PARAMETERS.Rule = RPARAMETERS + IGUAL + CORIZQ + PARAMETERS2 + CORDER;
 
             PARAMETERS2.Rule = PARAMETERS2 + COMA + PARAMETERS3
-                | PARAMETERS3;
+                | PARAMETERS3
+                | Empty;
+
 
             PARAMETERS3.Rule = MENQUE + PARAMETERS4 + MAYQUE;
+            PARAMETERS3.ErrorRule = SyntaxError + MAYQUE;
 
             PARAMETERS4.Rule = PARAMETERS4 + COMA + PARAMETER
                 | PARAMETER;

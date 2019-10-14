@@ -18,9 +18,27 @@ namespace Servidor.Models
             this.columna = column;
             this.user = user;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Recolectar(TablaDeSimbolos ts)
         {
+            if (Program.sistema.getPermission(user, id))
+            {
+                if (Program.sistema.existDataBase(id.ToLower()))
+                {
+                    Program.sistema.asignUse(id);
+                }
+                else
+                {
+                    //informar que no existe database
+                }
+            }
             return null;
         }
         public object Ejecutar(TablaDeSimbolos ts)
@@ -35,7 +53,7 @@ namespace Servidor.Models
                 else
                 {
                     //informar que no existe database
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos que desea usar no existe."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists"));
                 }
             }
             else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario no posee permisos para usar la base de datos."));

@@ -40,6 +40,17 @@ namespace Servidor.NOSQL.Modelos
             return salida;
         }
 
+        internal void deletePermiso(string db)
+        {
+            int index = -1;
+            for (int i = 0; i < permisos.Count; i++)
+            {
+                if (permisos.ElementAt(i).Name.ToLower().Equals(db.ToLower())) index = i;
+            }
+            if (index != -1) permisos.RemoveAt(index);
+            return;
+        }
+
         public bool Revoke(string id)
         {
             int index = -1;

@@ -25,6 +25,10 @@ namespace Servidor.Models
 
             return salida;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Recolectar(TablaDeSimbolos ts) {
             return null;
@@ -39,7 +43,7 @@ namespace Servidor.Models
                 else
                 {
                     //Imprimir error ya que la tabla 
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos "+id+" ya existe."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id+ " BDAlreadyExists."));
                 }
             }
             else {
@@ -58,6 +62,10 @@ namespace Servidor.Models
         public int getColumn()
         {
             return columna;
+        }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
         }
     }
 }

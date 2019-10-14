@@ -61,8 +61,10 @@ namespace Servidor.Analizador.CHISON
 
             DATA_DATA3.Rule = DATA_DATA3 + COMA + DATA_DATA4
                 | DATA_DATA4;
+            DATA_DATA3.ErrorRule = SyntaxError + MENQUE;
 
             DATA_DATA4.Rule = MENQUE + DATA_DATA5 + MAYQUE;
+            
 
             DATA_DATA5.Rule = DATA_DATA5 + COMA + DATA_DATA6
                 | DATA_DATA6;
@@ -81,7 +83,7 @@ namespace Servidor.Analizador.CHISON
                 | RNULL
                 | RDATE;
 
-            #region LISTAS y MAPAS
+            #region  LISTAS y MAPAS
             LISTAS.Rule = CORIZQ + LISTAS2 + CORDER;
 
             LISTAS2.Rule = LISTAS2 + COMA + LISTAS3

@@ -23,6 +23,10 @@ namespace Servidor.Models.DCL
             this.id_db = id_db;
             this.user_actual = user_actual;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
 
         public object Ejecutar(TablaDeSimbolos ts)
         {
@@ -48,11 +52,11 @@ namespace Servidor.Models.DCL
                             if (Program.sistema.setPermission(user, new_permiso)) salida.Add(Program.buildMessage("Permisos concedidos a " + user + " para base de datos " + id_db + "."));
                             else salida.Add(Program.buildMessage("Error interno del sistema."));
                         }
-                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "La base de datos " + id_db + " no existe en el sistema."));
+                        else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id_db + " BDDontExists."));
                     }
                     else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " ya tiene permiso sobre " + id_db + "."));
                 }
-                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico",  user + " UserDontExists."));
             }
             return null;
         }
@@ -75,6 +79,11 @@ namespace Servidor.Models.DCL
         public object Recolectar(TablaDeSimbolos ts)
         {
             throw new NotImplementedException();
+        }
+
+        public Tipo getType()
+        {
+            return Tipo.DCL;
         }
     }
 }

@@ -22,7 +22,10 @@ namespace Servidor.Models.DCL
             this.id_db = id_db;
             this.user_actual = user_actual;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (!Program.sistema.tienePermiso(user_actual, id_db))
@@ -50,12 +53,16 @@ namespace Servidor.Models.DCL
                     }
                     return null;
                 }
-                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "El usuario " + user + " no existe en el sistema."));
+                else salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", user + " UserDontExists."));
             }
             return null;
 
         }
 
+        public Tipo getType()
+        {
+            return Tipo.DCL;
+        }
         public int getColumn()
         {
             return this.line;
