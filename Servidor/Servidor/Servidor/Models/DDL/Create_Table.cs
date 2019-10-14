@@ -25,12 +25,19 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public List<string> getSalida()
         {
 
             return salida;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
@@ -318,7 +325,7 @@ namespace Servidor.Models
                             }
                             else
                             {
-                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No existe ninguna base de datos en uso."));
+                                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists:."));
                                 //mandamos mensaje que no se pudo por que no hay ninguna base de datos en uso.
                                 return null;
                             }

@@ -19,6 +19,10 @@ namespace Servidor.Models
             this.linea = line;
             this.columna = column;
         }
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
 
         public List<string> getSalida()
         {
@@ -26,7 +30,10 @@ namespace Servidor.Models
             return salida;
         }
 
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Recolectar(TablaDeSimbolos ts) { return null; }
         public object Ejecutar(TablaDeSimbolos ts)
         {

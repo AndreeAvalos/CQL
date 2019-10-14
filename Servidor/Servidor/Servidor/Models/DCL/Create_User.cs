@@ -19,7 +19,10 @@ namespace Servidor.Models.DCL
             this.user = user;
             this.password = password;
         }
-
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (Program.sistema.existUser(user))
@@ -49,6 +52,11 @@ namespace Servidor.Models.DCL
         public List<string> getSalida()
         {
             return this.salida;
+        }
+
+        public Tipo getType()
+        {
+            return Tipo.DCL;
         }
 
         public object Recolectar(TablaDeSimbolos ts)

@@ -4,7 +4,6 @@ using Servidor.NOSQL.Modelos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Servidor.Analizador.CHISON
 {
@@ -679,7 +678,33 @@ namespace Servidor.Analizador.CHISON
 
 
                 case "USERS2":
-                    if (nodo.ChildNodes.Count == 3)
+                    if (nodo.ChildNodes.ElementAt(0).Term.Name.Equals("ruta_import"))
+                    {
+                        string link = nodo.ChildNodes.ElementAt(0).Token.Text.Replace("${ ", "");
+                        link = link.Replace(" }$", "");
+                        db_nosql.Link = link;
+                        db_nosql.Importada = true;
+                        String text = System.IO.File.ReadAllText("./NOSQL/Generados/" + link);
+
+                        LanguageData lenguaje = new LanguageData(new Gramatica_Import_User());
+                        Parser parser = new Parser(lenguaje);
+                        ParseTree arbol = parser.Parse(text);
+                        ParseTreeNode raiz = arbol.Root;
+
+                        if (raiz != null && arbol.ParserMessages.Count == 0)
+                        {
+
+                            return (List<Usuario>)Ejecutar(raiz.ChildNodes.ElementAt(0));
+
+                        }
+                        else
+                        {
+                            Program.addError(arbol);
+                            return new List<Usuario>();
+                        }
+
+                    }
+                    else if (nodo.ChildNodes.Count == 3)
                     {
                         List<Usuario> usuarios = (List<Usuario>)Ejecutar(nodo.ChildNodes.ElementAt(0));
                         usuarios.Add((Usuario)Ejecutar(nodo.ChildNodes.ElementAt(2)));
@@ -802,7 +827,7 @@ namespace Servidor.Analizador.CHISON
                     catch (Exception)
                     {
 
-                        Convert.ToDouble(nodo.ChildNodes[0].ChildNodes.ElementAt(0).Token.Text);
+                        Convert.ToDouble(nodo.Token.Text);
                         return 4;
                     }
 

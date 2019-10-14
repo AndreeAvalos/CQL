@@ -18,9 +18,27 @@ namespace Servidor.Models
             this.columna = column;
             this.user = user;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.DDL;
+        }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Recolectar(TablaDeSimbolos ts)
         {
+            if (Program.sistema.getPermission(user, id))
+            {
+                if (Program.sistema.existDataBase(id.ToLower()))
+                {
+                    Program.sistema.asignUse(id);
+                }
+                else
+                {
+                    //informar que no existe database
+                }
+            }
             return null;
         }
         public object Ejecutar(TablaDeSimbolos ts)

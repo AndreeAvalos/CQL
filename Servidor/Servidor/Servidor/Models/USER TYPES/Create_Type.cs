@@ -22,7 +22,14 @@ namespace Servidor.Models.USER_TYPES
             this.line = line;
             this.column = column;
         }
-
+        public Tipo getType()
+        {
+            return Tipo.USER_TYPES;
+        }
+        public void clearSalida()
+        {
+            this.salida.Clear();
+        }
         public object Ejecutar(TablaDeSimbolos ts)
         {
             if (Program.sistema.En_uso())
@@ -176,14 +183,14 @@ namespace Servidor.Models.USER_TYPES
                 }
                 else
                 {
-                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "Ya existe " + id + " en la base de datos."));
+                    salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", id + " UserAlreadyExists."));
                 }
 
             }
             else
             {
                 //no hay ninguna base de datos seleccionada.
-                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "No existe ninguna base de datos en uso."));
+                salida.Add(Program.buildError(getLine(), getColumn(), "Semantico", "BDDontExists."));
             }
 
             return null;

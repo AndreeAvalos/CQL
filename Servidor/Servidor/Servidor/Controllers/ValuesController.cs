@@ -24,17 +24,17 @@ namespace Servidor.Controllers
         [HttpGet]
         public string Get()
         {
-            /*String text = System.IO.File.ReadAllText("entradaCliente.txt");
+            String text = System.IO.File.ReadAllText("entradaCliente.txt");
             Sintactico_LUP sintactico = new Sintactico_LUP();
 
             if (sintactico.Validar(text, new Gramatica_LUP()))
             {
-                sintactico.Analizar(text, new Gramatica_LUP());*/
-            foreach (string item in Program.log_errores)
-            {
-                salida += item + "\n";
+                sintactico.Analizar(text, new Gramatica_LUP());
+                foreach (string item in sintactico.salida)
+                {
+                    salida += item + "\n";
+                }
             }
-
 
             return salida;
         }
@@ -79,10 +79,11 @@ namespace Servidor.Controllers
                     }
                 }
             }
-            else {
+            else
+            {
                 respuesta.Add(Program.buildMessage("El sistma no existe."));
             }
-            return respuesta ;
+            return respuesta;
         }
 
         // PUT api/values/5
